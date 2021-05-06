@@ -1,0 +1,64 @@
+@import "../../styles/themes";
+@import "~bootstrap/scss/mixins/breakpoints";
+@import "~@nebular/theme/styles/global/breakpoints";
+
+@include nb-install-component() {
+  .menu-sidebar ::ng-deep .scrollable {
+    padding-top: nb-theme(layout-padding-top);
+  }
+}
+
+::ng-deep .toaster {
+  width: 300px !important;
+}
+
+::ng-deep .toaster-wide {
+  width: 600px !important;
+}
+
+::ng-deep ngx-one-column-layout {
+  nb-layout-header {
+    box-shadow: 0 0.5rem 1rem 0 #2c33491a;
+    top: 0 !important;
+    max-width: 100vw !important;
+
+    .fixed {
+      height: 90px;
+      padding-top: 0.5rem;
+      padding-bottom: 0rem;
+      box-shadow: none !important;
+      max-width: 100vw !important;
+
+      ngx-header {
+        height: 100%;
+      }
+
+      @media only screen and (max-width: 767px) {
+        height: 76px !important;
+        padding-bottom: 0.5rem !important;
+      }
+    }
+  }
+
+  nb-layout-column {
+    padding: 0 !important;
+    padding-top: 13px !important;
+  }
+
+  .layout-container {
+    padding-top: 90px !important;
+  }
+
+  @media only screen and (max-width: 767px) {
+    nb-layout-header {
+      .fixed {
+        height: 76px !important;
+        padding-bottom: 0.5rem !important;
+      }
+    }
+
+    .layout-container {
+      padding-top: 76px !important;
+    }
+  }
+}

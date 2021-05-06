@@ -1,0 +1,31 @@
+<nb-card *ngIf="userDetails">
+    <nb-card-header>My Profile</nb-card-header>
+    <nb-card-body>
+        <form>
+            <div class="form-group row">
+                <label for="Name" class="label col-sm-3 col-form-label">Name</label>
+                <div class="col-sm-9">
+                    <input disabled [(ngModel)]="userDetails.Name" name="Name" type="text" nbInput fullWidth id="Name" placeholder="Name">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="UserID" class="label col-sm-3 col-form-label">User ID</label>
+                <div class="col-sm-9">
+                    <input disabled [(ngModel)]="userDetails.UserID" name="UserID" type="text" nbInput fullWidth id="UserID" placeholder="User ID">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="DefaultJurisdiction" class="label col-sm-3 col-form-label">Default Jurisdiction</label>
+                <div class="col-sm-9">
+                    <input disabled [(ngModel)]="userDetails.DefaultJurisdiction" name="DefaultJurisdiction" type="text" nbInput fullWidth id="DefaultJurisdiction" placeholder="Default Jurisdiction">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="DefaultProjectTypes" class="label col-sm-3 col-form-label">Default Project Types</label>
+                <div class="col-sm-9">
+                    <input disabled [(ngModel)]="userDetails.DefaultProjectTypes" name="DefaultProjectTypes" type="text" nbInput fullWidth id="DefaultProjectTypes" placeholder="Default Project Types">
+                </div>
+            </div>
+        </form>
+    </nb-card-body>
+</nb-card>

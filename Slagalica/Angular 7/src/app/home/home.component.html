@@ -1,0 +1,147 @@
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand text-white">LEXICON</a>
+    <span style="color: white;">NAME: {{userDetails?.fullName}}</span>
+    <span style="color: white;">USERNAME: {{userDetails?.username}}</span>
+    <span style="color: white;">EMAIL: {{userDetails?.email}}</span>
+    <button class="btn btn-danger my-2 my-sm-0" (click)="onLogout()">Logout</button>
+</nav>
+<div class="container">
+    <div style="padding: 20px;">
+        <p-tabView>
+            <!-- <p-tabPanel header="Lexicons">
+                <div style="display: flex; padding: 10px;">
+                    <div style="float: right; padding-left: 10px; text-align:left">
+                        <button type="button" pButton icon="pi pi-list" (click)="allWords()" label="All Words"></button>
+                    </div>
+                    <div style="float: right; padding-left: 10px; text-align:left">
+                        <button type="button" pButton icon="pi pi-search-plus" (click)="onlyPositive()"
+                            label="Positive Words"></button>
+                    </div>
+                    <div style="float: right; padding-left: 10px; text-align:left">
+                        <button type="button" pButton icon="pi pi-search-minus" (click)="onlyNegative()"
+                            label="Negative Words"></button>
+                    </div>
+                </div>
+                <p-table [columns]="cols" [value]="lexicons" selectionMode="single" [(selection)]="selectedLexicon"
+                    (onRowSelect)="onRowSelect($event)" [paginator]="true" [rows]="8">
+                    <ng-template pTemplate="caption">
+                        List of Lexicons
+                    </ng-template>
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                {{col.header}}
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns">
+                        <tr [pSelectableRow]="rowData">
+                            <td *ngFor="let col of columns">
+                                <span style="color: green;"
+                                    *ngIf="isNumber(rowData[col.field]) && rowData[col.field] > 0">{{rowData[col.field]}}</span>
+                                <span style="color: red;"
+                                    *ngIf="isNumber(rowData[col.field]) && rowData[col.field] < 0">{{rowData[col.field]}}</span>
+                                <span style="color: black;"
+                                    *ngIf="isNumber(rowData[col.field]) && rowData[col.field] == 0">{{rowData[col.field]}}</span>
+                                <span style="color: green;"
+                                    *ngIf="!isNumber(rowData[col.field]) && rowData['sentimentScore'] > 0">{{rowData[col.field]}}</span>
+                                <span style="color: red;"
+                                    *ngIf="!isNumber(rowData[col.field]) && rowData['sentimentScore'] < 0">{{rowData[col.field]}}</span>
+                                <span style="color: black;"
+                                    *ngIf="!isNumber(rowData[col.field]) && rowData['sentimentScore'] == 0">{{rowData[col.field]}}</span>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="summary" let-rowData>
+                        <div style="display: flex;">
+                            <div style="float: left; text-align:left">
+                                <button type="button" pButton icon="pi pi-plus" (click)="showDialogToAdd()"
+                                    label="Add"></button>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-table>
+
+                <p-dialog header="Lexicon Details" [(visible)]="displayDialog" [focusOnShow]="false" [responsive]="true"
+                    showEffect="fade" [modal]="true" [style]="{width: '300px'}">
+                    <div class="p-grid ui-fluid" *ngIf="lexicon">
+                        <div class="p-col-4">
+                            <label for="word">Word</label>
+                        </div>
+                        <div class="p-col-8">
+                            <input pInputText id="word" [(ngModel)]="lexicon.word" autofocus />
+                        </div>
+                        <div class="p-col-4">
+                            <label for="sentimentScore">Sentiment Score</label>
+                        </div>
+                        <div class="p-col-8">
+                            <input id="sentimentScore" [(ngModel)]="lexicon.sentimentScore" type="number" step="0.1"
+                                min="-1" max="1" />
+                        </div>
+                        <div *ngIf="errorMsg" class="p-col-8">
+                            <span style="color:red">{{ errorMsg }}</span>
+                        </div>
+                    </div>
+                    <p-footer>
+                        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                            <button *ngIf="showDeleteButton" type="button" pButton icon="pi pi-times"
+                                (click)="delete(lexicon)" label="Delete"></button>
+                            <button type="button" pButton icon="pi pi-check" (click)="save(lexicon)"
+                                label="Save"></button>
+                        </div>
+                    </p-footer>
+                </p-dialog>
+            </p-tabPanel>
+            <p-tabPanel header="Calculation">
+                <h3>Calculation of text Sentiment</h3>
+                <div style="display: flex;">
+                    <div style="float: left;">
+                        <div style="display: flex; padding: 10px;">
+                            <div style="float: right; padding-left: 10px; text-align:left">
+                                <button type="button" pButton icon="pi pi-replay" (click)="calculate()"
+                                    label="Calculate text Sentiment"></button>
+                            </div>
+                            <div style="float: right; padding-left: 10px; text-align:left">
+                                <input type="file" accept='text/plain' icon="pi pi-upload" id="file"
+                                    (change)="uploadFile($event.target.files)" label="Upload File" />
+                            </div>
+                        </div>
+                        <textarea [(ngModel)]="textCalc" [rows]="12" [cols]="60" pInputTextarea></textarea>
+                    </div>
+                    <div style="float: left; padding-left: 20px;">
+                        <h3>Result of the Calculation</h3>
+                        <span style="font-size: 250%; color: green;">Result:
+                            {{ sentimentCalculationResult | number : '1.5-5' }}</span>
+                        <br>
+                        <span style="color:red;">Number of words that are not present in the LEXICON:
+                            {{ wordsNotPresentInTheDictionary }}</span>
+                    </div>
+                </div>
+            </p-tabPanel> -->
+            <p-tabPanel header="Checklists Test">
+                <h3>Checklists Test</h3>
+                <div style="display: flex;">
+                    <div style="float: left;">
+                        <div style="display: flex; padding: 10px;">
+                            <div style="float: right; padding-left: 10px; text-align:left">
+                                <button type="button" pButton icon="pi pi-replay" (click)="getChecklists()"
+                                    label="Get Checklists"></button>
+                            </div>
+                        </div>
+                        <textarea [(ngModel)]="checklists" [rows]="12" [cols]="60" pInputTextarea></textarea>
+                    </div>
+                    <div style="float: left; padding-left: 20px;">
+                        <!-- <h3>Result of the Calculation</h3>
+                        <span style="font-size: 250%; color: green;">Result:
+                            {{ sentimentCalculationResult | number : '1.5-5' }}</span>
+                        <br>
+                        <span style="color:red;">Number of words that are not present in the LEXICON:
+                            {{ wordsNotPresentInTheDictionary }}</span> -->
+                    </div>
+                </div>
+            </p-tabPanel>
+        </p-tabView>
+
+    </div>
+</div>

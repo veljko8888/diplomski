@@ -1,0 +1,22 @@
+<nb-layout windowMode [nbSpinner]="loading" nbSpinnerSize="giant" nbSpinnerStatus="primary">
+  <nb-layout-column>
+    <!-- <ng-content select="router-outlet"></ng-content> -->
+    <div class="bg-img d-flex">
+      <div class="d-flex main-content">
+        <div class="left-side">
+          <!-- <img class="header-img pointer" [routerLink]="['/auth/login']" src="../../../assets/images/logo.svg"> -->
+          <div class="content">
+            <div>
+              <router-outlet></router-outlet>
+            </div>
+            <div class="underform-text contact-us-text">
+              Have a question or would like to schedule a demo?
+              <a  target="_blank" href="https://www.mygovernmentonline.org/#contactus" class="contact-us-link link-like col-sm-12">CONTACT US ></a>
+            </div>
+          </div>
+        </div>
+        <div class="side-img"></div>  
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>

@@ -1,0 +1,49 @@
+<div *ngIf="true">
+    <div class="row">
+        <div class="col-md-12">
+            <h4 *ngIf="authService.loginError" class="text-info">Failed to Login -
+                {{ authService.loginError.message }}.</h4>
+            <h4 *ngIf="passwordChanged" class="text-success">Successfully Changed Password.</h4>
+            <h4 *ngIf="accountDisabled" class="text-info">Account disabled, please contact support.</h4>
+            <nb-card class="nb-card-auth">
+                <nb-card-header>Log In</nb-card-header>
+                <nb-card-body>
+                    <form [formGroup]="form" class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="label col-sm-3 form-control-label">Email</label>
+                            <div class="col-sm-9">
+                                <input type="email" email nbInput fullWidth id="inputEmail3" name="UserName"
+                                    formControlName="Email" placeholder="Email">
+                                <br>
+                                <small
+                                    *ngIf="(form.get('Email').touched || formSubmitAttempt) && (form.get('Email').errors)"
+                                    class="text-danger">Please enter a valid email.</small>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputPassword3" class="label col-sm-3 form-control-label">Password</label>
+                            <div class="col-sm-9">
+                                <input type="password" nbInput fullWidth id="inputPassword3" name="Password"
+                                    formControlName="Password" placeholder="Password">
+                                <br>
+                                <small
+                                    *ngIf="(form.get('Password').touched || formSubmitAttempt) && (form.get('Password').errors)"
+                                    class="text-danger">Password is required.</small>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <a (click)="navigateForgotPass()"
+                                class="link-like label col-sm-12 form-control-label">Forgot Password?</a>
+                        </div>
+                        <div class="form-group row">
+                            <div class="offset-sm-3 col-sm-9">
+                                <!-- <button type="submit" (click)="onSubmit()" nbButton status="primary">Sign
+                                    in</button> -->
+                            </div>
+                        </div>
+                    </form>
+                </nb-card-body>
+            </nb-card>
+        </div>
+    </div>
+</div>

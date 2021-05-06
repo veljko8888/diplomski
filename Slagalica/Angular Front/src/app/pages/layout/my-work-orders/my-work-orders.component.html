@@ -1,0 +1,80 @@
+<p-table #dt [columns]="cols" [resizableColumns]="true" [reorderableColumns]="true" [value]="workOrders"
+    [(selection)]="selectedWorkOrders" dataKey="WorkOrderID" styleClass="p-datatable-customers" [rowHover]="true" [rows]="10"
+    [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [paginator]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [filterDelay]="0"
+    [globalFilterFields]="['name','country.name','representative.name','status']">
+    <ng-template pTemplate="caption">
+        <div class="table-header">
+            Work Orders
+            <div style="padding-top: 10px">
+                <div>
+                    <label class="label col-form-label">Date From</label>
+                    <input [(ngModel)]="dateFrom" class="col-md-2 margin-left-12 margin-right-10" nbInput fullWidth
+                        placeholder="Date From" [nbDatepicker]="formpicker">
+                    <nb-datepicker #formpicker></nb-datepicker>
+                    <label class="label col-form-label">Date To</label>
+                    <input [(ngModel)]="dateTo" class="input-style col-md-2 margin-left-12 margin-right-10" nbInput
+                        fullWidth placeholder="Date To" [nbDatepicker]="formpicker2">
+                    <nb-datepicker #formpicker2></nb-datepicker>
+                    <button type="submit" (click)="filterWorkOrders()" nbButton status="primary">Filter</button>
+                    <div style="margin-top: 10px;">
+                        <label class="label col-form-label margin-right-10">Columns</label>
+                        <nb-select (selectedChange)="colsChanged()" [(ngModel)]="selectedCols" nbInput fullWidth
+                            multiple placeholder="Columns">
+                            <nb-option *ngFor="let option of allCols;" disabled="{{ option.mandatory ? true : false }}"
+                                value="{{ option.field }}">
+                                {{ option.header }}</nb-option>
+                        </nb-select>
+                    </div>
+                </div>
+                <!-- <div>
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Global Search" />
+                    </span>
+                </div> -->
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" pResizableColumn pReorderableColumn pSortableColumn="{{col.field}}">
+                <div class="p-d-flex p-jc-between p-ai-center">
+                    {{col.header}}
+                    <p-sortIcon field="{{col.field}}"></p-sortIcon>
+                    <p-columnFilter type="{{col.fieldType}}" field="{{col.field}}" display="menu" class="p-ml-auto">
+                    </p-columnFilter>
+                </div>
+            </th>
+            <!-- <th style="width: 8rem"></th> -->
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-workOrder let-columns="columns">
+        <tr class="p-selectable-row">
+            <td>
+                <p-tableCheckbox [value]="workOrder"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns">
+                <span *ngIf="col.field == 'ProjectNumber'; else Other">
+                    <a (click)="navigateToProject(workOrder)"
+                        class="link-like label col-sm-12 form-control-label">{{workOrder[col.field]}}</a>
+                </span>
+                <ng-template #Other>
+                    <a *ngIf="col.link; else NoLink" (click)="navigateToWorkOrderDetail(workOrder)"
+                        class="link-like label col-sm-12 form-control-label">{{ col.fieldType == 'date' ?
+                        (workOrder[col.field] | date: 'MM/dd/yyyy') : workOrder[col.field]}}</a>
+                    <ng-template #NoLink>{{ col.fieldType == 'date' ?
+                        (workOrder[col.field] | date: 'MM/dd/yyyy') : workOrder[col.field]}}</ng-template>
+                </ng-template>
+            </td>
+            <!-- <td style="text-align: center">
+                <button type="submit" (click)="navigateToWorkOrderDetail(workOrder)" nbButton
+                    status="primary">Details</button>
+            </td> -->
+        </tr>
+    </ng-template>
+</p-table>

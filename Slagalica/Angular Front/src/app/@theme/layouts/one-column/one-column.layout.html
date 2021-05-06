@@ -1,0 +1,34 @@
+<p-toast [styleClass]="toastObj && toastObj.sticky ? 'toaster-wide' : 'toaster'" position="top-right" key="toast" [baseZIndex]="1000">
+    <ng-template let-message pTemplate="message">
+        <div class="p-flex p-flex-column" style="flex: 1;">
+            <div class="p-text-center">
+                <div>
+                    <i *ngIf="message.severity == 'error'" class="fa fa-exclamation-triangle"
+                        style="font-size: 3rem; color: red;"></i>
+                    <i *ngIf="message.severity == 'success'" class="fas fa-check"
+                        style="font-size: 3rem; color: green;"></i>
+                        <i *ngIf="message.severity == 'info'" class="fas fa-info"
+                        style="font-size: 3rem; color: blue;"></i>
+                    <span style="padding-left: 15px; padding-bottom: 10px; font-size: 2rem;">{{message.summary}}</span>
+                </div>
+                <div [ngStyle]="{'overflow-y': toastObj && toastObj.sticky ? 'scroll' : 'auto' }" style="padding-top: 10px; max-height: 300px !important;">
+                    <span [innerHtml]="message.detail" style="white-space: pre-line"></span>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-toast>
+
+<nb-layout windowMode [nbSpinner]="loading" nbSpinnerSize="giant" nbSpinnerStatus="primary">
+    <nb-layout-header fixed>
+        <ngx-header></ngx-header>
+    </nb-layout-header>
+
+    <nb-sidebar class="menu-sidebar" tag="menu-sidebar" responsive>
+        <ng-content select="nb-menu"></ng-content>
+    </nb-sidebar>
+
+    <nb-layout-column>
+        <ng-content select="router-outlet"></ng-content>
+    </nb-layout-column>
+</nb-layout>

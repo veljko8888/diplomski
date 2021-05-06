@@ -1,0 +1,177 @@
+<div class="header-container flex-grow-1">
+  <div class="logo-container">
+    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+      <nb-icon icon="menu-2-outline"></nb-icon>
+    </a>
+    <a class="logo" href="#" (click)="navigateHome()"></a>
+    <h3 class="text-nowrap beta-text mb-0">- BETA</h3>
+  </div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light top-menu">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" [routerLink]="['/pages/dashboard']">Home</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle pointer" id="projectsDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Projects
+          </a>
+          <div class="dropdown-menu" aria-labelledby="projectsDropdown">
+            <a class="dropdown-item" [routerLink]="['/pages/layout/searchprojects']">Search</a>
+            <a class="dropdown-item" (click)="showCreateProjectDialog()">Create</a>
+            <a class="dropdown-item" [routerLink]="['/pages/layout/projectmanager']">Project Manager</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle pointer" id="workOrdersDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Work Orders
+          </a>
+          <div class="dropdown-menu" aria-labelledby="workOrdersDropdown">
+            <a class="dropdown-item" [routerLink]="['/pages/layout/myworkorders']">List</a>
+            <a class="dropdown-item">Wizard</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" target="_blank"
+              href="https://www.myprojectnow.org/WorkOrder_Overview_V2.aspx">Overview</a>
+            <a class="dropdown-item" target="_blank" href="https://assets.mgoconnect.org/WoManagement">Dashboard</a>
+            <a class="dropdown-item" target="_blank" href="https://assets.mgoconnect.org">Map</a>
+            <a class="dropdown-item">Completed</a>
+            <a class="dropdown-item" [routerLink]="['/pages/layout/septicsearch']">Septic Inspections</a>
+          </div>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" [routerLink]="['/pages/layout/customreports']">Reports</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<p-dialog [style]="{width: '50vw'}" modal="true" (onHide)="closeDialog()" [(visible)]="createProjectDialogVisible">
+  <p-header>
+    Create Project
+  </p-header>
+  <div>
+    <form [formGroup]="projectForm">
+      <div class="form-group row">
+        <label class="control-label required label col-sm-3 col-form-label">Jurisdiction</label>
+        <div class="col-sm-9">
+          <nb-select fullWidth placeholder="Jurisdiction" formControlName="Jurisdiction">
+            <nb-option *ngFor="let option of jurisdictions" value="{{option.JurisdictionID}}">
+              {{option.Name}}</nb-option>
+          </nb-select>
+          <small
+            *ngIf="(projectForm.get('Jurisdiction').touched || formValidationService.formSubmitAttempt) && projectForm.get('Jurisdiction').errors?.required"
+            class="text-danger">Jurisdiction is required.</small>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="control-label required label col-sm-3 col-form-label">Project Type</label>
+        <div class="col-sm-9">
+          <nb-select fullWidth placeholder="Project Type" formControlName="ProjectType">
+            <nb-option *ngFor="let option of projectTypes" value="{{option.ProjectTypeID}}">
+              {{option.Description}}</nb-option>
+          </nb-select>
+          <small
+            *ngIf="(projectForm.get('ProjectType').touched || formValidationService.formSubmitAttempt) && projectForm.get('ProjectType').errors?.required"
+            class="text-danger">Project type
+            is required.</small>
+        </div>
+      </div>
+      <div *ngIf="projectSettings && projectSettings.IsShowProjectNumberField" class="form-group row">
+        <label class="control-label required label col-sm-3 col-form-label">Project Number</label>
+        <div class="col-sm-9">
+          <input (keypress)="formValidationService.integerNumberOnly($event)"
+            (paste)="formValidationService.onPasteInteger($event)" class="input-style" type="text" nbInput fullWidth
+            placeholder="Project Number" formControlName="ProjectNumber">
+          <small
+            *ngIf="(projectForm.get('ProjectNumber').touched || formValidationService.formSubmitAttempt) && projectForm.get('ProjectNumber').errors?.required"
+            class="text-danger">Project Number
+            is required.</small>
+        </div>
+      </div>
+      <div *ngIf="designations && designations.length" class="form-group row">
+        <label class="control-label required label col-sm-3 col-form-label">Designation</label>
+        <div class="col-sm-9">
+          <nb-select fullWidth placeholder="Designation" formControlName="Designation">
+            <nb-option *ngFor="let option of designations" value="{{option.DesignationTypeID}}">
+              {{option.Description}}</nb-option>
+          </nb-select>
+          <small
+            *ngIf="(projectForm.get('Designation').touched || formValidationService.formSubmitAttempt) && projectForm.get('Designation').errors?.required"
+            class="text-danger">Designation
+            is required.</small>
+        </div>
+      </div>
+      <div *ngIf="workTypes && workTypes.length" class="form-group row">
+        <label class="control-label required label col-sm-3 col-form-label">Work Type</label>
+        <div class="col-sm-9">
+          <nb-select fullWidth placeholder="Work Type" formControlName="WorkType">
+            <nb-option *ngFor="let option of workTypes" value="{{option.WorkTypeID}}">
+              {{option.Description}}</nb-option>
+          </nb-select>
+          <small
+            *ngIf="(projectForm.get('WorkType').touched || formValidationService.formSubmitAttempt) && projectForm.get('WorkType').errors?.required"
+            class="text-danger">Work type is
+            required.</small>
+        </div>
+      </div>
+      <div *ngIf="specificUses && specificUses.length" class="form-group row">
+        <label class="control-label required label col-sm-3 col-form-label">Specific Use</label>
+        <div class="col-sm-9">
+          <nb-select fullWidth placeholder="Specific Use" formControlName="SpecificUse">
+            <nb-option *ngFor="let option of specificUses" value="{{option.SpecificUseID}}">
+              {{option.Description}}</nb-option>
+          </nb-select>
+          <small
+            *ngIf="(projectForm.get('SpecificUse').touched || formValidationService.formSubmitAttempt) && projectForm.get('SpecificUse').errors?.required"
+            class="text-danger">Specific use
+            is required.</small>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="control-label label col-sm-3 col-form-label">Project Description</label>
+        <div class="col-sm-9">
+          <input class="input-style" type="text" nbInput fullWidth placeholder="Project Description"
+            formControlName="ProjectDescription">
+        </div>
+      </div>
+    </form>
+  </div>
+  <p-footer>
+    <button (click)="saveProject()" nbButton status="primary">Create</button>
+  </p-footer>
+</p-dialog>
+
+<div class="header-container">
+  <nb-actions size="small">
+
+    <nb-action class="control-item">
+      <!-- <nb-search ></nb-search> -->
+      <!-- <span class="p-input-icon-left">
+        <i class="pi pi-search"></i> -->
+      <p-autoComplete [(ngModel)]="searchText" [suggestions]="projectsResults" (completeMethod)="searchProducts($event)"
+        (onSelect)="selectProject($event)" placeholder="Global Search" field="DispName">
+        <ng-template let-project pTemplate="item">
+          <!-- <img src="assets/showcase/images/demo/car/{{brand}}.png"
+              style="width:32px;display:inline-block;margin:5px 0 2px 5px" /> -->
+          <div><b>{{project.ProjNo}}</b> {{ project.DispName }}</div>
+          <div style="font-size: 12px;">{{project.Jurisdiction}} - {{ project.ProjectType }}</div>
+        </ng-template>
+      </p-autoComplete>
+      <!-- </span> -->
+    </nb-action>
+    <nb-action class="control-item" icon="email-outline"></nb-action>
+    <nb-action class="control-item" icon="bell-outline"></nb-action>
+    <nb-action class="user-action" *nbIsGranted="['view', 'user']">
+      <nb-user [nbContextMenu]="userMenu" [onlyPicture]="userPictureOnly" [name]="user?.Name" [picture]="user?.picture">
+      </nb-user>
+    </nb-action>
+  </nb-actions>
+</div>

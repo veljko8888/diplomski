@@ -1,0 +1,56 @@
+@import "../@theme/styles/themes";
+
+@include nb-install-component() {
+  ::ng-deep router-outlet + * {
+    display: block;
+    animation: fade 1s;
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+::ng-deep ngx-pages {
+  .menu-sidebar {
+    display: none !important;
+  }
+
+  .content {
+    margin: 0 !important;
+  }
+
+  .scrollable {
+    padding-top: 0.5rem !important;
+  }
+
+  @media only screen and (max-width: 991px) {
+    .menu-sidebar.expanded {
+      display: flex !important;
+
+      .main-container {
+        top: 90px !important;
+        height: calc(100vh - 90px);
+      }
+    }
+
+    .menu-sidebar:not(.expanded) {
+      display: none !important;
+    }
+  }
+
+  @media only screen and (max-width: 767px) {
+    .menu-sidebar.expanded {
+      .main-container {
+        top: 76px !important;
+        height: calc(100vh - 76px);
+      }
+    }
+  }
+}
