@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterContentChecked, AfterViewChecked, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FrameService } from 'app/@core/mock/frame.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'ngx-forgot-password',
@@ -21,11 +22,15 @@ export class ForgotPasswordComponent implements OnInit {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private frameService: FrameService
+    private cdr: ChangeDetectorRef,
+    private frameService: FrameService,
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {
-    if(localStorage.getItem('resetPassword')){
+    setTimeout( () => { this.authService.showRegister = false; }, 0 );
+    
+    if (localStorage.getItem('resetPassword')) {
       this.headerText = 'Please Reset Your Password';
     }
     localStorage.removeItem('resetPassword');

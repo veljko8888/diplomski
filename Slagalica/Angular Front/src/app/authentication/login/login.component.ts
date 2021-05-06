@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FrameService } from 'app/@core/mock/frame.service';
@@ -30,12 +30,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
     private userService: UserService,
     private httpService: HttpHandlerService,
     private frameService: FrameService) { }
 
   ngOnInit() {
-    console.log(environment.logout);
+    setTimeout( () => { this.authService.showRegister = true; }, 0 );
     if (localStorage.getItem('passwordChanged')) {
       this.passwordChanged = true;
     }

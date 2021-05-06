@@ -15,6 +15,7 @@ export class AuthService {
   passwordChangedSuccessfully = false;
 
   currentUser = null;
+  showRegister = true;
 
   private httpClient: HttpClient;
 
