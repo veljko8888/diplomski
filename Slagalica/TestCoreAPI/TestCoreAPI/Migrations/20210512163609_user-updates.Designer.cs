@@ -10,8 +10,8 @@ using TestCoreAPI.Models;
 namespace TestCoreAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200603151353_lexicons")]
-    partial class lexicons
+    [Migration("20210512163609_user-updates")]
+    partial class userupdates
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,13 +44,19 @@ namespace TestCoreAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("DatumRodjenja")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("Ime")
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<bool>("IsAccountActivated")
+                    b.Property<string>("KorisnickoIme")
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("NalogAktiviran")
                         .HasColumnType("bit");
 
                     b.Property<string>("PasswordHash")
@@ -59,10 +65,19 @@ namespace TestCoreAPI.Migrations
                     b.Property<string>("PasswordSalt")
                         .HasColumnType("nvarchar(350)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Pol")
+                        .HasColumnType("nvarchar(1)");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("Prezime")
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<byte[]>("ProfilnaSlika")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("TipKorisnika")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Zanimanje")
                         .HasColumnType("nvarchar(150)");
 
                     b.HasKey("Id");

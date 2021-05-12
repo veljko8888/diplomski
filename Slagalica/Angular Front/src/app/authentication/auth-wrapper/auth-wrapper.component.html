@@ -11,9 +11,19 @@
             </div>
             <router-outlet></router-outlet>
           </div>
-          <div *ngIf="authService.showRegister">
-            <a (click)="navigateRegisterPage()" class="link-like label form-control-label">Nemate nalog? Registrujte
-              se!</a>
+          <div style="display: block;">
+            <div style="float: left; margin: 0;" class="col-sm-6">
+              <div *ngIf="authService.showRegister">
+                <a (click)="navigateRegisterPage()" class="link-like label form-control-label">Nemate nalog? Registrujte
+                  se!</a>
+              </div>
+              <div *ngIf="authService.showLogin">
+                <a (click)="navigateLoginPage()" class="link-like label form-control-label">Prijavite se!</a>
+              </div>
+            </div>
+            <div style="margin: 0; float: right;" class="col-sm-6">
+              <a style="float: right;" (click)="navigateGuest()" class="link-like label form-control-label">Udjite kao gost!</a>
+            </div>
           </div>
         </div>
       </div>

@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 
 namespace TestCoreAPI.Dtos
 {
-    public class LoginDto
+    public class Enums
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public enum TipKorisnika
+        {
+            Ucesnik,
+            Admin,
+            Supervizor
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace TestCoreAPI.ApplicationConstants
 
         public const string ErrorUpdatingUser = "Error updating user";
 
-        public const string WrongUsernameOrPassword = "Wrong Username or Password";
+        public const string WrongUsernameOrPassword = "Pogrešan email ili lozinka.";
 
         public const string TokenExpired = "User Confirmation token Expired. We are sending new confirmation link. Check your email again.";
 
@@ -35,11 +35,17 @@ namespace TestCoreAPI.ApplicationConstants
 
         public const string NoUserTokenMatch = "There is no corresponding user-token match for confirmation.";
 
-        public const string UsernameAlreadyExist = "Username is already taken";
+        public const string UsernameAlreadyExist = "Korisnicko ime ili Email već postoje";
+
+        public const string UserDoesNotExist = "Korisnik sa ovim Email-om ne postoji";
+
+        public const string WrongOldPassword = "Stara lozinka je pogrešna!";
+
+        public const string ErrorChangingPass = "Došlo je do greške prilikom promene lozinke. Pokušajte ponovo.";
 
         public const string ConfirmationEmailFailedToSend = "Failed to send user registration confirmation email.";
 
-        public const string PleaseActivateAccount = "Please check your email and activate your account first.";
+        public const string PleaseActivateAccount = "Vaš nalog još uvek nije aktiviran. Molimo vas da sačekate.";
         #endregion
 
         #region StaticStrings

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using static TestCoreAPI.Dtos.Enums;
 
 namespace TestCoreAPI.Models
 {
@@ -13,13 +14,23 @@ namespace TestCoreAPI.Models
         public Guid Id { get; set; }
 
         [Column(TypeName = "nvarchar(150)")]
-        public string FullName { get; set; }
+        public string Ime { get; set; }
 
         [Column(TypeName = "nvarchar(150)")]
-        public string Username { get; set; }
+        public string Prezime { get; set; }
 
         [Column(TypeName = "nvarchar(150)")]
         public string Email { get; set; }
+        [Column(TypeName = "nvarchar(150)")]
+        public string Zanimanje { get; set; }
+
+        [Column(TypeName = "nvarchar(150)")]
+        public string KorisnickoIme { get; set; }
+
+        [Column(TypeName = "nvarchar(1)")]
+        public string Pol { get; set; }
+
+        public DateTime DatumRodjenja { get; set; }
 
         [Column(TypeName = "nvarchar(350)")]
         public byte[] PasswordHash { get; set; }
@@ -27,8 +38,9 @@ namespace TestCoreAPI.Models
         [Column(TypeName = "nvarchar(350)")]
         public byte[] PasswordSalt { get; set; }
 
-        public string PhoneNumber { get; set; }
+        public byte[] ProfilnaSlika { get; set; }
 
-        public bool IsAccountActivated { get; set; }
+        public bool NalogAktiviran { get; set; }
+        public TipKorisnika TipKorisnika { get; set; }
     }
 }

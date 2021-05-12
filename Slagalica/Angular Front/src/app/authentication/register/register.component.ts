@@ -1,20 +1,17 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpHandlerService } from 'app/@core/http/http-handler.service';
 import { FrameService } from 'app/@core/mock/frame.service';
 import { UserService } from 'app/@core/mock/users.service';
 import { AuthService } from '../auth.service';
-import jwt_decode from 'jwt-decode';
-import { HttpHandlerService } from 'app/@core/http/http-handler.service';
-import { environment } from 'environments/environment';
-
 
 @Component({
-  selector: 'ngx-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  selector: 'ngx-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnInit, OnDestroy {
 
   shouldRenderLoginPage = false;
   formSubmitAttempt = false;
@@ -22,7 +19,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   accountDisabled = false;
   form: FormGroup = null;
   errorMessage = null;
-
+  successMessage = null;
+  formModel = {
+    UserName: '',
+    Password: ''
+  }
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -33,10 +34,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     private frameService: FrameService) { }
 
   ngOnInit() {
-    setTimeout( () => { 
-      this.authService.showRegister = true;
-      this.authService.showLogin = false;
-    }, 0 );
+    setTimeout(() => {
+      this.authService.showRegister = false;
+      this.authService.showLogin = true;
+    }, 0);
     if (localStorage.getItem('passwordChanged')) {
       this.passwordChanged = true;
     }
@@ -53,13 +54,23 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.accountDisabled = false;
     this.passwordChanged = false;
     this.errorMessage = null;
+    this.successMessage = null;
   }
 
   initForm() {
     this.form = this.fb.group({
       Email: ['', [Validators.required, Validators.email]],
-      Password: ['', Validators.required]
-    });
+      Sifra: ['', Validators.required],
+      Ime: ['', Validators.required],
+      Prezime: ['', Validators.required],
+      Zanimanje: ['', Validators.required],
+      KorisnickoIme: ['', Validators.required],
+      Pol: ['', Validators.required],
+      SifraPotvrda: [''],
+      DatumRodjenja: ['', Validators.required],
+      ProfilnaSlika: ['']
+    },
+    { validators: this.checkPasswords });
   }
 
   async onSubmit() {
@@ -67,16 +78,16 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.form.valid) {
       this.frameService.showLoaderAuth();
       let formValue = this.form.value;
-      await this.httpService.login(formValue).subscribe(
+      await this.httpService.register(formValue).subscribe(
         (res: any) => {
           //ON SUCCESS
-          localStorage.setItem('token', res.token);
-          this.router.navigate(['/pages']);
           this.frameService.hideLoaderAuth();
           this.errorMessage = null;
+          this.successMessage = 'Uspesno ste kreirali nalog. Nakon što administrator odobri vaš nalog moći ćete da učestvujete u igri.';
         },
         error => {
           this.frameService.hideLoaderAuth();
+          this.successMessage = null;
           this.errorMessage = error?.error[0]?.Value ? error?.error[0]?.Value : 'Došlo je do greške prilikom registracije';
           console.log(error);
         });
@@ -117,5 +128,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   navigateForgotPass() {
     this.router.navigate(['/auth/forgotPassword']);
   }
+
+  checkPasswords(group: FormGroup) { // here we have the 'passwords' group
+    const password = group.get('Sifra').value;
+    const confirmPassword = group.get('SifraPotvrda').value;
+  
+    return password === confirmPassword ? null : { notSame: true }     
+  }
 }
+
 

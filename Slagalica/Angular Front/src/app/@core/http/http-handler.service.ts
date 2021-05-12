@@ -16,6 +16,7 @@ export class HttpHandlerService {
     private userService: UserService
   ) { }
 
+  readonly BaseURI = 'http://localhost:58701/api';
   readonly JPApiBaseURI = 'https://demo.mypermitnow.org/api';
   readonly JPAPINewBaseURI = 'https://api.mgoconnect.org';
 
@@ -294,7 +295,7 @@ export class HttpHandlerService {
   }
 
 
-  // readonly BaseURI = 'http://localhost:58701/api';
+  
 
   // readonly JPApiBaseURI = 'https://demo.mypermitnow.org/api'
   // readonly JPAPIBaseURITunnel = 'https://d314b468a522.ngrok.io/api'
@@ -322,15 +323,17 @@ export class HttpHandlerService {
   //   }
   // }
 
-  // register() {
-  //   var body = {
-  //     Username: this.formModel.value.UserName,
-  //     Email: this.formModel.value.Email,
-  //     FullName: this.formModel.value.FullName,
-  //     Password: this.formModel.value.Passwords.Password
-  //   };
-  //   return this.http.post(this.BaseURI + '/Authentication/Register', body);
-  // }
+  login(loginRequest: any){
+    return this.http.post(this.BaseURI + '/Authentication/Login', loginRequest);
+  }
+
+  register(registerRequest: any) {
+    return this.http.post(this.BaseURI + '/Authentication/Register', registerRequest);
+  }
+
+  changePass(changePassRequest: any) {
+    return this.http.post(this.BaseURI + '/Authentication/ChangePass', changePassRequest);
+  }
 
   // login(formData) {
   //   return this.http.post(this.BaseURI + '/Authentication/Login', formData);
@@ -340,9 +343,9 @@ export class HttpHandlerService {
   //   return this.http.get(this.BaseURI + `/Authentication?userId=${userId}&token=${token}`);
   // }
 
-  // getUserProfile() {
-  //   return this.http.get(this.BaseURI + '/User/UserProfile');
-  // }
+  getUserProfile() {
+    return this.http.get(this.BaseURI + '/User/UserProfile');
+  }
 
   // getChecklists() {
 

@@ -33,6 +33,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from './auth.service';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ForgotPasswordVerificationComponent } from './forgot-password-verification/forgot-password-verification.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   imports: [
@@ -68,7 +69,8 @@ import { ForgotPasswordVerificationComponent } from './forgot-password-verificat
     LoginComponent,
     AuthWrapperComponent,
     ForgotPasswordComponent,
-    ForgotPasswordVerificationComponent
+    ForgotPasswordVerificationComponent,
+    RegisterComponent
   ],
   providers: [
     ConfirmationService,

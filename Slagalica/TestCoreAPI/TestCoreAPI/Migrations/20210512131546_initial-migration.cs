@@ -3,21 +3,39 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TestCoreAPI.Migrations
 {
-    public partial class initial_migration : Migration
+    public partial class initialmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Lexicons",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Word = table.Column<string>(type: "nvarchar(150)", nullable: true),
+                    SentimentScore = table.Column<double>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lexicons", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(150)", nullable: true),
-                    Username = table.Column<string>(type: "nvarchar(150)", nullable: true),
+                    Ime = table.Column<string>(type: "nvarchar(150)", nullable: true),
+                    Prezime = table.Column<string>(type: "nvarchar(150)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(150)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(150)", nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
-                    IsAccountActivated = table.Column<bool>(nullable: false)
+                    Zanimanje = table.Column<string>(type: "nvarchar(150)", nullable: true),
+                    KorisnickoIme = table.Column<string>(type: "nvarchar(150)", nullable: true),
+                    Pol = table.Column<string>(type: "nvarchar(1)", nullable: true),
+                    DatumRodjenja = table.Column<DateTime>(nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(350)", nullable: true),
+                    PasswordSalt = table.Column<string>(type: "nvarchar(350)", nullable: true),
+                    ProfilnaSlika = table.Column<byte[]>(nullable: true),
+                    NalogAktiviran = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,6 +64,9 @@ namespace TestCoreAPI.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Lexicons");
+
             migrationBuilder.DropTable(
                 name: "UserRegistrationConfirmations");
 

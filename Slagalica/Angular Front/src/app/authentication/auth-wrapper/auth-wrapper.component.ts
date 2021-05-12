@@ -20,6 +20,9 @@ export class AuthWrapperComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if(localStorage.getItem('token') != null){
+      this.router.navigate(['/pages']);
+    }
     this.frameService.loaderAuth$.subscribe((data) => {
       this.loading = data;
       this.cdr.detectChanges();
@@ -27,6 +30,14 @@ export class AuthWrapperComponent implements OnInit {
   }
 
   navigateRegisterPage(){
-    this.router.navigate(['/auth/forgotPassword']);
+    this.router.navigate(['/auth/register']);
+  }
+
+  navigateLoginPage(){
+    this.router.navigate(['/auth/login']);
+  }
+
+  navigateGuest(){
+    this.router.navigate(['/guest']);
   }
 }

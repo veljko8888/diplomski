@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace TestCoreAPI.Dtos
 {
-    public class LoginDto
+    public class ChangePassDto
     {
         public string Email { get; set; }
-        public string Password { get; set; }
+        public string StariPassword { get; set; }
+        public string NoviPassword { get; set; }
     }
 }

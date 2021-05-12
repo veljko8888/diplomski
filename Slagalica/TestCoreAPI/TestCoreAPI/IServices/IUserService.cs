@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TestCoreAPI.Dtos;
 using TestCoreAPI.Models;
 
 namespace TestCoreAPI.IServices
@@ -12,6 +13,7 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<List<UserDto>>> GetAll();
         Task<ResponseWrapper<UserDto>> GetById(Guid id);
         Task<ResponseWrapper<UserDto>> Insert(UserDto user);
+        Task<ResponseWrapper<UserDto>> ChangePassword(ChangePassDto changePassDto);
         Task<ResponseWrapper<UserDto>> Update(UserDto user);
         Task<ResponseWrapper<UserDto>> FindByUsernameAsync(string username, string password);
         Task<ResponseWrapper<bool>> CheckTokenForUser(string userId, string token);

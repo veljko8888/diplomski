@@ -60,7 +60,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
   currentTheme = 'default';
 
-  userMenu = [{ title: 'Profile', data: { id: 'userDetails' } }, { title: 'Log out', data: { id: 'logout' } }];
+  userMenu = [{ title: 'Profil Korisnika', data: { id: 'userDetails' } }, { title: 'Odjavi me', data: { id: 'logout' } }];
 
   searchText: string;
   projectsResults: any[];
@@ -87,6 +87,9 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initForm();
     this.userService.currentUser$.subscribe((data) => {
       this.user = data;
+      if(data){
+        this.user.name = data.ime + ' ' + data.prezime;
+      }
       this.cdr.detectChanges();
     });
 
@@ -114,15 +117,10 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(themeName => this.currentTheme = themeName);
 
     this.menuService.onItemClick()
-      // .pipe(
-      //   filter(({ tag }) => tag === 'my-context-menu'),
-      // )
       .subscribe((event) => {
         if (event.item?.data?.id === 'logout') {
-          //localStorage.removeItem('token');
-          //this.authService.logoutUserFromCognito();
-          //window.location.assign(environment.logout);
-          //this.authService.logoutUserFromCognito();
+          localStorage.removeItem('token');
+          this.userService.saveLoggedInUser(null);
           this.router.navigate(['/']);
           //this.authService.signOutSSO();
         }

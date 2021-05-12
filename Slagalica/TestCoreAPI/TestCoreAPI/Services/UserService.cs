@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using TestCoreAPI.ApplicationConstants;
+using TestCoreAPI.Dtos;
 using TestCoreAPI.IServices;
 using TestCoreAPI.Models;
 
@@ -19,8 +20,8 @@ namespace TestCoreAPI.Services
         private IMapper _mapper;
         private IMailService _emailService;
         public UserService(
-            ApplicationDbContext context, 
-            IMapper mapper, 
+            ApplicationDbContext context,
+            IMapper mapper,
             IMailService emailService)
         {
             _emailService = emailService;
@@ -30,7 +31,7 @@ namespace TestCoreAPI.Services
         public async Task<ResponseWrapper<List<UserDto>>> GetAll()
         {
             List<User> resultDB = await _context.Users.ToListAsync();
-            if(resultDB != null)
+            if (resultDB != null)
             {
                 var result = _mapper.Map<List<UserDto>>(resultDB);
                 return ResponseWrapper<List<UserDto>>.Success(result);
@@ -41,7 +42,7 @@ namespace TestCoreAPI.Services
         public async Task<ResponseWrapper<UserDto>> GetById(Guid id)
         {
             var resultDB = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
-            if(resultDB != null)
+            if (resultDB != null)
             {
                 var result = _mapper.Map<UserDto>(resultDB);
                 return ResponseWrapper<UserDto>.Success(result);
@@ -49,19 +50,53 @@ namespace TestCoreAPI.Services
 
             return ResponseWrapper<UserDto>.Error(AppConstants.NoSuchUser);
         }
-        
+
+        public async Task<ResponseWrapper<UserDto>> ChangePassword(ChangePassDto changePassDto)
+        {
+            try
+            {
+                var userDB = await _context.Users
+                .FirstOrDefaultAsync(x => x.Email.Equals(changePassDto.Email));
+
+                if (userDB != null)
+                {
+                    if (!VerifyPassword(changePassDto.StariPassword, userDB.PasswordHash, userDB.PasswordSalt))
+                    {
+                        return ResponseWrapper<UserDto>.Error(AppConstants.WrongOldPassword);
+                    }
+
+                    byte[] passwordHash, passwordSalt;
+                    CreatePasswordHash(changePassDto.NoviPassword, out passwordHash, out passwordSalt);
+
+                    userDB.PasswordHash = passwordHash;
+                    userDB.PasswordSalt = passwordSalt;
+                    _context.Users.Update(userDB);
+                    await _context.SaveChangesAsync();
+
+                    var user = _mapper.Map<UserDto>(userDB);
+                    return ResponseWrapper<UserDto>.Success(user);
+                }
+
+                return ResponseWrapper<UserDto>.Error(AppConstants.UserDoesNotExist);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<UserDto>.Error(AppConstants.ErrorChangingPass);
+            }
+        }
+
         public async Task<ResponseWrapper<UserDto>> Insert(UserDto user)
         {
             try
             {
-                bool usernameExist = _context.Users.Any(x => x.Username.Equals(user.Username));
+                bool usernameExist = _context.Users.Any(x => x.KorisnickoIme.Equals(user.KorisnickoIme) || x.Email.Equals(user.Email));
                 if (usernameExist)
                 {
                     return ResponseWrapper<UserDto>.Error(AppConstants.UsernameAlreadyExist);
                 }
 
                 byte[] passwordHash, passwordSalt;
-                CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
+                CreatePasswordHash(user.Sifra, out passwordHash, out passwordSalt);
 
                 User userDB = _mapper.Map<User>(user);
                 userDB.Id = Guid.NewGuid();
@@ -70,23 +105,9 @@ namespace TestCoreAPI.Services
                 _context.Users.Add(userDB);
                 await _context.SaveChangesAsync();
                 user = _mapper.Map<UserDto>(userDB);
-
-                var confirmation = new UserRegistrationConfirmation();
-                confirmation.UserId = userDB.Id;
-                confirmation.Token = Guid.NewGuid();
-                confirmation.TokenExpirationTime = DateTime.UtcNow.AddSeconds(180);
-                _context.UserRegistrationConfirmations.Add(confirmation);
                 await _context.SaveChangesAsync();
 
                 var userId = userDB.Id.ToString();
-                var token = confirmation.Token.ToString();
-
-                Response emailSendingResponse = await CreateNewEmailAndSend(user.Email, userId, token);
-                if (emailSendingResponse.StatusCode != HttpStatusCode.Accepted)
-                {
-                    return ResponseWrapper<UserDto>.Error(AppConstants.ConfirmationEmailFailedToSend);
-                }
-
                 return ResponseWrapper<UserDto>.Success(user);
             }
             catch (Exception)
@@ -110,24 +131,24 @@ namespace TestCoreAPI.Services
             }
         }
 
-        public async Task<ResponseWrapper<UserDto>> FindByUsernameAsync(string username, string password)
+        public async Task<ResponseWrapper<UserDto>> FindByUsernameAsync(string email, string password)
         {
             var userDB = await _context.Users
-                .FirstOrDefaultAsync(x => x.Username.Equals(username));
+                .FirstOrDefaultAsync(x => x.Email.Equals(email));
 
-            if(userDB != null)
+            if (userDB != null)
             {
                 if (!VerifyPassword(password, userDB.PasswordHash, userDB.PasswordSalt))
                 {
                     return ResponseWrapper<UserDto>.Error(AppConstants.WrongUsernameOrPassword);
                 }
 
-                if (!userDB.IsAccountActivated)
+                if (!userDB.NalogAktiviran)
                 {
                     return ResponseWrapper<UserDto>.Error(AppConstants.PleaseActivateAccount);
                 }
 
-                var user = _mapper.Map<UserDto>(userDB);   //menjaj ovo da ne vracas password
+                var user = _mapper.Map<UserDto>(userDB);
                 return ResponseWrapper<UserDto>.Success(user);
             }
 
@@ -138,7 +159,7 @@ namespace TestCoreAPI.Services
         {
             try
             {
-                UserRegistrationConfirmation confirmation = 
+                UserRegistrationConfirmation confirmation =
                     await _context.UserRegistrationConfirmations
                           .FirstOrDefaultAsync(x => x.UserId.ToString() == userId && x.Token.ToString() == token);
 
@@ -164,7 +185,7 @@ namespace TestCoreAPI.Services
                     User user = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);
                     if (user != null)
                     {
-                        user.IsAccountActivated = true;
+                        user.NalogAktiviran = true;
                         _context.Users.Update(user);
                         await _context.SaveChangesAsync();
                     }

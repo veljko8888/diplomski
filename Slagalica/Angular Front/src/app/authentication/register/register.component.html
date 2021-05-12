@@ -1,0 +1,167 @@
+<div *ngIf="true">
+    <div class="row">
+        <div class="col-md-12">
+            <h4 *ngIf="authService.loginError" class="text-info">Failed to Login -
+                {{ authService.loginError.message }}.</h4>
+            <h4 *ngIf="passwordChanged" class="text-success">Successfully Changed Password.</h4>
+            <h4 *ngIf="accountDisabled" class="text-info">Account disabled, please contact support.</h4>
+            <nb-card class="nb-card-auth">
+                <nb-card-header>Registrujte se</nb-card-header>
+                <nb-card-body>
+
+                    <form [formGroup]="form" class="form-horizontal">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="ime" class="label col-sm-3 form-control-label">Ime</label>
+                                    <div>
+                                        <input type="text" nbInput fullWidth id="ime" name="Ime" formControlName="Ime"
+                                            placeholder="Ime">
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('Ime').touched || formSubmitAttempt) && (form.get('Ime').errors)"
+                                            class="text-danger">Molimo vas unesite Ime.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="prezime" class="label col-sm-3 form-control-label">Prezime</label>
+                                    <div>
+                                        <input type="text" nbInput fullWidth id="prezime" name="Prezime"
+                                            formControlName="Prezime" placeholder="Prezime">
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('Prezime').touched || formSubmitAttempt) && (form.get('Prezime').errors)"
+                                            class="text-danger">Molimo vas unesite Prezime.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="inputEmail3" class="label col-sm-3 form-control-label">Email</label>
+                                    <div>
+                                        <input type="email" email nbInput fullWidth id="inputEmail3" name="Email"
+                                            formControlName="Email" placeholder="Email">
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('Email').touched || formSubmitAttempt) && (form.get('Email').errors)"
+                                            class="text-danger">Molimo vas unesite validan Email.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="zanimanje" class="label col-sm-3 form-control-label">Zanimanje</label>
+                                    <div>
+                                        <input type="text" nbInput fullWidth id="zanimanje" name="Zanimanje"
+                                            formControlName="Zanimanje" placeholder="Zanimanje">
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('Zanimanje').touched || formSubmitAttempt) && (form.get('Zanimanje').errors)"
+                                            class="text-danger">Molimo vas unesite Zanimanje.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="userName" class="label col-sm-9 form-control-label">Korisničko
+                                        Ime</label>
+                                    <div>
+                                        <input type="text" nbInput fullWidth id="userName" name="KorisnickoIme"
+                                            formControlName="KorisnickoIme" placeholder="Korisnicko Ime">
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('KorisnickoIme').touched || formSubmitAttempt) && (form.get('KorisnickoIme').errors)"
+                                            class="text-danger">Molimo vas unesite Korisničko ime.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="pol" class="label col-sm-3 form-control-label">Pol</label>
+                                    <div>
+                                        <nb-select fullWidth placeholder="Pol" formControlName="Pol">
+                                            <!-- <nb-option *ngFor="let option of jurisdictions" value="{{option.JurisdictionID}}">
+                                          {{option.Name}}</nb-option> -->
+                                            <nb-option value="M">Muško</nb-option>
+                                            <nb-option value="Z">Žensko</nb-option>
+                                        </nb-select>
+                                        <small
+                                            *ngIf="(form.get('Pol').touched || formSubmitAttempt) && form.get('Pol').errors?.required"
+                                            class="text-danger">Molimo vas unesite pol.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="datumRodjenja" class="label col-sm-9 form-control-label">Datum
+                                        Rodjenja</label>
+                                    <div>
+                                        <input class="input-style" formControlName="DatumRodjenja" nbInput fullWidth
+                                            placeholder="Datum Rodjenja" [nbDatepicker]="formpicker">
+                                        <nb-datepicker #formpicker></nb-datepicker>
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('DatumRodjenja').touched || formSubmitAttempt) && form.get('DatumRodjenja').errors?.required"
+                                            class="text-danger">Molimo vas unesite datum rodjenja.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="sifra" class="label col-sm-3 form-control-label">Šifra</label>
+                                    <div>
+                                        <input type="password" nbInput fullWidth id="sifra" name="Sifra"
+                                            formControlName="Sifra" placeholder="Šifra">
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('Sifra').touched || formSubmitAttempt) && (form.get('Sifra').errors)"
+                                            class="text-danger">Molimo vas unesite šifru.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label for="sifraPotvrda" class="label col-sm-9 form-control-label">Potvrda
+                                        Šifre</label>
+                                    <div>
+                                        <input type="password" nbInput fullWidth id="sifraPotvrda" name="Sifra"
+                                            formControlName="SifraPotvrda" placeholder="Šifra">
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('SifraPotvrda').touched || formSubmitAttempt) && (form.get('SifraPotvrda').errors)"
+                                            class="text-danger">Molimo vas potvrdite šifru.</small>
+                                        <br>
+                                        <small
+                                            *ngIf="(form.get('SifraPotvrda').touched || formSubmitAttempt) && (form.get('SifraPotvrda').value !== form.get('Sifra').value)"
+                                            class="text-danger">Vaše šifre se ne slažu.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <a (click)="navigateForgotPass()"
+                                class="link-like label col-sm-12 form-control-label">Promena šifre</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <span *ngIf="errorMessage" class="text-danger">{{errorMessage}}</span>
+                                <span *ngIf="successMessage" class="text-success">{{successMessage}}</span>
+                            </div>
+                            <div style="text-align: right;" class="col-sm-4">
+                                <button type="submit" (click)="onSubmit()" nbButton status="primary">Registrujte
+                                    se</button>
+                            </div>
+                        </div>
+                    </form>
+                </nb-card-body>
+            </nb-card>
+        </div>
+    </div>
+</div>

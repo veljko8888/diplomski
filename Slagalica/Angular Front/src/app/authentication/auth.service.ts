@@ -16,6 +16,7 @@ export class AuthService {
 
   currentUser = null;
   showRegister = true;
+  showLogin = false;
 
   private httpClient: HttpClient;
 

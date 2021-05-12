@@ -47,20 +47,29 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("ChangePass")]
+        public async Task<IActionResult> ChangePass(ChangePassDto changePassDto)
+        {
+            var result = await _userService.ChangePassword(changePassDto);
+            return result.IsSuccess ? (IActionResult)Ok(result) : BadRequest(result.Errors);
+        }
+
+        [HttpPost]
         [Route("Login")]
         //POST : /api/Registration/Login
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
-            ResponseWrapper<UserDto> result = await _userService.FindByUsernameAsync(loginDto.Username, loginDto.Password);
+            ResponseWrapper<UserDto> result = await _userService.FindByUsernameAsync(loginDto.Email, loginDto.Password);
             if (result.IsSuccess)
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                        new Claim("UserID", result.Data.Id.ToString())
+                        new Claim("UserID", result.Data.Id.ToString()),
+                        new Claim("UserType", result.Data.TipKorisnika.ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddMinutes(15),
+                    Expires = DateTime.UtcNow.AddMinutes(120),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JWT_Secret)), SecurityAlgorithms.HmacSha256Signature)
                 };
                 var tokenHandler = new JwtSecurityTokenHandler();
