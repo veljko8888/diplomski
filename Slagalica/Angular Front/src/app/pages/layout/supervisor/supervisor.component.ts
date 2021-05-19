@@ -131,19 +131,19 @@ export class SupervisorComponent implements OnInit {
   async saveWord() {
     this.formSubmitAttempt = true;
     if (this.slagalicaForm.valid) {
-      this.frameService.showLoaderAuth();
+      this.frameService.showLoader();
       let formValue = this.slagalicaForm.value;
       await this.httpService.addWord(formValue).subscribe(
         (res: any) => {
           //ON SUCCESS
-          this.frameService.hideLoaderAuth();
+          this.frameService.hideLoader();
           this.showWordDialog = false;
           this.slagalicaForm.reset();
           this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali novu reč', 'success', 4000);
         },
         error => {
           let errorText = error && error.error && error.error[0] ? error?.error[0]?.Value : 'Došlo je do greške prilikom dodavanja reči';
-          this.frameService.hideLoaderAuth();
+          this.frameService.hideLoader();
           this.showWordDialog = false;
           this.slagalicaForm.reset();
           this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
@@ -182,7 +182,7 @@ export class SupervisorComponent implements OnInit {
   async saveAssoc() {
     this.formAssocSubmitAttempt = true;
     if (this.assocForm.valid) {
-      this.frameService.showLoaderAuth();
+      this.frameService.showLoader();
       let formValue = this.assocForm.value;
 
       let assocRequest = this.packAssocRequest(formValue);
@@ -190,14 +190,14 @@ export class SupervisorComponent implements OnInit {
       await this.httpService.addAssocGame(assocRequest).subscribe(
         (res: any) => {
           //ON SUCCESS
-          this.frameService.hideLoaderAuth();
+          this.frameService.hideLoader();
           this.showAssocDialog = false;
           this.assocForm.reset();
           this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali novu igru Asocijacije', 'success', 4000);
         },
         error => {
           let errorText = error && error.error && error.error[0] ? error?.error[0]?.Value : 'Došlo je do greške prilikom dodavanja igre Asocijacije';
-          this.frameService.hideLoaderAuth();
+          this.frameService.hideLoader();
           this.showAssocDialog = false;
           this.assocForm.reset();
           this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
