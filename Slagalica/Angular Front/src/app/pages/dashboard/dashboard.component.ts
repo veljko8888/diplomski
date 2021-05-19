@@ -7,8 +7,10 @@ import { UserService } from 'app/@core/mock/users.service';
 
 @Component({
   selector: 'ngx-dashboard',
-  template: ``,
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss']
 })
+
 export class DashboardComponent implements OnInit {
 
   constructor(
@@ -19,24 +21,68 @@ export class DashboardComponent implements OnInit {
     private userService: UserService
   ) { }
 
+  selectedUsers: any[];
+  users = [];
+  cols = [];
   checked: boolean = false;
 
   async ngOnInit() {
-    if (!this.userService.getCurrentUser()) {
-      this.frameService.showLoader();
+    this.cols = [
+      { field: 'ime', header: 'Ime', fieldType: 'text' },
+      { field: 'prezime', header: 'Prezime', fieldType: 'text' },
+      { field: 'email', header: 'Email', fieldType: 'text' },
+      { field: 'zanimanje', header: 'Zanimanje', fieldType: 'text' },
+      { field: 'korisnickoIme', header: 'Korisnicko Ime', fieldType: 'text' },
+      { field: 'pol', header: 'Pol', fieldType: 'text' },
+      { field: 'datumRodjenja', header: 'Datum Rodjenja', fieldType: 'date' },
+      { field: 'tipKorisnika', header: 'Tip Korisnika', fieldType: 'text' },
+      { field: 'nalogAktiviran', header: 'Nalog Aktiviran', fieldType: 'text' },
+    ];
 
-      await this.httpService.getUserProfile().subscribe(
-        (res: any) => {
-          this.userService.saveLoggedInUser(res);
-          this.frameService.showToastPrime('Zdravo!', 'Uspešna prijava na sistem, dobrodošli.', 'success', 4000);
-          this.frameService.hideLoader();
-        },
-        error => {
-          this.frameService.hideLoader();
-          this.frameService.showToastPrime('Ups!', 'Došlo je do greške prilikom prijave na sistem.', 'error', 4000);
-          console.log(error);
-        });
-    }
-
+    this.frameService.showLoader();
+    await this.httpService.getAllUsers().subscribe(
+      (res: any) => {
+        this.users = res;
+        console.log(res)
+        this.frameService.hideLoader();
+      },
+      error => {
+        this.frameService.hideLoader();
+        this.frameService.showToastPrime('Ups!', 'Došlo je do greške.', 'error', 4000);
+        console.log(error);
+      });
   }
+
+  async activateDeactivate(korisnik: any){
+    this.frameService.showLoader();
+    await this.httpService.activateDeactivateUser(korisnik).subscribe(
+      (res: any) => {
+        this.users = res;
+        //console.log(res)
+        this.frameService.hideLoader();
+        this.frameService.showToastPrime('Uspešno!', 'Uspešno ste promenili status korisničkog naloga.', 'success', 4000);
+      },
+      error => {
+        this.frameService.hideLoader();
+        this.frameService.showToastPrime('Ups!', 'Došlo je do greške.', 'error', 4000);
+        console.log(error);
+      });
+  }
+
+  // if (!this.userService.getCurrentUser()) {
+  //   this.frameService.showLoader();
+
+  //   await this.httpService.getUserProfile().subscribe(
+  //     (res: any) => {
+  //       this.userService.saveLoggedInUser(res);
+  //       this.frameService.showToastPrime('Zdravo!', 'Uspešna prijava na sistem, dobrodošli.', 'success', 4000);
+  //       this.frameService.hideLoader();
+  //     },
+  //     error => {
+  //       this.frameService.hideLoader();
+  //       this.frameService.showToastPrime('Ups!', 'Došlo je do greške prilikom prijave na sistem.', 'error', 4000);
+  //       console.log(error);
+  //     });
+  // }
+
 }

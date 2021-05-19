@@ -41,6 +41,12 @@
         <li class="nav-item active">
           <a class="nav-link" [routerLink]="['/pages/layout/customreports']">Reports</a>
         </li>
+        <li *ngIf="authService.isAdmin()" class="nav-item active">
+          <a class="nav-link" [routerLink]="['/pages/layout/dailygame']">Igra dana</a>
+        </li>
+        <li *ngIf="authService.isAdmin()" class="nav-item active">
+          <a class="nav-link" [routerLink]="['/pages']">Korisnici</a>
+        </li>
       </ul>
     </div>
   </nav>

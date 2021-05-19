@@ -7,6 +7,7 @@ import { AuthService } from '../auth.service';
 import jwt_decode from 'jwt-decode';
 import { HttpHandlerService } from 'app/@core/http/http-handler.service';
 import { environment } from 'environments/environment';
+import { HttpBackend, HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -23,6 +24,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   form: FormGroup = null;
   errorMessage = null;
 
+  httpClient: HttpClient;
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -30,13 +33,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private userService: UserService,
     private httpService: HttpHandlerService,
-    private frameService: FrameService) { }
+    private handler: HttpBackend,
+    private frameService: FrameService
+  ) {
+    this.httpClient = new HttpClient(handler);
+  }
 
   ngOnInit() {
-    setTimeout( () => { 
+    setTimeout(() => {
       this.authService.showRegister = true;
       this.authService.showLogin = false;
-    }, 0 );
+      this.authService.showGuest = true;
+    }, 0);
     if (localStorage.getItem('passwordChanged')) {
       this.passwordChanged = true;
     }
@@ -67,17 +75,17 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.form.valid) {
       this.frameService.showLoaderAuth();
       let formValue = this.form.value;
-      await this.httpService.login(formValue).subscribe(
+      await this.httpService.login(formValue, this.httpClient).subscribe(
         (res: any) => {
           //ON SUCCESS
           localStorage.setItem('token', res.token);
-          this.router.navigate(['/pages']);
+          this.router.navigate(['/pages/dashboard-handler']);
           this.frameService.hideLoaderAuth();
           this.errorMessage = null;
         },
         error => {
           this.frameService.hideLoaderAuth();
-          this.errorMessage = error?.error[0]?.Value ? error?.error[0]?.Value : 'Došlo je do greške prilikom registracije';
+          this.errorMessage = error?.error[0]?.Value ? error?.error[0]?.Value : 'Došlo je do greške prilikom prijavljivanja';
           console.log(error);
         });
     }

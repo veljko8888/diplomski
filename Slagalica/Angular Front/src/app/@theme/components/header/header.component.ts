@@ -78,7 +78,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     private fb: FormBuilder,
     public formValidationService: FormValidationService,
     private router: Router,
-    private authService: AuthService,
+    public authService: AuthService,
     private cdr: ChangeDetectorRef,
     private renderer: Renderer2) {
   }

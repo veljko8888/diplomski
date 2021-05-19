@@ -1,0 +1,85 @@
+<p-table #dt [columns]="cols" [resizableColumns]="true" [reorderableColumns]="true" [value]="users"
+    [(selection)]="selectedUsers" dataKey="korisnickoIme" styleClass="p-datatable-customers" [rowHover]="true"
+    [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [paginator]="true"
+    currentPageReportTemplate="Prikaz {first} do {last} od {totalRecords} korisnika" [filterDelay]="0"
+    [globalFilterFields]="['ime','email','korisnickoIme','zanimanje', 'pol', 'datumRodjenja', 'nalogAktivan', 'tipKorisnika']">
+    <ng-template pTemplate="caption">
+        <div class="table-header">
+            Korisnici
+            <div style="padding-top: 10px">
+                <!-- <div>
+                    <label class="label col-form-label">Date From</label>
+                    <input [(ngModel)]="dateFrom" class="col-md-2 margin-left-12 margin-right-10" nbInput fullWidth
+                        placeholder="Date From" [nbDatepicker]="formpicker">
+                    <nb-datepicker #formpicker></nb-datepicker>
+                    <label class="label col-form-label">Date To</label>
+                    <input [(ngModel)]="dateTo" class="input-style col-md-2 margin-left-12 margin-right-10" nbInput
+                        fullWidth placeholder="Date To" [nbDatepicker]="formpicker2">
+                    <nb-datepicker #formpicker2></nb-datepicker>
+                    <button type="submit" (click)="filterWorkOrders()" nbButton status="primary">Filter</button>
+                    <div style="margin-top: 10px;">
+                        <label class="label col-form-label margin-right-10">Columns</label>
+                        <nb-select (selectedChange)="colsChanged()" [(ngModel)]="selectedCols" nbInput fullWidth
+                            multiple placeholder="Columns">
+                            <nb-option *ngFor="let option of allCols;" disabled="{{ option.mandatory ? true : false }}"
+                                value="{{ option.field }}">
+                                {{ option.header }}</nb-option>
+                        </nb-select>
+                    </div>
+                </div> -->
+                <!-- <div>
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Global Search" />
+                    </span>
+                </div> -->
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" pResizableColumn pReorderableColumn pSortableColumn="{{col.field}}">
+                <div class="p-d-flex p-jc-between p-ai-center">
+                    {{col.header}}
+                    <p-sortIcon field="{{col.field}}"></p-sortIcon>
+                    <!-- <p-columnFilter type="{{col.fieldType}}" field="{{col.field}}" display="menu" class="p-ml-auto"> -->
+                    <!-- </p-columnFilter> -->
+                </div>
+            </th>
+            <!-- <th style="width: 8rem"></th> -->
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-korisnik let-columns="columns">
+        <tr class="p-selectable-row">
+            <td>
+                <p-tableCheckbox [value]="korisnik"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns">
+                <span *ngIf="col.field == 'tipKorisnika'; else Other">{{ korisnik[col.field] == 0 ? 'Učesnik' :
+                    korisnik[col.field] == 1 ? 'Administrator' : 'Supervizor'}}</span>
+                <ng-template #Other>
+                    <div *ngIf="col.field == 'nalogAktiviran'; else OtherSecond">
+                        <span>
+                            {{ korisnik[col.field] == true ? 'DA' : 'NE'}}
+                        </span>
+                        <button type="submit" (click)="activateDeactivate(korisnik, korisnik[col.field])" nbButton
+                            status="primary">{{ korisnik[col.field] == true ? 'Deaktiviraj' : 'Aktiviraj' }}</button>
+                    </div>
+
+                    <ng-template #OtherSecond>
+                        <span>{{ col.fieldType == 'date' ?
+                            (korisnik[col.field] | date: 'MM/dd/yyyy') : korisnik[col.field]}}</span>
+                    </ng-template>
+                </ng-template>
+            </td>
+            <!-- <td style="text-align: center">
+                <button type="submit" (click)="navigateToWorkOrderDetail(workOrder)" nbButton
+                    status="primary">Details</button>
+            </td> -->
+        </tr>
+    </ng-template>
+</p-table>

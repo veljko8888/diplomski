@@ -1,3 +1,4 @@
+import { HttpBackend, HttpClient } from '@angular/common/http';
 import { AfterContentChecked, AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -19,19 +20,25 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   successMessage = null;
   errorMessage = null;
 
+  httpClient: HttpClient;
+
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private frameService: FrameService,
     public authService: AuthService,
-    private httpService: HttpHandlerService
-  ) { }
+    private httpService: HttpHandlerService,
+    private handler: HttpBackend
+  ) {
+    this.httpClient = new HttpClient(handler);
+   }
 
   ngOnInit(): void {
     setTimeout( () => { 
       this.authService.showRegister = false; 
       this.authService.showLogin = true;
+      this.authService.showGuest = true;
     }, 0 );
     
     if (localStorage.getItem('resetPassword')) {
@@ -59,7 +66,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     if (this.form.valid) {
       this.frameService.showLoaderAuth();
       let formValue = this.form.value;
-      await this.httpService.changePass(formValue).subscribe(
+      await this.httpService.changePass(formValue, this.httpClient).subscribe(
         (res: any) => {
           this.frameService.hideLoaderAuth();
           this.errorMessage = null;

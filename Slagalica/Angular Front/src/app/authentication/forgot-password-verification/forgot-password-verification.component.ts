@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FrameService } from 'app/@core/mock/frame.service';
+import { UserService } from 'app/@core/mock/users.service';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -18,11 +19,22 @@ export class ForgotPasswordVerificationComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService,
-    private frameService: FrameService
+    private frameService: FrameService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
-    this.initForm();
+    setTimeout(() => {
+      this.authService.showRegister = false;
+      this.authService.showLogin = false;
+      this.authService.showGuest = false;
+    }, 0);
+
+    setTimeout(() => {
+      localStorage.removeItem('token');
+      this.userService.saveLoggedInUser(null);
+      this.router.navigate(['/']);
+    }, 4000);
   }
 
   initForm() {

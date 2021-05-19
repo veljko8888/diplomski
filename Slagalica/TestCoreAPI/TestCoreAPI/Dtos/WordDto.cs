@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 
 namespace TestCoreAPI.Dtos
 {
-    public class LexiconDto
+    public class WordDto
     {
         public Guid? Id { get; set; }
 
-        public string? Word { get; set; }
-
-        public double? SentimentScore { get; set; }
+        public string? Rec { get; set; }
     }
 }

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HttpHandlerService } from 'app/@core/http/http-handler.service';
 import { FrameService } from 'app/@core/mock/frame.service';
 import { UserService } from 'app/@core/mock/users.service';
+import { TipKorisnika } from 'enums';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -11,12 +12,14 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
+  public TipKorisnika = TipKorisnika;
   loginError = null;
   passwordChangedSuccessfully = false;
 
   currentUser = null;
   showRegister = true;
   showLogin = false;
+  showGuest = true;
 
   private httpClient: HttpClient;
 
@@ -28,6 +31,33 @@ export class AuthService {
     private handler: HttpBackend
   ) { 
     this.httpClient = new HttpClient(handler);
+  }
+
+  isUser(){
+    let currUser = this.userService.getCurrentUser();
+    if(currUser){
+      return currUser.tipKorisnika == TipKorisnika.Ucesnik;
+    }
+
+    return false;
+  }
+
+  isAdmin(){
+    let currUser = this.userService.getCurrentUser();
+    if(currUser){
+      return currUser.tipKorisnika == TipKorisnika.Admin;
+    }
+
+    return false;
+  }
+
+  isSupervisor(){
+    let currUser = this.userService.getCurrentUser();
+    if(currUser){
+      return currUser.tipKorisnika == TipKorisnika.Supervizor;
+    }
+
+    return false;
   }
 
   // async signIn(username: string, password: string) {

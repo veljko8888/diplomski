@@ -5,6 +5,7 @@ import { AuthWrapperComponent } from './auth-wrapper/auth-wrapper.component';
 import { ForgotPasswordVerificationComponent } from './forgot-password-verification/forgot-password-verification.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { LoginComponent } from './login/login.component';
+import { LogoutComponent } from './logout/logout.component';
 import { RegisterComponent } from './register/register.component';
 
 const routes: Routes = [{
@@ -25,12 +26,16 @@ const routes: Routes = [{
             component: ForgotPasswordComponent,
         },
         {
-            path: 'forgotPasswordVerification',
+            path: 'no-access',
             component: ForgotPasswordVerificationComponent,
         },
         {
             path: 'register',
             component: RegisterComponent,
+        },
+        {
+            path: 'logout',
+            component: LogoutComponent,
         }
     ],
 }];

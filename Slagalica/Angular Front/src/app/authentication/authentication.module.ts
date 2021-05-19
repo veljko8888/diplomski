@@ -34,6 +34,7 @@ import { AuthService } from './auth.service';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ForgotPasswordVerificationComponent } from './forgot-password-verification/forgot-password-verification.component';
 import { RegisterComponent } from './register/register.component';
+import { LogoutComponent } from './logout/logout.component';
 
 @NgModule({
   imports: [
@@ -70,7 +71,8 @@ import { RegisterComponent } from './register/register.component';
     AuthWrapperComponent,
     ForgotPasswordComponent,
     ForgotPasswordVerificationComponent,
-    RegisterComponent
+    RegisterComponent,
+    LogoutComponent
   ],
   providers: [
     ConfirmationService,

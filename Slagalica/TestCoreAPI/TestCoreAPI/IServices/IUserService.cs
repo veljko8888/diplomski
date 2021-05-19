@@ -18,6 +18,8 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<UserDto>> FindByUsernameAsync(string username, string password);
         Task<ResponseWrapper<bool>> CheckTokenForUser(string userId, string token);
         
+        
+
         //void Delete(User user); 
     }
 }

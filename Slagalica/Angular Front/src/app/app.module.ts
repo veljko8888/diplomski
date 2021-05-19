@@ -23,9 +23,10 @@ import {
 import { CookieModule } from 'ngx-cookie';
 import { AuthInterceptor } from './authentication/auth.interceptor';
 import { UserService } from './@core/mock/users.service';
+import { GuestComponent } from './guest/guest.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, GuestComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

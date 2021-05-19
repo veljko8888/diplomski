@@ -17,5 +17,10 @@ namespace TestCoreAPI.Models
         public DbSet<User> Users { get; set; }
         public DbSet<UserRegistrationConfirmation> UserRegistrationConfirmations { get; set; }
         public DbSet<Lexicon> Lexicons { get; set; }
+        public DbSet<Word> Words { get; set; }
+        public DbSet<Connection> Connections { get; set; }
+        public DbSet<Pair> Pairs { get; set; }
+
+        public DbSet<Association> Associations { get; set; }
     }
 }

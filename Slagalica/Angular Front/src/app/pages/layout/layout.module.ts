@@ -43,6 +43,8 @@ import { MyWorkOrdersComponent } from './my-work-orders/my-work-orders.component
 import { WorkOrderDetailsComponent } from './my-work-orders/work-order-details/work-order-details.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DailyGameComponent } from './daily-game/daily-game.component';
+import { SupervisorComponent } from './supervisor/supervisor.component';
 
 @NgModule({
   imports: [
@@ -87,6 +89,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MyWorkOrdersComponent,
     WorkOrderDetailsComponent,
     UserDetailsComponent,
+    DailyGameComponent,
+    SupervisorComponent,
   ],
   providers: [
     ConfirmationService

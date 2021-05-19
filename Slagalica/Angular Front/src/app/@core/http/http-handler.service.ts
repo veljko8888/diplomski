@@ -294,86 +294,41 @@ export class HttpHandlerService {
     return this.http.delete<any>(unshareSetURL, options);
   }
 
-
-  
-
-  // readonly JPApiBaseURI = 'https://demo.mypermitnow.org/api'
-  // readonly JPAPIBaseURITunnel = 'https://d314b468a522.ngrok.io/api'
-
-  // formModel = this.fb.group({
-  //   UserName: ['', Validators.required],
-  //   Email: ['', Validators.email],
-  //   FullName: [''],
-  //   Passwords: this.fb.group({
-  //     Password: ['', [Validators.required, Validators.minLength(4)]],
-  //     ConfirmPassword: ['', Validators.required]
-  //   }, { validator: this.comparePasswords })
-
-  // });
-
-  // comparePasswords(fb: FormGroup) {
-  //   let confirmPswrdCtrl = fb.get('ConfirmPassword');
-  //   //passwordMismatch
-  //   //confirmPswrdCtrl.errors={passwordMismatch:true}
-  //   if (confirmPswrdCtrl.errors == null || 'passwordMismatch' in confirmPswrdCtrl.errors) {
-  //     if (fb.get('Password').value != confirmPswrdCtrl.value)
-  //       confirmPswrdCtrl.setErrors({ passwordMismatch: true });
-  //     else
-  //       confirmPswrdCtrl.setErrors(null);
-  //   }
-  // }
-
-  login(loginRequest: any){
-    return this.http.post(this.BaseURI + '/Authentication/Login', loginRequest);
+  login(loginRequest: any, httpClient: any){
+    return httpClient.post(this.BaseURI + '/Authentication/Login', loginRequest);
   }
 
-  register(registerRequest: any) {
-    return this.http.post(this.BaseURI + '/Authentication/Register', registerRequest);
+  register(registerRequest: any, httpClient: any) {
+    return httpClient.post(this.BaseURI + '/Authentication/Register', registerRequest);
   }
 
-  changePass(changePassRequest: any) {
-    return this.http.post(this.BaseURI + '/Authentication/ChangePass', changePassRequest);
+  changePass(changePassRequest: any, httpClient: any) {
+    return httpClient.post(this.BaseURI + '/Authentication/ChangePass', changePassRequest);
   }
-
-  // login(formData) {
-  //   return this.http.post(this.BaseURI + '/Authentication/Login', formData);
-  // }
-
-  // confirmRegistration(userId: string, token: string) {
-  //   return this.http.get(this.BaseURI + `/Authentication?userId=${userId}&token=${token}`);
-  // }
 
   getUserProfile() {
     return this.http.get(this.BaseURI + '/User/UserProfile');
   }
 
-  // getChecklists() {
+  getAllUsers() {
+    return this.http.get(this.BaseURI + '/Organization/users-administration');
+  }
 
-  //   // var auth = $base64.encode("foo:bar"),
-  //   //   headers = { "Authorization": "Basic " + auth };
-  //   // $http.get(url, { headers: headers })
+  activateDeactivateUser(userRequest: any){
+    return this.http.post(this.BaseURI + '/Organization/activate-deactivate', userRequest);
+  }
 
-  //   var checklistsURL = this.JPAPIBaseURITunnel + '/permit/4712269/reviewChecklist';
-  //   const httpOptions = {
-  //     headers: new HttpHeaders({
-  //       'Content-Type': 'application/json',
-  //       'Authorization': 'Basic ' + btoa('jerryt@scpdc.org:jerryt3764')
-  //     })
-  //   };
-  //   return this.http.get(checklistsURL, httpOptions);
-  // }
+  addWord(wordRequest: any) {
+    return this.http.post(this.BaseURI + '/Organization/add-word', wordRequest);
+  }
 
-  // getLexicons() {
-  //   return this.http.get(this.BaseURI + '/Lexicon/LexiconData');
-  // }
+  addConnectionGame(connRequest: any) {
+    return this.http.post(this.BaseURI + '/Organization/add-connection-game', connRequest);
+  }
 
-  // removeLexicon(lexicon: any) {
-  //   return this.http.post(this.BaseURI + '/Lexicon/RemoveLexicon', lexicon);
-  // }
-
-  // addLexicon(lexicon: any) {
-  //   return this.http.post(this.BaseURI + '/Lexicon/SaveLexicon', lexicon);
-  // }
+  addAssocGame(assocRequest: any) {
+    return this.http.post(this.BaseURI + '/Organization/add-assoc-game', assocRequest);
+  }
 
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {

@@ -1,0 +1,220 @@
+﻿using AutoMapper;
+using Img.ELicensing.Core;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TestCoreAPI.ApplicationConstants;
+using TestCoreAPI.Dtos;
+using TestCoreAPI.IServices;
+using TestCoreAPI.Models;
+
+namespace TestCoreAPI.Services
+{
+    public class OrganizationService : IOrganizationService
+    {
+        private ApplicationDbContext _context;
+        private IMapper _mapper;
+        public OrganizationService(
+            ApplicationDbContext context,
+            IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<ResponseWrapper<List<WordDto>>> GetLexicons()
+        {
+            try
+            {
+                List<Lexicon> lexiconsDb = await _context.Lexicons.ToListAsync();
+                List<WordDto> lexicons = _mapper.Map<List<WordDto>>(lexiconsDb);
+                return ResponseWrapper<List<WordDto>>.Success(lexicons);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<WordDto>>.Error(AppConstants.GetLexiconsFailed);
+            }
+        }
+
+        public async Task<ResponseWrapper<List<WordDto>>> Delete(Guid lexiconId)
+        {
+            try
+            {
+                Lexicon lexiconRemove = _context.Lexicons.FirstOrDefault(x => x.Id == lexiconId);
+                if (lexiconRemove != null)
+                {
+                    _context.Lexicons.Remove(lexiconRemove);
+                    await _context.SaveChangesAsync();
+
+                    List<Lexicon> lexiconsDb = await _context.Lexicons.ToListAsync();
+                    List<WordDto> lexicons = _mapper.Map<List<WordDto>>(lexiconsDb);
+                    return ResponseWrapper<List<WordDto>>.Success(lexicons);
+                }
+
+                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToDeleteLexicon);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToDeleteLexicon);
+            }
+        }
+
+        public async Task<ResponseWrapper<List<WordDto>>> Insert(WordDto lexiconDto)
+        {
+            try
+            {
+                Lexicon lexicon = _mapper.Map<Lexicon>(lexiconDto);
+                lexicon.Id = Guid.NewGuid();
+                _context.Lexicons.Add(lexicon);
+                await _context.SaveChangesAsync();
+
+                List<Lexicon> lexiconsDb = await _context.Lexicons.ToListAsync();
+                List<WordDto> lexicons = _mapper.Map<List<WordDto>>(lexiconsDb);
+                return ResponseWrapper<List<WordDto>>.Success(lexicons);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToAddLexicon);
+            }
+        }
+
+        public async Task<ResponseWrapper<WordDto>> AddWord(WordDto wordDto)
+        {
+            try
+            {
+                var alreadyExist = _context.Words.Any(x => x.Rec.Equals(wordDto.Rec));
+                if (alreadyExist)
+                {
+                    return ResponseWrapper<WordDto>.Error(AppConstants.FailedToAddWordExist);
+                }
+
+                Word word = _mapper.Map<Word>(wordDto);
+                word.Id = Guid.NewGuid();
+                _context.Words.Add(word);
+                await _context.SaveChangesAsync();
+                wordDto = _mapper.Map<WordDto>(word);
+
+                return ResponseWrapper<WordDto>.Success(wordDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<WordDto>.Error(AppConstants.FailedToAddWord);
+            }
+        }
+
+        public async Task<ResponseWrapper<ConnectionDto>> AddConn(ConnectionDto connDto)
+        {
+            try
+            {
+                Connection conn = _mapper.Map<Connection>(connDto);
+                conn.Id = Guid.NewGuid();
+                _context.Connections.Add(conn);
+                await _context.SaveChangesAsync();
+                connDto = _mapper.Map<ConnectionDto>(conn);
+
+                return ResponseWrapper<ConnectionDto>.Success(connDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<ConnectionDto>.Error(AppConstants.FailedToAddConnGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<AssociationDto>> AddAssoc(AssociationDto assocDto)
+        {
+            try
+            {
+                var finalSinonymsList = assocDto.Final.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(c => { c = c.Trim(); return c; }).ToList();
+                var finalCommaSeparatedSinonyms = string.Join(",", finalSinonymsList);
+                assocDto.Final = finalCommaSeparatedSinonyms;
+
+                var ASinonymsList = assocDto.A.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(c => { c = c.Trim(); return c; }).ToList();
+                var ACommaSeparatedSinonyms = string.Join(",", ASinonymsList);
+                assocDto.A = ACommaSeparatedSinonyms;
+
+                var BSinonymsList = assocDto.B.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(c => { c = c.Trim(); return c; }).ToList();
+                var BCommaSeparatedSinonyms = string.Join(",", BSinonymsList);
+                assocDto.B = BCommaSeparatedSinonyms;
+
+                var CSinonymsList = assocDto.C.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(c => { c = c.Trim(); return c; }).ToList();
+                var CCommaSeparatedSinonyms = string.Join(",", CSinonymsList);
+                assocDto.C = CCommaSeparatedSinonyms;
+
+                var DSinonymsList = assocDto.D.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(c => { c = c.Trim(); return c; }).ToList();
+                var DCommaSeparatedSinonyms = string.Join(",", DSinonymsList);
+                assocDto.D = DCommaSeparatedSinonyms;
+
+                Association assoc = _mapper.Map<Association>(assocDto);
+                assoc.Id = Guid.NewGuid();
+                _context.Associations.Add(assoc);
+                await _context.SaveChangesAsync();
+                assocDto = _mapper.Map<AssociationDto>(assoc);
+
+                return ResponseWrapper<AssociationDto>.Success(assocDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<AssociationDto>.Error(AppConstants.FailedToAddAssocGame);
+            }
+        }
+
+
+        public async Task<ResponseWrapper<List<WordDto>>> Update(WordDto lexiconDto)
+        {
+            try
+            {
+                Lexicon lexiconUpdate = _context.Lexicons.AsNoTracking().FirstOrDefault(x => x.Id == lexiconDto.Id);
+                if (lexiconUpdate != null)
+                {
+                    lexiconUpdate = _mapper.Map<Lexicon>(lexiconDto);
+                    _context.Lexicons.Update(lexiconUpdate);
+                    await _context.SaveChangesAsync();
+
+                    List<Lexicon> lexiconsDb = await _context.Lexicons.ToListAsync();
+                    List<WordDto> lexicons = _mapper.Map<List<WordDto>>(lexiconsDb);
+                    return ResponseWrapper<List<WordDto>>.Success(lexicons);
+                }
+
+                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToUpdateLexicon);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToUpdateLexicon);
+            }
+        }
+
+        public async Task<ResponseWrapper<List<UserDto>>> GetUsers()
+        {
+            try
+            {
+                List<User> usersDb = await _context.Users.ToListAsync();
+                List<UserDto> users = _mapper.Map<List<UserDto>>(usersDb);
+                return ResponseWrapper<List<UserDto>>.Success(users);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<UserDto>>.Error(AppConstants.GetUsersFailed);
+            }
+        }
+
+        public async Task<ResponseWrapper<List<UserDto>>> ActivateDeactivateUser(UserDto user)
+        {
+            try
+            {
+                var userDB = _context.Users.FirstOrDefault(x => x.Id == user.Id);
+                userDB.NalogAktiviran = !userDB.NalogAktiviran;
+                _context.Users.Update(userDB);
+                await _context.SaveChangesAsync();
+                List<User> usersDb = await _context.Users.ToListAsync();
+                List<UserDto> users = _mapper.Map<List<UserDto>>(usersDb);
+                return ResponseWrapper<List<UserDto>>.Success(users);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<UserDto>>.Error(AppConstants.GetUsersFailed);
+            }
+        }
+    }
+}

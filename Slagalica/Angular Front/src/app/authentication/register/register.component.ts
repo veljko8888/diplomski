@@ -1,3 +1,4 @@
+import { HttpBackend, HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,6 +25,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     UserName: '',
     Password: ''
   }
+  private httpClient: HttpClient;
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -31,12 +34,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private userService: UserService,
     private httpService: HttpHandlerService,
-    private frameService: FrameService) { }
+    private handler: HttpBackend,
+    private frameService: FrameService) 
+    {
+    this.httpClient = new HttpClient(handler);
+  }
 
   ngOnInit() {
     setTimeout(() => {
       this.authService.showRegister = false;
       this.authService.showLogin = true;
+      this.authService.showGuest = true;
     }, 0);
     if (localStorage.getItem('passwordChanged')) {
       this.passwordChanged = true;
@@ -70,7 +78,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       DatumRodjenja: ['', Validators.required],
       ProfilnaSlika: ['']
     },
-    { validators: this.checkPasswords });
+      { validators: this.checkPasswords });
   }
 
   async onSubmit() {
@@ -78,7 +86,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     if (this.form.valid) {
       this.frameService.showLoaderAuth();
       let formValue = this.form.value;
-      await this.httpService.register(formValue).subscribe(
+      await this.httpService.register(formValue, this.httpClient).subscribe(
         (res: any) => {
           //ON SUCCESS
           this.frameService.hideLoaderAuth();
@@ -94,37 +102,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
   }
 
-  // async checkIfSessionAlreadyExists() {
-  //   if (localStorage.getItem('token') != null) {
-  //     if (this.userService.getCurrentUser()) {
-  //       this.router.navigate(['/pages'])
-  //     }
-  //     else {
-  //       let decodedToken = jwt_decode<any>(localStorage.getItem('token'));
-  //       this.httpService.getLoggedInUser(decodedToken.sub).subscribe(
-  //         (res: any) => {
-  //           if (!res.IsApproved || res.IsUnapprovedUser) {
-  //             //dodaj poruku za account disabled please contact support
-  //             localStorage.setItem('accDisabled', '1');
-  //             this.authService.logoutUserFromCognito();
-  //             this.router.navigate(['/']);
-  //           }
-  //           else {
-  //             this.userService.saveLoggedInUser(res);
-  //             this.router.navigate(['/pages']);
-  //           }
-  //         },
-  //         error => {
-  //           this.authService.logoutUserFromCognito();
-  //           this.router.navigate(['/']);
-  //         });
-  //     }
-  //   }
-  //   else {
-  //     this.shouldRenderLoginPage = true;
-  //   }
-  // }
-
   navigateForgotPass() {
     this.router.navigate(['/auth/forgotPassword']);
   }
@@ -132,8 +109,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   checkPasswords(group: FormGroup) { // here we have the 'passwords' group
     const password = group.get('Sifra').value;
     const confirmPassword = group.get('SifraPotvrda').value;
-  
-    return password === confirmPassword ? null : { notSame: true }     
+
+    return password === confirmPassword ? null : { notSame: true }
   }
 }
 

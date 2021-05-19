@@ -1,0 +1,580 @@
+<div style="margin-left: 20px;">
+    <div style="padding-bottom: 20px;">
+        <h3>Slagalica</h3>
+        <div class="row">
+            <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="showWordDialogBox()" nbButton status="primary">Dodaj reč</button>
+            </div>
+            <div class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="addWordUpload()" nbButton status="primary">Dodaj reči preko
+                    dokumenta</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding-bottom: 20px;">
+        <h3>Spojnice</h3>
+        <div class="row">
+            <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="showConnectionsGameDialogBox()" nbButton status="primary">Dodaj
+                    igru</button>
+            </div>
+            <div class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="addGameConnectionsUpload()" nbButton status="primary">Dodaj igru preko
+                    dokumenta</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding-bottom: 20px;">
+        <h3>Asocijacije</h3>
+        <div class="row">
+            <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="showAssocDialogBox()" nbButton status="primary">Dodaj igru</button>
+            </div>
+            <div class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="addGameAssocUpload()" nbButton status="primary">Dodaj igru preko
+                    dokumenta</button>
+            </div>
+        </div>
+    </div>
+
+    <p-dialog [style]="{width: '50vw'}" modal="true" (onHide)="closeWordDialog()" [(visible)]="showWordDialog">
+        <p-header>
+            Slagalica reči
+        </p-header>
+        <div>
+            <form [formGroup]="slagalicaForm">
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-3 col-form-label">Reč</label>
+                    <div class="col-sm-9">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="Reč"
+                            formControlName="Rec">
+                        <small
+                            *ngIf="(slagalicaForm.get('Rec').touched || formSubmitAttempt) && slagalicaForm.get('Rec').errors"
+                            class="text-danger">Morate da unesete validnu reč.</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <p-footer>
+            <button (click)="saveWord()" nbButton status="primary">Sačuvaj</button>
+        </p-footer>
+    </p-dialog>
+
+    <p-dialog [style]="{'width': '50vw', 'padding-top': '30px' }" modal="true" (onHide)="closeConnectionsGameDialog()"
+        [(visible)]="showConnDialog">
+        <p-header>
+            Spojnice
+        </p-header>
+        <div>
+            <form [formGroup]="connForm">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">Opis Igre Spojnice</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="Description" name="Description"
+                                    formControlName="Description" placeholder="Opis Spojnice">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('Description').touched || formConnSubmitAttempt) && (connForm.get('Description').errors)"
+                                    class="text-danger">Molimo vas unesite Opis Igre Spojnice.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L1</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L1" name="L1" formControlName="L1"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L1').touched || formConnSubmitAttempt) && (connForm.get('L1').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R1</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="R1" name="R1" formControlName="R1"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R1').touched || formConnSubmitAttempt) && (connForm.get('R1').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L2</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L2" name="L2" formControlName="L2"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L2').touched || formConnSubmitAttempt) && (connForm.get('L2').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R2</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="R2" name="R2" formControlName="R2"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R2').touched || formConnSubmitAttempt) && (connForm.get('R2').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L3</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L3" name="L3" formControlName="L3"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L3').touched || formConnSubmitAttempt) && (connForm.get('L3').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R3</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="R3" name="R3" formControlName="R3"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R3').touched || formConnSubmitAttempt) && (connForm.get('R3').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L4</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L4" name="L4" formControlName="L4"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L4').touched || formConnSubmitAttempt) && (connForm.get('L4').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R4</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="ime" name="R4" formControlName="R4"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R4').touched || formConnSubmitAttempt) && (connForm.get('R4').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L5</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L5" name="L5" formControlName="L5"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L5').touched || formConnSubmitAttempt) && (connForm.get('L5').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R5</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="R5" name="R5" formControlName="R5"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R5').touched || formConnSubmitAttempt) && (connForm.get('R5').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L6</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L6" name="L6" formControlName="L6"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L6').touched || formConnSubmitAttempt) && (connForm.get('L6').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R6</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="ime" name="R6" formControlName="R6"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R6').touched || formConnSubmitAttempt) && (connForm.get('R6').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L7</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L7" name="L7" formControlName="L7"
+                                    placeholder="Opis Spojnice">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L7').touched || formConnSubmitAttempt) && (connForm.get('L7').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R7</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="R7" name="R7" formControlName="R7"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R7').touched || formConnSubmitAttempt) && (connForm.get('R7').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L8</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L8" name="L8" formControlName="L8"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L8').touched || formConnSubmitAttempt) && (connForm.get('L8').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R8</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="R8" name="R8" formControlName="R8"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R8').touched || formConnSubmitAttempt) && (connForm.get('R8').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L9</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L9" name="L9" formControlName="L9"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L9').touched || formConnSubmitAttempt) && (connForm.get('L9').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R9</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="R9" name="R9" formControlName="R9"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R9').touched || formConnSubmitAttempt) && (connForm.get('R9').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">L10</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="L10" name="L10" formControlName="L10"
+                                    placeholder="Leva Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('L10').touched || formConnSubmitAttempt) && (connForm.get('L10').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Levu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="ime" class="label col-sm-3 form-control-label">R10</label>
+                            <div>
+                                <input type="text" nbInput fullWidth id="R10" name="R10" formControlName="R10"
+                                    placeholder="Desna Spojnica">
+                                <br>
+                                <small
+                                    *ngIf="(connForm.get('R10').touched || formConnSubmitAttempt) && (connForm.get('R10').errors)"
+                                    class="text-danger">Molimo vas unesite validnu Desnu Spojnicu.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <p-footer>
+            <button (click)="saveConnGame()" nbButton status="primary">Sačuvaj</button>
+        </p-footer>
+    </p-dialog>
+
+
+    <p-dialog [style]="{width: '50vw', 'padding-top': '30px'}" modal="true" (onHide)="closeAssocDialog()"
+        [(visible)]="showAssocDialog">
+        <p-header>
+            Asocijacije
+        </p-header>
+        <div>
+            <form [formGroup]="assocForm">
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">A1</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="A1" formControlName="A1">
+                        <small
+                            *ngIf="(assocForm.get('A1').touched || formAssocSubmitAttempt) && assocForm.get('A1').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">B1</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="B1" formControlName="B1">
+                        <small
+                            *ngIf="(assocForm.get('B1').touched || formAssocSubmitAttempt) && assocForm.get('B1').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">A2</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="A2" formControlName="A2">
+                        <small
+                            *ngIf="(assocForm.get('A2').touched || formAssocSubmitAttempt) && assocForm.get('A2').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">B2</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="B2" formControlName="B2">
+                        <small
+                            *ngIf="(assocForm.get('B2').touched || formAssocSubmitAttempt) && assocForm.get('B2').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">A3</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="A3" formControlName="A3">
+                        <small
+                            *ngIf="(assocForm.get('A3').touched || formAssocSubmitAttempt) && assocForm.get('A3').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">B3</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="B3" formControlName="B3">
+                        <small
+                            *ngIf="(assocForm.get('B3').touched || formAssocSubmitAttempt) && assocForm.get('B3').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">A4</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="A4" formControlName="A4">
+                        <small
+                            *ngIf="(assocForm.get('A4').touched || formAssocSubmitAttempt) && assocForm.get('A4').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">B4</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="B4" formControlName="B4">
+                        <small
+                            *ngIf="(assocForm.get('B4').touched || formAssocSubmitAttempt) && assocForm.get('B4').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">A Konačno</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="A" formControlName="A">
+                        <small
+                            *ngIf="(assocForm.get('A').touched || formAssocSubmitAttempt) && assocForm.get('A').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small><br>
+                        <small class="text-warning">Uputstvo: Rešenje i sinonime (ukoliko postoje) razdvojite
+                            zarezom.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">B Konačno</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="B" formControlName="B">
+                        <small
+                            *ngIf="(assocForm.get('B').touched || formAssocSubmitAttempt) && assocForm.get('B').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small><br>
+                        <small class="text-warning">Uputstvo: Rešenje i sinonime (ukoliko postoje) razdvojite
+                            zarezom.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">Konačno</label>
+                    <div class="col-sm-10">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="Konačno"
+                            formControlName="Final">
+                        <small
+                            *ngIf="(assocForm.get('Final').touched || formAssocSubmitAttempt) && assocForm.get('Final').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small><br>
+                        <small class="text-warning">Uputstvo: Rešenje i sinonime (ukoliko postoje) razdvojite
+                            zarezom.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">C1</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="C1" formControlName="C1">
+                        <small
+                            *ngIf="(assocForm.get('C1').touched || formAssocSubmitAttempt) && assocForm.get('C1').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">D1</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="D1" formControlName="D1">
+                        <small
+                            *ngIf="(assocForm.get('D1').touched || formAssocSubmitAttempt) && assocForm.get('D1').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">C2</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="C2" formControlName="C2">
+                        <small
+                            *ngIf="(assocForm.get('C2').touched || formAssocSubmitAttempt) && assocForm.get('C2').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">D2</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="D2" formControlName="D2">
+                        <small
+                            *ngIf="(assocForm.get('D2').touched || formAssocSubmitAttempt) && assocForm.get('D2').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">C3</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="C3" formControlName="C3">
+                        <small
+                            *ngIf="(assocForm.get('C3').touched || formAssocSubmitAttempt) && assocForm.get('C3').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">D3</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="D3" formControlName="D3">
+                        <small
+                            *ngIf="(assocForm.get('D3').touched || formAssocSubmitAttempt) && assocForm.get('D3').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">C4</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="C4" formControlName="C4">
+                        <small
+                            *ngIf="(assocForm.get('C4').touched || formAssocSubmitAttempt) && assocForm.get('C4').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">D4</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="D4" formControlName="D4">
+                        <small
+                            *ngIf="(assocForm.get('D4').touched || formAssocSubmitAttempt) && assocForm.get('D4').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label required label col-sm-2 col-form-label">C Konačno</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="C" formControlName="C">
+                        <small
+                            *ngIf="(assocForm.get('C').touched || formAssocSubmitAttempt) && assocForm.get('C').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small><br>
+                        <small class="text-warning">Uputstvo: Rešenje i sinonime (ukoliko postoje) razdvojite
+                            zarezom.</small>
+                    </div>
+                    <label class="control-label required label col-sm-2 col-form-label">D Konačno</label>
+                    <div class="col-sm-4">
+                        <input class="input-style" type="text" nbInput fullWidth placeholder="D" formControlName="D">
+                        <small
+                            *ngIf="(assocForm.get('D').touched || formAssocSubmitAttempt) && assocForm.get('D').errors"
+                            class="text-danger">Morate da unesete validnu sintagmu.</small><br>
+                        <small class="text-warning">Uputstvo: Rešenje i sinonime (ukoliko postoje) razdvojite
+                            zarezom.</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <p-footer>
+            <button (click)="saveAssoc()" nbButton status="primary">Sačuvaj</button>
+        </p-footer>
+    </p-dialog>
+
+</div>

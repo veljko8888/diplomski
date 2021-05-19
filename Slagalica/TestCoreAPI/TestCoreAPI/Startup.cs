@@ -39,7 +39,7 @@ namespace TestCoreAPI
             //Inject AppSettings
             services.Configure<ApplicationSettings>(Configuration.GetSection("ApplicationSettings"));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             //database options
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -55,7 +55,7 @@ namespace TestCoreAPI
             //register dependency injection for services
             services.AddSingleton(mapper);
             services.AddTransient<IUserService, UserService>();
-            services.AddTransient<ILexiconService, LexiconService>();
+            services.AddTransient<IOrganizationService, OrganizationService>();
 
             //EMAIL
             services.AddTransient<IMailService, SendGridMailService>();
@@ -71,7 +71,8 @@ namespace TestCoreAPI
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x => {
+            }).AddJwtBearer(x =>
+            {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = false;
                 x.TokenValidationParameters = new TokenValidationParameters

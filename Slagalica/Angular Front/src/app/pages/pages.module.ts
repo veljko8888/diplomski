@@ -7,16 +7,28 @@ import { PagesRoutingModule } from './pages-routing.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
+import {TableModule} from 'primeng/table';
+
+import {
+  NbButtonModule,
+} from '@nebular/theme';
+import { DashboardHandlerComponent } from './dashboard-handler/dashboard-handler.component';
+
 @NgModule({
   imports: [
     PagesRoutingModule,
     ThemeModule,
     NbMenuModule,
-    MiscellaneousModule
+    MiscellaneousModule,
+
+    TableModule,
+
+    NbButtonModule
   ],
   declarations: [
     PagesComponent,
-    DashboardComponent
+    DashboardComponent,
+    DashboardHandlerComponent,
   ],
 })
 export class PagesModule {

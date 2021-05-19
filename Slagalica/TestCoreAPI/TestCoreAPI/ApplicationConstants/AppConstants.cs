@@ -13,7 +13,17 @@ namespace TestCoreAPI.ApplicationConstants
 
         public const string FailedToAddLexicon = "Failed to add lexicon";
 
+        public const string FailedToAddWord = "Greška prilikom dodavanja reči";
+
+        public const string FailedToAddConnGame = "Greška prilikom dodavanja igre spojnica";
+
+        public const string FailedToAddAssocGame = "Greška prilikom dodavanja igre asocijacije";
+
+        public const string FailedToAddWordExist = "Reč već postoji";
+
         public const string GetLexiconsFailed = "Failed to retrieve lexicons";
+
+        public const string GetUsersFailed = "Greška prilikom dohvatanja korisnika";
 
         public const string FailedToDeleteLexicon = "Failed to delete lexicon";
 

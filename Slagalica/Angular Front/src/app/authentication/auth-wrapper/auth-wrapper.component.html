@@ -21,7 +21,7 @@
                 <a (click)="navigateLoginPage()" class="link-like label form-control-label">Prijavite se!</a>
               </div>
             </div>
-            <div style="margin: 0; float: right;" class="col-sm-6">
+            <div *ngIf="authService.showGuest" style="margin: 0; float: right;" class="col-sm-6">
               <a style="float: right;" (click)="navigateGuest()" class="link-like label form-control-label">Udjite kao gost!</a>
             </div>
           </div>
