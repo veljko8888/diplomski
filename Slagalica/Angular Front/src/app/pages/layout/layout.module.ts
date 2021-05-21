@@ -36,6 +36,8 @@ import {RadioButtonModule} from 'primeng/radiobutton';
 import {ToggleButtonModule} from 'primeng/togglebutton';
 import { DialogModule } from 'primeng/dialog';
 import {DynamicDialogModule} from 'primeng/dynamicdialog';
+import {FileUploadModule} from 'primeng/fileupload';
+import {HttpClientModule} from '@angular/common/http';
 
 
 import { SearchProjectsComponent } from './search-projects/search-projects.component';
@@ -78,8 +80,9 @@ import { SupervisorComponent } from './supervisor/supervisor.component';
     RadioButtonModule,
     DialogModule,
     NbDialogModule,
-    DynamicDialogModule
-   
+    DynamicDialogModule,
+    FileUploadModule,
+    HttpClientModule
   ],
   declarations: [
     LayoutComponent,

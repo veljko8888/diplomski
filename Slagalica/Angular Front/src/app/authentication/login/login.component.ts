@@ -85,7 +85,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         },
         error => {
           this.frameService.hideLoaderAuth();
-          this.errorMessage = error?.error[0]?.Value ? error?.error[0]?.Value : 'Došlo je do greške prilikom prijavljivanja';
+          this.errorMessage = error?.error[0]?.value ? error.error[0].value : 'Došlo je do greške prilikom prijavljivanja';
           console.log(error);
         });
     }

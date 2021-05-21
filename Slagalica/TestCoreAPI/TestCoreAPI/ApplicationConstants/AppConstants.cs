@@ -47,6 +47,8 @@ namespace TestCoreAPI.ApplicationConstants
 
         public const string UsernameAlreadyExist = "Korisnicko ime ili Email već postoje";
 
+        public const string ImageSizeTooBig = "Veličina profilne slike može biti maksimalno 300x300 px";
+        
         public const string UserDoesNotExist = "Korisnik sa ovim Email-om ne postoji";
 
         public const string WrongOldPassword = "Stara lozinka je pogrešna!";

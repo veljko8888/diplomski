@@ -38,7 +38,7 @@ namespace TestCoreAPI.Models
         [Column(TypeName = "nvarchar(350)")]
         public byte[] PasswordSalt { get; set; }
 
-        public byte[] ProfilnaSlika { get; set; }
+        public string ProfilnaSlika { get; set; }
 
         public bool NalogAktiviran { get; set; }
         public TipKorisnika TipKorisnika { get; set; }

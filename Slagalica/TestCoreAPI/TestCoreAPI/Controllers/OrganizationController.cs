@@ -89,11 +89,31 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("add-words-upload")]
+        public async Task<IActionResult> AddWordsUpload([FromBody]List<WordDto> wordsDtos)
+        {
+            var result = new ResponseWrapper<List<WordDto>>();
+            result = await _organizationService.AddWordsUpload(wordsDtos);
+
+            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+        }
+
+        [HttpPost]
         [Route("add-connection-game")]
         public async Task<IActionResult> AddConnectionGame([FromBody]ConnectionDto connDto)
         {
             var result = new ResponseWrapper<ConnectionDto>();
             result = await _organizationService.AddConn(connDto);
+
+            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+        }
+
+        [HttpPost]
+        [Route("add-conns-games")]
+        public async Task<IActionResult> AddConnectionsGames([FromBody]List<ConnectionDto> connsDtos)
+        {
+            var result = new ResponseWrapper<List<ConnectionDto>>();
+            result = await _organizationService.AddConnsUpload(connsDtos);
 
             return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
         }
@@ -107,5 +127,28 @@ namespace TestCoreAPI.Controllers
 
             return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
         }
+        
+        [HttpPost]
+        [Route("add-assocs-games")]
+        public async Task<IActionResult> AddAssocsGames([FromBody]List<AssociationDto> assocsDtos)
+        {
+            var result = new ResponseWrapper<List<AssociationDto>>();
+            result = await _organizationService.AddAssocsUpload(assocsDtos);
+
+            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+        }
+
+        [HttpPost]
+        [Route("upload-image")]
+        public async Task<IActionResult> UploadImageProfile(IFormCollection data, IFormFile imageFile)
+        {
+            var x = data["name"];
+            var result = new ResponseWrapper<List<AssociationDto>>();
+            //result = await _organizationService.AddAssocsUpload(assocsDtos);
+
+            return result.IsSuccess ? (IActionResult)Ok(true) : BadRequest(true);
+        }
+
+        
     }
 }

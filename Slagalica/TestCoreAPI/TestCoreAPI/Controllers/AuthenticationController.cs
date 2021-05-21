@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Img.ELicensing.Core;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,23 +30,38 @@ namespace TestCoreAPI.Controllers
         private readonly IUserService _userService;
         private IMapper _mapper;
         private readonly ApplicationSettings _appSettings;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
         public AuthenticationController(
             IMapper mapper,
             IUserService userService,
-            IOptions<ApplicationSettings> applicationSettings)
+            IOptions<ApplicationSettings> applicationSettings,
+            IHostingEnvironment hostingEnvironment)
         {
             _mapper = mapper;
             _userService = userService;
             _appSettings = applicationSettings.Value;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpPost]
         [Route("Register")]
         //POST : /api/Registration/Register
-        public async Task<IActionResult> PostApplicationUser(UserDto userDto)
+        public async Task<IActionResult> PostApplicationUser(IFormCollection data)
         {
-            var result = await _userService.Insert(userDto);
+            var userDto = new UserDto
+            {
+                DatumRodjenja = DateTimeOffset.Parse((string)data["DatumRodjenja"]).UtcDateTime,
+                Email = data["Email"],
+                Ime = data["Ime"],
+                KorisnickoIme = data["KorisnickoIme"],
+                Pol = data["Pol"],
+                Prezime = data["Prezime"],
+                Sifra = data["Sifra"],
+                Zanimanje = data["Zanimanje"],
+            };
+
+            var result = await _userService.Insert(userDto, data, _hostingEnvironment);
             return result.IsSuccess ? (IActionResult)Ok(result) : BadRequest(result.Errors);
         }
 
@@ -81,6 +100,30 @@ namespace TestCoreAPI.Controllers
             {
                 return BadRequest(result.Errors);
             }
+        }
+
+        [HttpPost]
+        [Route("upload-image")]
+        public async Task<IActionResult> UploadImageProfile(IFormCollection data, IFormFile imageFile)
+        {
+            IFormFile postedFile = data.Files[0];
+            var delimitedPath = _hostingEnvironment.ContentRootPath.Split(new string[] { @"\" }, StringSplitOptions.None).ToList();
+            delimitedPath.RemoveAt(delimitedPath.Count - 1);
+            delimitedPath.RemoveAt(delimitedPath.Count - 1);
+            delimitedPath.Add("Angular Front");
+            delimitedPath.Add("src");
+            delimitedPath.Add("assets");
+            delimitedPath.Add("images");
+
+            var path = string.Join(@"\", delimitedPath);
+            using (FileStream stream = new FileStream(Path.Combine(path, postedFile.FileName), FileMode.Create))
+            {
+                postedFile.CopyTo(stream);
+            }
+            var result = new ResponseWrapper<List<AssociationDto>>();
+            //result = await _organizationService.AddAssocsUpload(assocsDtos);
+
+            return result.IsSuccess ? (IActionResult)Ok(true) : BadRequest(true);
         }
 
         [HttpGet]

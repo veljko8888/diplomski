@@ -322,12 +322,28 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/add-word', wordRequest);
   }
 
+  addWordsUpload(wordsRequest: any) {
+    return this.http.post(this.BaseURI + '/Organization/add-words-upload', wordsRequest);
+  }
+
   addConnectionGame(connRequest: any) {
     return this.http.post(this.BaseURI + '/Organization/add-connection-game', connRequest);
   }
 
+  addConnsUpload(connsRequest: any){
+    return this.http.post(this.BaseURI + '/Organization/add-conns-games', connsRequest);
+  }
+
   addAssocGame(assocRequest: any) {
     return this.http.post(this.BaseURI + '/Organization/add-assoc-game', assocRequest);
+  }
+
+  addAssocsUpload(assocsRequest: any) {
+    return this.http.post(this.BaseURI + '/Organization/add-assocs-games', assocsRequest);
+  }
+
+  uploadProfilePicture(profPictureRequest: any) {
+    return this.http.post(this.BaseURI + '/Authentication/upload-image', profPictureRequest);
   }
 
   private handleError(error: HttpErrorResponse) {

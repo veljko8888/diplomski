@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using Img.ELicensing.Core;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using SendGrid;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -85,10 +89,25 @@ namespace TestCoreAPI.Services
             }
         }
 
-        public async Task<ResponseWrapper<UserDto>> Insert(UserDto user)
+        public async Task<ResponseWrapper<UserDto>> Insert(UserDto user, IFormCollection data, IHostingEnvironment environment)
         {
             try
             {
+                if (data.Files != null && data.Files.Count > 0 && data.Files[0] != null)
+                {
+                    IFormFile postedFile = data.Files[0];
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await postedFile.CopyToAsync(memoryStream);
+                        using (Image img = Image.FromStream(memoryStream))
+                        {
+                            if (img.Size.Height > 300 || img.Size.Width > 300)
+                            {
+                                return ResponseWrapper<UserDto>.Error(AppConstants.ImageSizeTooBig);
+                            }
+                        }
+                    }
+                }
                 bool usernameExist = _context.Users.Any(x => x.KorisnickoIme.Equals(user.KorisnickoIme) || x.Email.Equals(user.Email));
                 if (usernameExist)
                 {
@@ -106,6 +125,25 @@ namespace TestCoreAPI.Services
                 await _context.SaveChangesAsync();
                 user = _mapper.Map<UserDto>(userDB);
                 await _context.SaveChangesAsync();
+                var delimitedPath = environment.ContentRootPath.Split(new string[] { @"\" }, StringSplitOptions.None).ToList();
+                delimitedPath.RemoveAt(delimitedPath.Count - 1);
+                delimitedPath.RemoveAt(delimitedPath.Count - 1);
+                delimitedPath.Add("Angular Front");
+                delimitedPath.Add("src");
+                delimitedPath.Add("assets");
+                delimitedPath.Add("images");
+                IFormFile postedFileSave = data.Files[0];
+                var imgExtension = postedFileSave.FileName.Substring(postedFileSave.FileName.LastIndexOf('.') + 1);
+                var newPhotoName = "assets/images/" + userDB.Id.ToString() + "." + imgExtension;
+                userDB.ProfilnaSlika = newPhotoName;
+                _context.Users.Update(userDB);
+                await _context.SaveChangesAsync();
+
+                var path = string.Join(@"\", delimitedPath);
+                using (FileStream stream = new FileStream(Path.Combine(path, userDB.Id.ToString() + "." + imgExtension), FileMode.Create))
+                {
+                    postedFileSave.CopyTo(stream);
+                }
 
                 var userId = userDB.Id.ToString();
                 return ResponseWrapper<UserDto>.Success(user);

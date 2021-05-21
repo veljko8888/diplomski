@@ -17,7 +17,7 @@ namespace TestCoreAPI.Models
         public string Pol { get; set; }
         public bool NalogAktiviran { get; set; }
         public string Sifra { get; set; }
-        public byte[] ProfilnaSlika { get; set; }
+        public string ProfilnaSlika { get; set; }
         public DateTime DatumRodjenja { get; set; }
         public TipKorisnika TipKorisnika { get; set; }
     }

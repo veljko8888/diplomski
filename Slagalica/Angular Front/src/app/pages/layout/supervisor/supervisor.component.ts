@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpHandlerService } from 'app/@core/http/http-handler.service';
 import { FrameService } from 'app/@core/mock/frame.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'ngx-supervisor',
@@ -14,8 +15,9 @@ export class SupervisorComponent implements OnInit {
     (
       private fb: FormBuilder,
       private frameService: FrameService,
-      private httpService: HttpHandlerService
-  ) { }
+      private httpService: HttpHandlerService,
+      private messageService: MessageService
+    ) { }
 
   formSubmitAttempt: boolean = false;
   showWordDialog: boolean = false;
@@ -26,7 +28,9 @@ export class SupervisorComponent implements OnInit {
   assocForm: FormGroup = null;
   showAssocDialog: boolean = false;
   formAssocSubmitAttempt: boolean = false;
-
+  fileToUpload: File = null;
+  readText: any;
+  textCalc: string = null;
 
   ngOnInit() {
     this.initForms();
@@ -86,16 +90,165 @@ export class SupervisorComponent implements OnInit {
     });
   }
 
-  addWordUpload() {
+  uploadFile(files: FileList) {
+    this.fileToUpload = files.item(0);
 
+    if (this.fileToUpload) {
+      this.frameService.showLoader()
+      let reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          this.textCalc = reader.result.toString();
+          let wordsObject = JSON.parse(this.textCalc);
+          let wordsRequest = [];
+          wordsObject.Words.forEach(word => {
+            let wordObj = {
+              Rec: word.Term
+            }
+            wordsRequest.push(wordObj);
+          });
+
+          await this.httpService.addWordsUpload(wordsRequest).subscribe(
+            (res: any) => {
+              //ON SUCCESS
+              this.frameService.hideLoader();
+              this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali nove reči', 'success', 4000);
+            },
+            error => {
+              let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom dodavanja reči';
+              this.frameService.hideLoader();
+              this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
+              console.log(error);
+            });
+
+          console.log(this.textCalc);
+          this.frameService.hideLoader();
+        }
+        catch (error) {
+          this.frameService.hideLoader();
+          this.frameService.showToastPrime('Ups!', 'Greška prilikom čitanja dokumenta. Moguća greška u strukturi vašeg dokumenta. Molimo vas da proverite.', 'error', 4000);
+        }
+      }
+      reader.readAsText(this.fileToUpload);
+    }
   }
 
-  addGameConnectionsUpload() {
+  uploadFileConn(files: FileList) {
+    this.fileToUpload = files.item(0);
 
+    if (this.fileToUpload) {
+      this.frameService.showLoader()
+      let reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          this.textCalc = reader.result.toString();
+          let connObjects = JSON.parse(this.textCalc);
+          let connsRequest = [];
+          connObjects.Games.forEach(game => {
+            let connObj = {
+              Description: game.Description,
+              Pairs: []
+            }
+
+            game.Pairs.forEach(pair => {
+              let pairObj = {
+                Left: pair.left,
+                Right: pair.right
+              }
+
+              connObj.Pairs.push(pairObj);
+            });
+
+            connsRequest.push(connObj);
+          });
+
+          await this.httpService.addConnsUpload(connsRequest).subscribe(
+            (res: any) => {
+              //ON SUCCESS
+              this.frameService.hideLoader();
+              this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali nove igre spojnice', 'success', 4000);
+            },
+            error => {
+              let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom dodavanja igara spojnice';
+              this.frameService.hideLoader();
+              this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
+              console.log(error);
+            });
+
+          console.log(this.textCalc);
+          this.frameService.hideLoader();
+        }
+        catch (error) {
+          this.frameService.hideLoader();
+          this.frameService.showToastPrime('Ups!', 'Greška prilikom čitanja dokumenta. Moguća greška u strukturi vašeg dokumenta. Molimo vas da proverite.', 'error', 4000);
+        }
+      }
+      reader.readAsText(this.fileToUpload);
+    }
   }
 
-  addGameAssocUpload() {
+  uploadFileAssoc(files: FileList) {
+    this.fileToUpload = files.item(0);
 
+    if (this.fileToUpload) {
+      this.frameService.showLoader()
+      let reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          this.textCalc = reader.result.toString();
+          let assocObjects = JSON.parse(this.textCalc);
+          let assocsRequest = [];
+          assocObjects.Games.forEach(game => {
+            let assocObj = {
+              A1: game.A.A1,
+              A2: game.A.A2,
+              A3: game.A.A3,
+              A4: game.A.A4,
+              A: game.A.A_sol.replace("/", ","),
+              B1: game.B.B1,
+              B2: game.B.B2,
+              B3: game.B.B3,
+              B4: game.B.B4,
+              B: game.B.B_sol.replace("/", ","),
+              C1: game.C.C1,
+              C2: game.C.C2,
+              C3: game.C.C3,
+              C4: game.C.C4,
+              C: game.C.C_sol.replace("/", ","),
+              D1: game.D.D1,
+              D2: game.D.D2,
+              D3: game.D.D3,
+              D4: game.D.D4,
+              D: game.D.D_sol.replace("/", ","),
+              Final: game.final_sol.replace("/", ","),
+            }
+
+            assocsRequest.push(assocObj);
+          });
+
+          await this.httpService.addAssocsUpload(assocsRequest).subscribe(
+            (res: any) => {
+              //ON SUCCESS
+              this.frameService.hideLoader();
+              this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali nove igre asocijacije', 'success', 4000);
+            },
+            error => {
+              let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom dodavanja igara asocijacije';
+              this.frameService.hideLoader();
+              this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
+              console.log(error);
+            });
+
+          console.log(this.textCalc);
+          this.frameService.hideLoader();
+        }
+        catch (error) {
+          this.frameService.hideLoader();
+          this.frameService.showToastPrime('Ups!', 'Greška prilikom čitanja dokumenta. Moguća greška u strukturi vašeg dokumenta. Molimo vas da proverite.', 'error', 4000);
+        }
+      }
+      reader.readAsText(this.fileToUpload);
+    }
   }
 
   showWordDialogBox() {
@@ -110,19 +263,19 @@ export class SupervisorComponent implements OnInit {
     this.showAssocDialog = true;
   }
 
-  closeWordDialog(){
+  closeWordDialog() {
     this.slagalicaForm.reset();
     this.showWordDialog = false;
     this.formSubmitAttempt = false;
   }
 
-  closeConnectionsGameDialog(){
+  closeConnectionsGameDialog() {
     this.connForm.reset();
     this.showConnDialog = false;
     this.formConnSubmitAttempt = false;
   }
 
-  closeAssocDialog(){
+  closeAssocDialog() {
     this.assocForm.reset();
     this.showAssocDialog = false;
     this.formAssocSubmitAttempt = false;
@@ -142,7 +295,7 @@ export class SupervisorComponent implements OnInit {
           this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali novu reč', 'success', 4000);
         },
         error => {
-          let errorText = error && error.error && error.error[0] ? error?.error[0]?.Value : 'Došlo je do greške prilikom dodavanja reči';
+          let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom dodavanja reči';
           this.frameService.hideLoader();
           this.showWordDialog = false;
           this.slagalicaForm.reset();
@@ -169,7 +322,7 @@ export class SupervisorComponent implements OnInit {
           this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali novu igru spojnice', 'success', 4000);
         },
         error => {
-          let errorText = error && error.error && error.error[0] ? error?.error[0]?.Value : 'Došlo je do greške prilikom dodavanja igre spojnica';
+          let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom dodavanja igre spojnica';
           this.frameService.hideLoader();
           this.showConnDialog = false;
           this.connForm.reset();
@@ -196,7 +349,7 @@ export class SupervisorComponent implements OnInit {
           this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali novu igru Asocijacije', 'success', 4000);
         },
         error => {
-          let errorText = error && error.error && error.error[0] ? error?.error[0]?.Value : 'Došlo je do greške prilikom dodavanja igre Asocijacije';
+          let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom dodavanja igre Asocijacije';
           this.frameService.hideLoader();
           this.showAssocDialog = false;
           this.assocForm.reset();
@@ -206,7 +359,7 @@ export class SupervisorComponent implements OnInit {
     }
   }
 
-  packConnectionsData(formValue: any){
+  packConnectionsData(formValue: any) {
     let requestData = {
       Description: formValue.Description,
       Pairs: []
@@ -275,11 +428,11 @@ export class SupervisorComponent implements OnInit {
     return requestData;
   }
 
-  packAssocRequest(assocFormValue: any){
-    assocFormValue.A = assocFormValue.A.replace(/\s\s+/g, ' ').replace(/,+/g,',').trim();
-    assocFormValue.B = assocFormValue.B.replace(/\s\s+/g, ' ').replace(/,+/g,',').trim();
-    assocFormValue.C = assocFormValue.C.replace(/\s\s+/g, ' ').replace(/,+/g,',').trim();
-    assocFormValue.D = assocFormValue.D.replace(/\s\s+/g, ' ').replace(/,+/g,',').trim();
+  packAssocRequest(assocFormValue: any) {
+    assocFormValue.A = assocFormValue.A.replace(/\s\s+/g, ' ').replace(/,+/g, ',').trim();
+    assocFormValue.B = assocFormValue.B.replace(/\s\s+/g, ' ').replace(/,+/g, ',').trim();
+    assocFormValue.C = assocFormValue.C.replace(/\s\s+/g, ' ').replace(/,+/g, ',').trim();
+    assocFormValue.D = assocFormValue.D.replace(/\s\s+/g, ' ').replace(/,+/g, ',').trim();
     assocFormValue.A1 = assocFormValue.A1.replace(/\s\s+/g, ' ').trim();
     assocFormValue.A2 = assocFormValue.A2.replace(/\s\s+/g, ' ').trim();
     assocFormValue.A3 = assocFormValue.A3.replace(/\s\s+/g, ' ').trim();
@@ -296,7 +449,7 @@ export class SupervisorComponent implements OnInit {
     assocFormValue.D2 = assocFormValue.D2.replace(/\s\s+/g, ' ').trim();
     assocFormValue.D3 = assocFormValue.D3.replace(/\s\s+/g, ' ').trim();
     assocFormValue.D4 = assocFormValue.D4.replace(/\s\s+/g, ' ').trim();
-    assocFormValue.Final = assocFormValue.Final.replace(/\s\s+/g, ' ').replace(/,+/g,',').trim();
+    assocFormValue.Final = assocFormValue.Final.replace(/\s\s+/g, ' ').replace(/,+/g, ',').trim();
 
     return assocFormValue;
   }

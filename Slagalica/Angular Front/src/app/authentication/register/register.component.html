@@ -11,9 +11,9 @@
 
                     <form [formGroup]="form" class="form-horizontal">
                         <div class="row">
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                    <label for="ime" class="label col-sm-3 form-control-label">Ime</label>
+                                    <label for="ime" class="label col-sm-12 form-control-label">Ime</label>
                                     <div>
                                         <input type="text" nbInput fullWidth id="ime" name="Ime" formControlName="Ime"
                                             placeholder="Ime">
@@ -24,9 +24,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                    <label for="prezime" class="label col-sm-3 form-control-label">Prezime</label>
+                                    <label for="prezime" class="label col-sm-12 form-control-label">Prezime</label>
                                     <div>
                                         <input type="text" nbInput fullWidth id="prezime" name="Prezime"
                                             formControlName="Prezime" placeholder="Prezime">
@@ -37,9 +37,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                    <label for="inputEmail3" class="label col-sm-3 form-control-label">Email</label>
+                                    <label for="inputEmail3" class="label col-sm-12 form-control-label">Email</label>
                                     <div>
                                         <input type="email" email nbInput fullWidth id="inputEmail3" name="Email"
                                             formControlName="Email" placeholder="Email">
@@ -50,12 +50,9 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-4">
+                            <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label for="zanimanje" class="label col-sm-3 form-control-label">Zanimanje</label>
+                                    <label for="zanimanje" class="label col-sm-12 form-control-label">Zanimanje</label>
                                     <div>
                                         <input type="text" nbInput fullWidth id="zanimanje" name="Zanimanje"
                                             formControlName="Zanimanje" placeholder="Zanimanje">
@@ -66,9 +63,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label for="userName" class="label col-sm-9 form-control-label">Korisničko
+                                    <label for="userName" class="label col-sm-12 form-control-label">Korisničko
                                         Ime</label>
                                     <div>
                                         <input type="text" nbInput fullWidth id="userName" name="KorisnickoIme"
@@ -80,9 +77,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                    <label for="pol" class="label col-sm-3 form-control-label">Pol</label>
+                                    <label for="pol" class="label col-sm-12 form-control-label">Pol</label>
                                     <div>
                                         <nb-select fullWidth placeholder="Pol" formControlName="Pol">
                                             <!-- <nb-option *ngFor="let option of jurisdictions" value="{{option.JurisdictionID}}">
@@ -96,11 +97,9 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                    <label for="datumRodjenja" class="label col-sm-9 form-control-label">Datum
+                                    <label for="datumRodjenja" class="label col-sm-12 form-control-label">Datum
                                         Rodjenja</label>
                                     <div>
                                         <input class="input-style" formControlName="DatumRodjenja" nbInput fullWidth
@@ -113,22 +112,22 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                    <label for="sifra" class="label col-sm-3 form-control-label">Šifra</label>
+                                    <label for="sifra" class="label col-sm-12 form-control-label">Šifra</label>
                                     <div>
                                         <input type="password" nbInput fullWidth id="sifra" name="Sifra"
                                             formControlName="Sifra" placeholder="Šifra">
                                         <br>
                                         <small
-                                            *ngIf="(form.get('Sifra').touched || formSubmitAttempt) && (form.get('Sifra').errors)"
-                                            class="text-danger">Molimo vas unesite šifru.</small>
+                                            *ngIf="(form.get('Sifra').touched || formSubmitAttempt) && ((form.get('Sifra').errors) || (form.errors?.threeInSequence))"
+                                            class="text-danger">Molimo vas unesite validnu šifru.</small>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label for="sifraPotvrda" class="label col-sm-9 form-control-label">Potvrda
+                                    <label for="sifraPotvrda" class="label col-sm-12 form-control-label">Potvrda
                                         Šifre</label>
                                     <div>
                                         <input type="password" nbInput fullWidth id="sifraPotvrda" name="Sifra"
@@ -144,13 +143,33 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="datumRodjenja" class="label col-sm-12 form-control-label">Profilna
+                                        Slika</label>
+                                    <div>
+                                        <input nbInput fullWidth type="file" #Image accept="image/*"
+                                            (change)="handleFileInput($event.target.files)">
+                                        <small *ngIf="imgSizeWrong" class="text-danger">Rezolucija slike mora biti
+                                            maksimalno 300x300px.</small>
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                         <div class="form-group row">
                             <a (click)="navigateForgotPass()"
                                 class="link-like label col-sm-12 form-control-label">Promena šifre</a>
                         </div>
                         <div class="row">
                             <div class="col-sm-8">
+                                <small class="text-warning">*Uputstvo za Lozinku: Najmanje 8 a najviše 16 karaktera,
+                                    minimum 1 veliko slovo, minimum 3 mala slova, minimum 1 numerik, minimum 1
+                                    specijalni znak,
+                                    početni karakter mora biti slovo ili numerik, maksimalan broj uzastopnih karaktera
+                                    je 3. <br>
+                                    *Uputstvo za profilnu sliku: Slika ne sme biti veća od 300x300px</small><br>
                                 <span *ngIf="errorMessage" class="text-danger">{{errorMessage}}</span>
                                 <span *ngIf="successMessage" class="text-success">{{successMessage}}</span>
                             </div>

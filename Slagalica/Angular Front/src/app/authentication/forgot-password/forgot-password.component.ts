@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { HttpHandlerService } from 'app/@core/http/http-handler.service';
 import { FrameService } from 'app/@core/mock/frame.service';
 import { AuthService } from '../auth.service';
+import { CustomValidators } from '../custom-validators';
 
 @Component({
   selector: 'ngx-forgot-password',
@@ -32,15 +33,15 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     private handler: HttpBackend
   ) {
     this.httpClient = new HttpClient(handler);
-   }
+  }
 
   ngOnInit(): void {
-    setTimeout( () => { 
-      this.authService.showRegister = false; 
+    setTimeout(() => {
+      this.authService.showRegister = false;
       this.authService.showLogin = true;
       this.authService.showGuest = true;
-    }, 0 );
-    
+    }, 0);
+
     if (localStorage.getItem('resetPassword')) {
       this.headerText = 'Please Reset Your Password';
     }
@@ -48,7 +49,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     this.initForm();
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.errorMessage = null;
     this.successMessage = null;
   }
@@ -57,8 +58,49 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       Email: ['', [Validators.required, Validators.email]],
       StariPassword: ['', Validators.required],
-      NoviPassword: ['', Validators.required]
-    });
+      NoviPassword: ['', [Validators.required, Validators.compose([
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(16),
+        // check whether the entered password has upper case letter
+        CustomValidators.patternValidator(/[A-Z]/, {
+          hasCapitalCase: true
+        }),
+        // check whether the entered password has at least one numeric char
+        CustomValidators.patternValidator(/^\D*(?:\d\D*){1,}$/, {
+          hasMinimumOneNumeric: true
+        }),
+        // check whether the entered passwords first character is alphanumeric
+        CustomValidators.patternValidator(/^[0-0a-zA-Z]{1}/, {
+          startsWithAlphanumeric: true
+        }),
+        // check whether the entered passwords contains minimum 3 lowercase letters
+        CustomValidators.patternValidator(/(?=(?:[^a-z]*[a-z]){3})/, {
+          minimumThreeLowerCaseLetters: true
+        }),
+        // check whether the entered passwords contains 3 or more of the same characters in a sequence
+        // CustomValidators.patternValidator(/^([a-z])\1+$/, { //(/(?!.*([A-Za-z0-9])\1{2})/, {
+        //   threeOrMoreSameCharsInSequence: true
+        // }),
+        // check whether the entered password has a special character
+        CustomValidators.patternValidator(
+          /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/,
+          {
+            hasSpecialCharacters: true
+          }
+        ),
+      ])]],
+    },
+      { validators: [this.stringCheck] });
+  }
+
+  stringCheck(group: FormGroup) {
+    const password = group.get('NoviPassword').value;
+    for (var i = 0; i < password.length; i++)
+      if (password[i] === password[i + 1] && password[i + 1] === password[i + 2])
+        return { threeInSequence: true };
+
+    return null;
   }
 
   async onSubmit() {
@@ -75,7 +117,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
         error => {
           this.frameService.hideLoaderAuth();
           this.successMessage = null;
-          this.errorMessage = error?.error[0]?.Value ? error?.error[0]?.Value : 'Došlo je do greške prilikom promene lozinke.'
+          this.errorMessage = error?.error[0]?.value ? error.error[0].value : 'Došlo je do greške prilikom promene lozinke.'
           console.log(error);
         });
     }

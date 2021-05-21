@@ -3,6 +3,7 @@ using Img.ELicensing.Core;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TestCoreAPI.ApplicationConstants;
@@ -104,6 +105,24 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<List<WordDto>>> AddWordsUpload(List<WordDto> wordsDtos)
+        {
+            try
+            {
+                List<Word> words = _mapper.Map<List<Word>>(wordsDtos);
+                words = words.Select(c => { c.Id = Guid.NewGuid(); return c; }).ToList();
+                _context.Words.AddRange(words);
+                await _context.SaveChangesAsync();
+                wordsDtos = _mapper.Map<List<WordDto>>(words);
+
+                return ResponseWrapper<List<WordDto>>.Success(wordsDtos);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToAddWord);
+            }
+        }
+
         public async Task<ResponseWrapper<ConnectionDto>> AddConn(ConnectionDto connDto)
         {
             try
@@ -119,6 +138,24 @@ namespace TestCoreAPI.Services
             catch (Exception)
             {
                 return ResponseWrapper<ConnectionDto>.Error(AppConstants.FailedToAddConnGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<List<ConnectionDto>>> AddConnsUpload(List<ConnectionDto> connsDtos)
+        {
+            try
+            {
+                List<Connection> conns = _mapper.Map<List<Connection>>(connsDtos);
+                conns = conns.Select(c => { c.Id = Guid.NewGuid(); return c; }).ToList();
+                _context.Connections.AddRange(conns);
+                await _context.SaveChangesAsync();
+                connsDtos = _mapper.Map<List<ConnectionDto>>(conns);
+
+                return ResponseWrapper<List<ConnectionDto>>.Success(connsDtos);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<ConnectionDto>>.Error(AppConstants.FailedToAddConnGame);
             }
         }
 
@@ -157,6 +194,24 @@ namespace TestCoreAPI.Services
             catch (Exception)
             {
                 return ResponseWrapper<AssociationDto>.Error(AppConstants.FailedToAddAssocGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<List<AssociationDto>>> AddAssocsUpload(List<AssociationDto> assocsDtos)
+        {
+            try
+            {
+                List<Association> assocs = _mapper.Map<List<Association>>(assocsDtos);
+                assocs = assocs.Select(c => { c.Id = Guid.NewGuid(); return c; }).ToList();
+                _context.Associations.AddRange(assocs);
+                await _context.SaveChangesAsync();
+                assocsDtos = _mapper.Map<List<AssociationDto>>(assocs);
+
+                return ResponseWrapper<List<AssociationDto>>.Success(assocsDtos);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<AssociationDto>>.Error(AppConstants.FailedToAddAssocGame);
             }
         }
 

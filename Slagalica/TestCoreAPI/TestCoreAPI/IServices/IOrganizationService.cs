@@ -17,8 +17,11 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<List<UserDto>>> ActivateDeactivateUser(UserDto user);
         Task<ResponseWrapper<List<UserDto>>> GetUsers();
         Task<ResponseWrapper<WordDto>> AddWord(WordDto word);
+        Task<ResponseWrapper<List<WordDto>>> AddWordsUpload(List<WordDto> wordsDtos);
         Task<ResponseWrapper<ConnectionDto>> AddConn(ConnectionDto conn);
         Task<ResponseWrapper<AssociationDto>> AddAssoc(AssociationDto conn);
-
+        Task<ResponseWrapper<List<ConnectionDto>>> AddConnsUpload(List<ConnectionDto> wordsDtos);
+        Task<ResponseWrapper<List<AssociationDto>>> AddAssocsUpload(List<AssociationDto> wordsDtos);
+        
     }
 }
