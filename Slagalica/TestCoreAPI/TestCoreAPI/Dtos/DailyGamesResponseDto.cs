@@ -13,5 +13,7 @@ namespace TestCoreAPI.Dtos
         public AssociationDto Association { get; set; }
         public List<ConnectionDto> Connections { get; set; }
         public List<AssociationDto> Associations { get; set; }
+        public bool StillNoOnePlayed { get; set; }
+        public bool NoGamesSavedForDate { get; set; }
     }
 }

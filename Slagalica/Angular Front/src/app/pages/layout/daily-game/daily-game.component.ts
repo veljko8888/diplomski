@@ -24,6 +24,7 @@ export class DailyGameComponent implements OnInit {
   selectedConnection: any;
   associations: any[];
   selectedAssociation: any;
+  dailyGamesMainObject: any;
 
   async ngOnInit() {
     this.initForm();
@@ -102,6 +103,7 @@ export class DailyGameComponent implements OnInit {
     if (this.selectedAssociation && this.selectedConnection && this.dailyGameForm.value?.DailyGameDate) {
       this.frameService.showLoader();
       let dailyGame = {
+        Id: this.dailyGamesMainObject.id,
         DailyGameDate: this.formatDate(this.dailyGameForm.value.DailyGameDate),
         ConnectionId: this.selectedConnection.id,
         AssociationId: this.selectedAssociation.id
@@ -109,13 +111,14 @@ export class DailyGameComponent implements OnInit {
       await this.httpService.addDailyGame(dailyGame).subscribe(
         (res: any) => {
           //ON SUCCESS
+          this.dailyGamesMainObject = res;
           if (res.connection && res.association) {
             this.showDailyGame = true;
           }
           this.populateForm(res);
           this.selectedConnection = null;
           this.selectedAssociation = null;
-          this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali nove igre dana', 'success', 4000);
+          this.frameService.showToastPrime('Uspešno!', 'Uspešno ste dodali/izmenili nove igre dana', 'success', 4000);
           this.frameService.hideLoader();
         },
         error => {
@@ -128,6 +131,10 @@ export class DailyGameComponent implements OnInit {
     else {
       this.frameService.showToastPrime('Ups!', 'Niste odabrali obe igre dana', 'error', 4000);
     }
+  }
+
+  changeSelectedGames() {
+    this.showDailyGame = !this.showDailyGame;
   }
 
   populateForm(dailyGames: any) {
@@ -185,15 +192,16 @@ export class DailyGameComponent implements OnInit {
       await this.httpService.getDailyGamesForDate(dailyGameDate).subscribe(
         (res: any) => {
           //ON SUCCESS
+          this.dailyGamesMainObject = res;
           if (res.connection && res.association) {
             this.populateForm(res);
             this.showDailyGame = true;
           }
           else {
             this.showDailyGame = false;
-            this.connections = res.connections;
-            this.associations = res.associations;
           }
+          this.connections = res.connections;
+          this.associations = res.associations;
           this.frameService.hideLoader();
         },
         error => {

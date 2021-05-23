@@ -24,9 +24,15 @@
                                 <button type="submit" (click)="getData()" nbButton status="primary">Proveri
                                     Datum</button>
                             </div>
-                            <div *ngIf="!showDailyGame" style="padding-top: 26px !important; text-align: right;" class="col-sm-4">
-                                <button type="submit" (click)="saveSelectedGames()" nbButton status="primary">Sačuvaj Odabrane Igre</button>
+                            <div class="col-sm-4">
+                                <div *ngIf="!showDailyGame" style="padding-top: 26px !important; text-align: right;">
+                                    <button type="submit" (click)="saveSelectedGames()" nbButton status="primary">Sačuvaj Odabrane Igre</button>
+                                </div>
+                                <div *ngIf="dailyGamesMainObject?.stillNoOnePlayed && !dailyGamesMainObject?.noGamesSavedForDate" style="padding-top: 26px !important; text-align: right;">
+                                    <button type="submit" (click)="changeSelectedGames()" nbButton status="primary">{{showDailyGame ? 'Promeni Igre Dana' : 'Odustani'}}</button>
+                                </div>
                             </div>
+                            
                         </div>
                         <div *ngIf="showDailyGame; else ChooseDailyGame">
                             <div>

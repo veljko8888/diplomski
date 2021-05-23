@@ -85,10 +85,19 @@ namespace TestCoreAPI.Services
         {
             try
             {
-                DailyGame dg = _mapper.Map<DailyGame>(dailyGameDto);
-                dg.Id = Guid.NewGuid();
-                _context.DailyGames.Add(dg);
-                await _context.SaveChangesAsync();
+                if(dailyGameDto.Id != null && dailyGameDto.Id != Guid.Empty)
+                {
+                    var dg = _mapper.Map<DailyGame>(dailyGameDto);
+                    _context.DailyGames.Update(dg);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    DailyGame dg = _mapper.Map<DailyGame>(dailyGameDto);
+                    dg.Id = Guid.NewGuid();
+                    _context.DailyGames.Add(dg);
+                    await _context.SaveChangesAsync();
+                }
 
                 var date = dailyGameDto.DailyGameDate;
                 var dailyGamesObj = _context.DailyGames
@@ -104,6 +113,13 @@ namespace TestCoreAPI.Services
                 {
                     dailyGamesDto = _mapper.Map<DailyGamesResponseDto>(dailyGamesObj);
                 }
+
+                var dailyGamePlays = await _context.DailyGamePlays.Where(
+                    x => x.DailyGameDate.Day == date.Day &&
+                    x.DailyGameDate.Month == date.Month &&
+                    x.DailyGameDate.Year == date.Year).CountAsync();
+
+                dailyGamesDto.StillNoOnePlayed = dailyGamePlays == 0;
 
                 return ResponseWrapper<DailyGamesResponseDto>.Success(dailyGamesDto);
             }
@@ -127,22 +143,31 @@ namespace TestCoreAPI.Services
                     .Include(x => x.Association)
                     .Include(x => x.Connection.Pairs)
                     .FirstOrDefault(
-                    x => x.DailyGameDate.Day == date.Day && 
-                    x.DailyGameDate.Month == date.Month && 
+                    x => x.DailyGameDate.Day == date.Day &&
+                    x.DailyGameDate.Month == date.Month &&
                     x.DailyGameDate.Year == date.Year);
 
                 DailyGamesResponseDto dailyGamesDto = new DailyGamesResponseDto();
-                if(dailyGamesObj != null)
+                if (dailyGamesObj != null)
                 {
                     dailyGamesDto = _mapper.Map<DailyGamesResponseDto>(dailyGamesObj);
                 }
                 else
                 {
-                    List<Connection> connections = await _context.Connections.Include(x => x.Pairs).ToListAsync();
-                    List<Association> associations = await _context.Associations.ToListAsync();
-                    dailyGamesDto.Connections = _mapper.Map<List<ConnectionDto>>(connections);
-                    dailyGamesDto.Associations = _mapper.Map<List<AssociationDto>>(associations);
+                    dailyGamesDto.NoGamesSavedForDate = true;
                 }
+
+                List<Connection> connections = await _context.Connections.Include(x => x.Pairs).ToListAsync();
+                List<Association> associations = await _context.Associations.ToListAsync();
+                dailyGamesDto.Connections = _mapper.Map<List<ConnectionDto>>(connections);
+                dailyGamesDto.Associations = _mapper.Map<List<AssociationDto>>(associations);
+
+                var dailyGamePlays = await _context.DailyGamePlays.Where(
+                    x => x.DailyGameDate.Day == date.Day &&
+                    x.DailyGameDate.Month == date.Month &&
+                    x.DailyGameDate.Year == date.Year).CountAsync();
+
+                dailyGamesDto.StillNoOnePlayed = dailyGamePlays == 0;
 
                 return ResponseWrapper<DailyGamesResponseDto>.Success(dailyGamesDto);
             }
