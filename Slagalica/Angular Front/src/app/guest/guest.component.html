@@ -1,3 +1,75 @@
-<div class="bg-login">
-    GOST
-</div>
+<nb-layout windowMode [nbSpinner]="loading" nbSpinnerSize="giant" nbSpinnerStatus="primary">
+    <nb-layout-column class="bg-login">
+        <div class="d-flex main-content bg-style">
+            <div class="left-side">
+                <div class="content">
+                    <div class="bg-login">
+                        <div class="align">
+                            <img class="slagalica" [routerLink]="['/auth/login']"
+                                src="../../../assets/images/slagalica.png">
+                            <h1>Slagalica</h1>
+                        </div>
+                        <h3 class="align">
+                            Rang Lista 7 Dana
+                        </h3>
+                        <p-table *ngIf="rankings?.rank7Days" [value]="rankings.rank7Days" dataKey="id" [rows]="10">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Takmičar</th>
+                                    <th>Ukupno Poena</th>
+                                    <th>Prosek Uk.Br.Poena/Br.Igara</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-user let-rowIndex="rowIndex">
+                                <tr [pSelectableRow]="user">
+                                    <td>
+                                        {{rowIndex+1}}
+                                    </td>
+                                    <td>
+                                        {{user.userName}}
+                                    </td>
+                                    <td>
+                                        {{user.totalPoints}}
+                                    </td>
+                                    <td>
+                                        {{user.averagePointsPerGame}}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <h3 class="align">
+                            Rang Lista Tekući Mesec
+                        </h3>
+                        <p-table *ngIf="rankings?.rankCurrentMonth" [value]="rankings.rankCurrentMonth" dataKey="id" [rows]="10">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Takmičar</th>
+                                    <th>Ukupno Poena</th>
+                                    <th>Prosek Uk.Br.Poena/Br.Igara</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-user let-rowIndex="rowIndex">
+                                <tr [pSelectableRow]="user">
+                                    <td>
+                                        {{rowIndex+1}}
+                                    </td>
+                                    <td>
+                                        {{user.userName}}
+                                    </td>
+                                    <td>
+                                        {{user.totalPoints}}
+                                    </td>
+                                    <td>
+                                        {{user.averagePointsPerGame}}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nb-layout-column>
+</nb-layout>

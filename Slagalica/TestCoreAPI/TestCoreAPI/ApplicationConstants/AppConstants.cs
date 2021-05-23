@@ -37,6 +37,8 @@ namespace TestCoreAPI.ApplicationConstants
 
         public const string NoUsersInDB = "There are no users in the system";
 
+        public const string RanksError = "Greška prilikom dohvatanja rank liste";
+
         public const string NoSuchUser = "User does not exist";
 
         public const string ErrorSavingUser = "Error encountered while registering user";

@@ -32,6 +32,7 @@ namespace TestCoreAPI.Services
             _context = context;
             _mapper = mapper;
         }
+
         public async Task<ResponseWrapper<List<UserDto>>> GetAll()
         {
             List<User> resultDB = await _context.Users.ToListAsync();
@@ -43,6 +44,59 @@ namespace TestCoreAPI.Services
 
             return ResponseWrapper<List<UserDto>>.Error(AppConstants.NoUsersInDB);
         }
+
+        public async Task<ResponseWrapper<BestUsersDto>> GetBestUsers()
+        {
+            try
+            {
+                List<BestUserDto> rank7days = await _context.DailyGamePlays
+                     .Where(x => x.DailyGameDate >= DateTime.Today.AddDays(-7) && x.DailyGameDate <= DateTime.Today)
+                     .Select(x => new
+                     {
+                         x.User.KorisnickoIme,
+                         x.Points,
+                     })
+                    .GroupBy(p => p.KorisnickoIme, x => x.Points)
+                    .Select(g => new BestUserDto
+                    {
+                        UserName = g.Key,
+                        AveragePointsPerGame = g.Sum() / 7, //g.Average(),
+                        TotalPoints = g.Sum()
+                    }).OrderByDescending(x => x.AveragePointsPerGame).Take(10).ToListAsync();
+
+                var firstDayInCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                List<BestUserDto> rankCurrentMonth = await _context.DailyGamePlays
+                    .Where(x => x.DailyGameDate >= firstDayInCurrentMonth && x.DailyGameDate <= DateTime.Today)
+                    .Select(x => new
+                    {
+                        x.User.KorisnickoIme,
+                        x.Points,
+                    })
+                    .GroupBy(p => p.KorisnickoIme, x => x.Points)
+                    .Select(g => new BestUserDto
+                    {
+                        UserName = g.Key,
+                        AveragePointsPerGame = g.Sum() / DateTime.Now.Day, //g.Average(),
+                        TotalPoints = g.Sum()
+                    }).OrderByDescending(x => x.AveragePointsPerGame).Take(10).ToListAsync();
+
+                var bestUsersRankings = new BestUsersDto();
+                bestUsersRankings.Rank7Days = new List<BestUserDto>();
+                bestUsersRankings.RankCurrentMonth = new List<BestUserDto>();
+                if (rank7days != null && rankCurrentMonth != null)
+                {
+                    bestUsersRankings.Rank7Days = rank7days;
+                    bestUsersRankings.RankCurrentMonth = rankCurrentMonth;
+                }
+
+                return ResponseWrapper<BestUsersDto>.Success(bestUsersRankings);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<BestUsersDto>.Error(AppConstants.RanksError);
+            }
+        }
+
         public async Task<ResponseWrapper<UserDto>> GetById(Guid id)
         {
             var resultDB = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);

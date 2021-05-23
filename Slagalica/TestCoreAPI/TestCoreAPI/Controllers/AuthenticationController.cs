@@ -73,6 +73,14 @@ namespace TestCoreAPI.Controllers
             return result.IsSuccess ? (IActionResult)Ok(result) : BadRequest(result.Errors);
         }
 
+        [HttpGet]
+        [Route("best-users")]
+        public async Task<IActionResult> GetBestUsers()
+        {
+            var result = await _userService.GetBestUsers();
+            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+        }
+
         [HttpPost]
         [Route("Login")]
         //POST : /api/Registration/Login

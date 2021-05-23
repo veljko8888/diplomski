@@ -13,6 +13,6 @@ namespace TestCoreAPI.Models
         public DateTime DailyGameDate { get; set; }
         public int Points { get; set; }
         public Guid UserId { get; set; }
-        public virtual User Connection { get; set; }
+        public virtual User User { get; set; }
     }
 }

@@ -314,6 +314,10 @@ export class HttpHandlerService {
     return this.http.get(this.BaseURI + '/Organization/users-administration');
   }
 
+  getRankings(httpClient: HttpClient) {
+    return httpClient.get(this.BaseURI + '/Authentication/best-users');
+  }
+
   getDailyGamesForDate(dailyGameDate: any) {
     return this.http.post(this.BaseURI + '/Organization/daily-games', dailyGameDate);
   }

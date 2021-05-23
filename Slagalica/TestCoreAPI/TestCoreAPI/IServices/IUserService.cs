@@ -13,6 +13,7 @@ namespace TestCoreAPI.IServices
     public interface IUserService
     {
         Task<ResponseWrapper<List<UserDto>>> GetAll();
+        Task<ResponseWrapper<BestUsersDto>> GetBestUsers();
         Task<ResponseWrapper<UserDto>> GetById(Guid id);
         Task<ResponseWrapper<UserDto>> Insert(UserDto user, IFormCollection data, IHostingEnvironment environment);
         Task<ResponseWrapper<UserDto>> ChangePassword(ChangePassDto changePassDto);

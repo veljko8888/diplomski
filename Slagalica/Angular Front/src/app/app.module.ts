@@ -19,7 +19,10 @@ import {
   NbSidebarModule,
   NbToastrModule,
   NbWindowModule,
+  NbLayoutModule,
+  NbSpinnerModule,
 } from '@nebular/theme';
+import {TableModule} from 'primeng/table';
 import { CookieModule } from 'ngx-cookie';
 import { AuthInterceptor } from './authentication/auth.interceptor';
 import { UserService } from './@core/mock/users.service';
@@ -32,6 +35,9 @@ import { GuestComponent } from './guest/guest.component';
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
+    TableModule,
+    NbLayoutModule,
+    NbSpinnerModule,
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),
     NbDatepickerModule.forRoot(),
