@@ -81,6 +81,77 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<DailyGamesResponseDto>> AddDailyGame(DailyGameDto dailyGameDto)
+        {
+            try
+            {
+                DailyGame dg = _mapper.Map<DailyGame>(dailyGameDto);
+                dg.Id = Guid.NewGuid();
+                _context.DailyGames.Add(dg);
+                await _context.SaveChangesAsync();
+
+                var date = dailyGameDto.DailyGameDate;
+                var dailyGamesObj = _context.DailyGames
+                    .Include(x => x.Association)
+                    .Include(x => x.Connection.Pairs)
+                    .FirstOrDefault(
+                    x => x.DailyGameDate.Day == date.Day &&
+                    x.DailyGameDate.Month == date.Month &&
+                    x.DailyGameDate.Year == date.Year);
+
+                DailyGamesResponseDto dailyGamesDto = new DailyGamesResponseDto();
+                if (dailyGamesObj != null)
+                {
+                    dailyGamesDto = _mapper.Map<DailyGamesResponseDto>(dailyGamesObj);
+                }
+
+                return ResponseWrapper<DailyGamesResponseDto>.Success(dailyGamesDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<DailyGamesResponseDto>.Error(AppConstants.FailedToAddDailyGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<DailyGamesResponseDto>> GetDailyGames(GetDailyGamesDto dailyGamesDateDto)
+        {
+            try
+            {
+                if (dailyGamesDateDto.DailyGameDate == null || dailyGamesDateDto.DailyGameDate < DateTime.Today)
+                {
+                    return ResponseWrapper<DailyGamesResponseDto>.Error(AppConstants.InvalidDate);
+                }
+
+                var date = dailyGamesDateDto.DailyGameDate;
+                var dailyGamesObj = _context.DailyGames
+                    .Include(x => x.Association)
+                    .Include(x => x.Connection.Pairs)
+                    .FirstOrDefault(
+                    x => x.DailyGameDate.Day == date.Day && 
+                    x.DailyGameDate.Month == date.Month && 
+                    x.DailyGameDate.Year == date.Year);
+
+                DailyGamesResponseDto dailyGamesDto = new DailyGamesResponseDto();
+                if(dailyGamesObj != null)
+                {
+                    dailyGamesDto = _mapper.Map<DailyGamesResponseDto>(dailyGamesObj);
+                }
+                else
+                {
+                    List<Connection> connections = await _context.Connections.Include(x => x.Pairs).ToListAsync();
+                    List<Association> associations = await _context.Associations.ToListAsync();
+                    dailyGamesDto.Connections = _mapper.Map<List<ConnectionDto>>(connections);
+                    dailyGamesDto.Associations = _mapper.Map<List<AssociationDto>>(associations);
+                }
+
+                return ResponseWrapper<DailyGamesResponseDto>.Success(dailyGamesDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<DailyGamesResponseDto>.Error(AppConstants.FailedToRetrieveDailyGames);
+            }
+        }
+
         public async Task<ResponseWrapper<WordDto>> AddWord(WordDto wordDto)
         {
             try

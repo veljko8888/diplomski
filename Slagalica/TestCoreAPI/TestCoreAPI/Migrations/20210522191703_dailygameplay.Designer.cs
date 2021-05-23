@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestCoreAPI.Models;
 
 namespace TestCoreAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210522191703_dailygameplay")]
+    partial class dailygameplay
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,28 +131,6 @@ namespace TestCoreAPI.Migrations
                     b.HasIndex("ConnectionId");
 
                     b.ToTable("DailyGames");
-                });
-
-            modelBuilder.Entity("TestCoreAPI.Models.DailyGamePlay", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("DailyGameDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("DailyGamePlays");
                 });
 
             modelBuilder.Entity("TestCoreAPI.Models.Lexicon", b =>
@@ -281,15 +261,6 @@ namespace TestCoreAPI.Migrations
                     b.HasOne("TestCoreAPI.Models.Connection", "Connection")
                         .WithMany()
                         .HasForeignKey("ConnectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TestCoreAPI.Models.DailyGamePlay", b =>
-                {
-                    b.HasOne("TestCoreAPI.Models.User", "Connection")
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

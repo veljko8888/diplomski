@@ -16,12 +16,14 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<List<WordDto>>> Update(WordDto word);
         Task<ResponseWrapper<List<UserDto>>> ActivateDeactivateUser(UserDto user);
         Task<ResponseWrapper<List<UserDto>>> GetUsers();
+        Task<ResponseWrapper<DailyGamesResponseDto>> GetDailyGames(GetDailyGamesDto dailyGames);
+        Task<ResponseWrapper<DailyGamesResponseDto>> AddDailyGame(DailyGameDto dailyGame);
         Task<ResponseWrapper<WordDto>> AddWord(WordDto word);
         Task<ResponseWrapper<List<WordDto>>> AddWordsUpload(List<WordDto> wordsDtos);
         Task<ResponseWrapper<ConnectionDto>> AddConn(ConnectionDto conn);
         Task<ResponseWrapper<AssociationDto>> AddAssoc(AssociationDto conn);
-        Task<ResponseWrapper<List<ConnectionDto>>> AddConnsUpload(List<ConnectionDto> wordsDtos);
-        Task<ResponseWrapper<List<AssociationDto>>> AddAssocsUpload(List<AssociationDto> wordsDtos);
+        Task<ResponseWrapper<List<ConnectionDto>>> AddConnsUpload(List<ConnectionDto> connsDtos);
+        Task<ResponseWrapper<List<AssociationDto>>> AddAssocsUpload(List<AssociationDto> assocsDtos);
         
     }
 }

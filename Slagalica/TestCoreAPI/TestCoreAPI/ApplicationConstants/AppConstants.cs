@@ -15,11 +15,17 @@ namespace TestCoreAPI.ApplicationConstants
 
         public const string FailedToAddWord = "Greška prilikom dodavanja reči";
 
+        public const string FailedToAddDailyGame = "Greška prilikom dodavanja igara dana";
+
+        public const string FailedToRetrieveDailyGames = "Greška prilikom pretrage igre dana za odabrani datum";
+
         public const string FailedToAddConnGame = "Greška prilikom dodavanja igre spojnica";
 
         public const string FailedToAddAssocGame = "Greška prilikom dodavanja igre asocijacije";
 
         public const string FailedToAddWordExist = "Reč već postoji";
+
+        public const string InvalidDate = "Datum nije validan - odaberite datum u buducnosti.";
 
         public const string GetLexiconsFailed = "Failed to retrieve lexicons";
 

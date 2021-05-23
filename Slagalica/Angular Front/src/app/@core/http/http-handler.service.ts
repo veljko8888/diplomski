@@ -314,6 +314,14 @@ export class HttpHandlerService {
     return this.http.get(this.BaseURI + '/Organization/users-administration');
   }
 
+  getDailyGamesForDate(dailyGameDate: any) {
+    return this.http.post(this.BaseURI + '/Organization/daily-games', dailyGameDate);
+  }
+
+  addDailyGame(dailyGame: any) {
+    return this.http.post(this.BaseURI + '/Organization/add-daily-game', dailyGame);
+  }
+
   activateDeactivateUser(userRequest: any){
     return this.http.post(this.BaseURI + '/Organization/activate-deactivate', userRequest);
   }

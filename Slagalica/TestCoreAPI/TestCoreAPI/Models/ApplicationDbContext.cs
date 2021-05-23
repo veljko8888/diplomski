@@ -20,7 +20,8 @@ namespace TestCoreAPI.Models
         public DbSet<Word> Words { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<Pair> Pairs { get; set; }
-
         public DbSet<Association> Associations { get; set; }
+        public DbSet<DailyGame> DailyGames { get; set; }
+        public DbSet<DailyGamePlay> DailyGamePlays { get; set; }
     }
 }

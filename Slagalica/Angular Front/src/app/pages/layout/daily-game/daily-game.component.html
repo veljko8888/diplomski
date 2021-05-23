@@ -1,1 +1,497 @@
-<p>daily-game works!</p>
+<div *ngIf="true">
+    <div class="row">
+        <div style="margin: auto;" class="col-md-8">
+            <nb-card class="nb-card-auth">
+                <nb-card-header>Igra Dana</nb-card-header>
+                <nb-card-body>
+                    <form [formGroup]="dailyGameForm" class="form-horizontal">
+                        <div class="form-group row">
+
+                            <div class="col-sm-4">
+                                <label for="DailyGameDate" class="label col-sm-12 form-control-label">Odaberi
+                                    Dan</label>
+                                <div>
+                                    <input class="input-style" formControlName="DailyGameDate" nbInput fullWidth
+                                        placeholder="Datum Igre Dana" [nbDatepicker]="formpicker">
+                                    <nb-datepicker #formpicker></nb-datepicker>
+                                    <br>
+                                    <small
+                                        *ngIf="(dailyGameForm.get('DailyGameDate').touched || formSubmitAttempt) && dailyGameForm.get('DailyGameDate').errors"
+                                        class="text-danger">Molimo vas unesite datum za igru dana.</small>
+                                </div>
+                            </div>
+                            <div style="padding-top: 26px !important" class="col-sm-4">
+                                <button type="submit" (click)="getData()" nbButton status="primary">Proveri
+                                    Datum</button>
+                            </div>
+                            <div *ngIf="!showDailyGame" style="padding-top: 26px !important; text-align: right;" class="col-sm-4">
+                                <button type="submit" (click)="saveSelectedGames()" nbButton status="primary">Sačuvaj Odabrane Igre</button>
+                            </div>
+                        </div>
+                        <div *ngIf="showDailyGame; else ChooseDailyGame">
+                            <div>
+                                <h3>Spojnice</h3>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">Opis Igre
+                                                Spojnice</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="Description"
+                                                    name="Description" formControlName="Description"
+                                                    placeholder="Opis Spojnice">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="L1" class="label col-sm-3 form-control-label">L1</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L1" name="L1"
+                                                    formControlName="L1" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R1</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R1" name="R1"
+                                                    formControlName="R1" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L2</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L2" name="L2"
+                                                    formControlName="L2" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R2</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R2" name="R2"
+                                                    formControlName="R2" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L3</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L3" name="L3"
+                                                    formControlName="L3" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R3</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R3" name="R3"
+                                                    formControlName="R3" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L4</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L4" name="L4"
+                                                    formControlName="L4" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R4</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R4" name="R4"
+                                                    formControlName="R4" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L5</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L5" name="L5"
+                                                    formControlName="L5" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R5</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R5" name="R5"
+                                                    formControlName="R5" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L6</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L6" name="L6"
+                                                    formControlName="L6" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R6</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R6" name="R6"
+                                                    formControlName="R6" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L7</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L7" name="L7"
+                                                    formControlName="L7" placeholder="Opis Spojnice">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R7</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R7" name="R7"
+                                                    formControlName="R7" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L8</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L8" name="L8"
+                                                    formControlName="L8" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R8</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R8" name="R8"
+                                                    formControlName="R8" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L9</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L9" name="L9"
+                                                    formControlName="L9" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R9</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R9" name="R9"
+                                                    formControlName="R9" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">L10</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="L10" name="L10"
+                                                    formControlName="L10" placeholder="Leva Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="ime" class="label col-sm-3 form-control-label">R10</label>
+                                            <div>
+                                                <input type="text" nbInput fullWidth id="R10" name="R10"
+                                                    formControlName="R10" placeholder="Desna Spojnica">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div>
+                                <h3>
+                                    Asocijacije
+                                </h3>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">A1</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="A1" formControlName="A1">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">B1</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="B1" formControlName="B1">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">A2</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="A2" formControlName="A2">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">B2</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="B2" formControlName="B2">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">A3</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="A3" formControlName="A3">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">B3</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="B3" formControlName="B3">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">A4</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="A4" formControlName="A4">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">B4</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="B4" formControlName="B4">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">A Konačno</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="A" formControlName="A">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">B Konačno</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="B" formControlName="B">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">Konačno</label>
+                                    <div class="col-sm-10">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="Konačno" formControlName="Final">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">C1</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="C1" formControlName="C1">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">D1</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="D1" formControlName="D1">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">C2</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="C2" formControlName="C2">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">D2</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="D2" formControlName="D2">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">C3</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="C3" formControlName="C3">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">D3</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="D3" formControlName="D3">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">C4</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="C4" formControlName="C4">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">D4</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="D4" formControlName="D4">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label  label col-sm-2 col-form-label">C Konačno</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="C" formControlName="C">
+                                    </div>
+                                    <label class="control-label  label col-sm-2 col-form-label">D Konačno</label>
+                                    <div class="col-sm-4">
+                                        <input class="input-style" type="text" nbInput fullWidth
+                                            placeholder="D" formControlName="D">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #ChooseDailyGame>
+                            <div>
+                                <div class="card">
+                                    <h5>Odaberi Igru Spojnice</h5>
+                                    <!-- <p>In single mode, a row is selected on click event of a row. If the row is already selected then the row gets unselected.</p> -->
+                                    <p-table [value]="connections" selectionMode="single"
+                                        [(selection)]="selectedConnection" dataKey="id" [rows]="10"
+                                        [rowsPerPageOptions]="[10,25,50]" [paginator]="true"
+                                        currentPageReportTemplate="Prikaz {first} do {last} od {totalRecords} igara">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>Zadatak</th>
+                                                <th>Par 1</th>
+                                                <th>Par 2</th>
+                                                <th>Par 3</th>
+                                                <th>Par 4</th>
+                                                <th>Par 5</th>
+                                                <th>Par 6</th>
+                                                <th>Par 7</th>
+                                                <th>Par 8</th>
+                                                <th>Par 9</th>
+                                                <th>Par 10</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-connection>
+                                            <tr [pSelectableRow]="connection">
+                                                <td>
+                                                    {{connection.description}}
+                                                </td>
+                                                <td>{{connection.pairs[0].left + ' - ' + connection.pairs[0].right}}
+                                                </td>
+                                                <td>{{connection.pairs[1].left + ' - ' + connection.pairs[1].right}}
+                                                </td>
+                                                <td>{{connection.pairs[2].left + ' - ' + connection.pairs[2].right}}
+                                                </td>
+                                                <td>{{connection.pairs[3].left + ' - ' + connection.pairs[3].right}}
+                                                </td>
+                                                <td>{{connection.pairs[4].left + ' - ' + connection.pairs[4].right}}
+                                                </td>
+                                                <td>{{connection.pairs[5].left + ' - ' + connection.pairs[5].right}}
+                                                </td>
+                                                <td>{{connection.pairs[6].left + ' - ' + connection.pairs[6].right}}
+                                                </td>
+                                                <td>{{connection.pairs[7].left + ' - ' + connection.pairs[7].right}}
+                                                </td>
+                                                <td>{{connection.pairs[8].left + ' - ' + connection.pairs[8].right}}
+                                                </td>
+                                                <td>{{connection.pairs[9].left + ' - ' + connection.pairs[9].right}}
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                                <div class="card">
+                                    <h5>Odaberi Igru Asocijacije</h5>
+                                    <!-- <p>In single mode, a row is selected on click event of a row. If the row is already selected then the row gets unselected.</p> -->
+                                    <p-table [value]="associations" selectionMode="single"
+                                        [(selection)]="selectedAssociation" dataKey="id" [rows]="10"
+                                        [rowsPerPageOptions]="[10,25,50]" [paginator]="true"
+                                        currentPageReportTemplate="Prikaz {first} do {last} od {totalRecords} igara">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>A pojmovi</th>
+                                                <th>A rešenje</th>
+                                                <th>B pojmovi</th>
+                                                <th>B rešenje</th>
+                                                <th>C pojmovi</th>
+                                                <th>C rešenje</th>
+                                                <th>D pojmovi</th>
+                                                <th>D rešenje</th>
+                                                <th>Konačno rešenje</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-association>
+                                            <tr [pSelectableRow]="association">
+                                                <td>
+                                                    {{association.a1 + ', ' + association.a2 + ', ' + association.a3 + ', ' + association.a4}}
+                                                </td>
+                                                <td>{{association.a}}
+                                                </td>
+                                                <td>{{association.b1 + ', ' + association.b2 + ', ' + association.b3 + ', ' + association.b4}}
+                                                </td>
+                                                <td>{{association.b}}
+                                                </td>
+                                                <td>{{association.c1 + ', ' + association.c2 + ', ' + association.c3 + ', ' + association.c4}}
+                                                </td>
+                                                <td>{{association.c}}
+                                                </td>
+                                                <td>{{association.d1 + ', ' + association.d2 + ', ' + association.d3 + ', ' + association.d4}}
+                                                </td>
+                                                <td>{{association.d}}
+                                                </td>
+                                                <td>{{association.final}}
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </form>
+                </nb-card-body>
+            </nb-card>
+        </div>
+    </div>
+</div>

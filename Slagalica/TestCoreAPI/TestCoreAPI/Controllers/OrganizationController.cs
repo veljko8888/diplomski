@@ -79,6 +79,26 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("daily-games")]
+        public async Task<IActionResult> GetDailyGamesForDate(GetDailyGamesDto dailyGameDate)
+        {
+            var result = new ResponseWrapper<DailyGamesResponseDto>();
+            result = await _organizationService.GetDailyGames(dailyGameDate);
+
+            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+        }
+
+        [HttpPost]
+        [Route("add-daily-game")]
+        public async Task<IActionResult> AddDailyGame(DailyGameDto dailyGameDto)
+        {
+            var result = new ResponseWrapper<DailyGamesResponseDto>();
+            result = await _organizationService.AddDailyGame(dailyGameDto);
+
+            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+        }
+
+        [HttpPost]
         [Route("add-word")]
         public async Task<IActionResult> AddWord([FromBody]WordDto wordDto)
         {
