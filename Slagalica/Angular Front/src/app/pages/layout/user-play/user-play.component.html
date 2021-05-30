@@ -1,0 +1,259 @@
+<div style="margin-left: 20px;">
+    <div style="padding-bottom: 20px;">
+        <h3>Kreiraj Partiju</h3>
+        <div class="row">
+            <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="createGame()" nbButton status="primary">Kreiraj Igru</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding-bottom: 20px;">
+        <h3>Prijava Na Igru</h3>
+        <div class="row">
+            <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="connectToGame()" nbButton status="primary">Biraj Igru</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding-bottom: 20px;">
+        <h3>Igra Dana</h3>
+        <div class="row">
+            <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="playDailyGame()" nbButton status="primary">Igraj Igru Dana</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding-bottom: 20px;">
+        <h3>Statistika/Rang</h3>
+        <div class="row">
+            <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
+                <button type="submit" (click)="showStats()" nbButton status="primary">Statistika</button>
+            </div>
+        </div>
+    </div>
+
+    <p-dialog [style]="{width: '50vw'}" modal="true" (onHide)="closeDailyGameDialog()"
+        [(visible)]="showDailyGameDialog">
+        <p-header>
+            Igra Dana
+        </p-header>
+        <div>
+            <div *ngIf="infoMsg" class="form-group row">
+                <p style="font-size: 20px; margin: auto; color: rgb(84, 187, 235); font-weight: bold;">{{infoMsg}}</p>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: blue; font-weight: bold;">Broj Osvojenih Poena: {{points}}</p>
+            </div>
+        </div>
+        <div *ngIf="slagalicaActive">
+            <div class="form-group row">
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeft}} sekundi</p>
+            </div>
+            <div class="form-group row">
+                <button style="margin: auto;" [disabled]="wordGameTimeStarted" (click)="pickChars()" nbButton
+                    status="primary">Odaberi Slova</button>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(0)"
+                        [ngStyle]="{'background': charsArray[0].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[0].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(1)"
+                        [ngStyle]="{'background': charsArray[1].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[1].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(2)"
+                        [ngStyle]="{'background': charsArray[2].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[2].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(3)"
+                        [ngStyle]="{'background': charsArray[3].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[3].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(4)"
+                        [ngStyle]="{'background': charsArray[4].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[4].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(5)"
+                        [ngStyle]="{'background': charsArray[5].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[5].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(6)"
+                        [ngStyle]="{'background': charsArray[6].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[6].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(7)"
+                        [ngStyle]="{'background': charsArray[7].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[7].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(8)"
+                        [ngStyle]="{'background': charsArray[8].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[8].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(9)"
+                        [ngStyle]="{'background': charsArray[9].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[9].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(10)"
+                        [ngStyle]="{'background': charsArray[10].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[10].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-1">
+                    <input readonly="readonly" (click)="chooseChar(11)"
+                        [ngStyle]="{'background': charsArray[11].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="charsArray[11].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <input readonly="readonly" [(ngModel)]="wordSolution" class="input-style" type="text" nbInput
+                        fullWidth>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div style="margin: auto; display: block;">
+                    <div style="float: left; padding-right: 5px;">
+                        <button (click)="deleteLastChar()" nbButton status="primary">Obriši Slovo</button>
+                    </div>
+                    <div style="float: left;">
+                        <button (click)="deleteAll()" nbButton status="primary">Obriši Sve</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <button [disabled]="!wordGameTimeStarted" style="margin: auto;" (click)="saveWord()" nbButton status="primary">Potvrdi</button>
+            </div>
+        </div>
+        <div *ngIf="mojBrojActive">
+            <div class="form-group row">
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeft}} sekundi</p>
+            </div>
+            <div class="form-group row">
+                <button style="margin: auto;" [disabled]="numGameTimeStarted" (click)="pickNums()" nbButton
+                    status="primary">Odaberi Brojeve</button>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(0)"
+                        [ngStyle]="{'background': numsArray[0].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="numsArray[0].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(1)"
+                        [ngStyle]="{'background': numsArray[1].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="numsArray[1].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(2)"
+                        [ngStyle]="{'background': numsArray[2].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="numsArray[2].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(3)"
+                        [ngStyle]="{'background': numsArray[3].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="numsArray[3].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(4)"
+                        [ngStyle]="{'background': numsArray[4].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="numsArray[4].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(5)"
+                        [ngStyle]="{'background': numsArray[5].clicked ? '#33daff' : 'white' }"
+                        [(ngModel)]="numsArray[5].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(6)"
+                        [(ngModel)]="numsArray[6].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(7)"
+                        [(ngModel)]="numsArray[7].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(8)"
+                        [(ngModel)]="numsArray[8].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(9)"
+                        [(ngModel)]="numsArray[9].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(10)"
+                        [(ngModel)]="numsArray[10].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+                <div class="col-sm-2">
+                    <input readonly="readonly" (click)="chooseNum(11)"
+                        [(ngModel)]="numsArray[11].value" class="input-style" type="text" nbInput fullWidth>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div style="margin: auto;" class="col-sm-2">
+                    <label>Traženi Broj</label>
+                    <input readonly="readonly" [(ngModel)]="finalNum" class="input-style" type="text" nbInput fullWidth>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <label>Izraz</label>
+                    <input readonly="readonly" [(ngModel)]="expression" class="input-style" type="text" nbInput fullWidth>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div style="margin: auto; display: block;">
+                    <div style="float: left; padding-right: 5px;">
+                        <button (click)="deleteLastNum()" nbButton status="primary">Obriši Poslednje</button>
+                    </div>
+                    <div style="float: left;">
+                        <button (click)="deleteAllNum()" nbButton status="primary">Obriši Sve</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <button [disabled]="!numGameTimeStarted" style="margin: auto;" (click)="checkValidExpressionAndCalcPoints()" nbButton status="primary">Potvrdi</button>
+            </div>
+        </div>
+        <div *ngIf="skockoActive">
+            <div class="form-group row">
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeft}} sekundi</p>
+            </div>
+            <!-- <div class="form-group row">
+                <button style="margin: auto;" [disabled]="numGameTimeStarted" (click)="pickNums()" nbButton
+                    status="primary">Odaberi Brojeve</button>
+            </div>
+            <div class="form-group row">
+                <div style="margin: auto; display: block;">
+                    <div style="float: left; padding-right: 5px;">
+                        <button (click)="deleteLastNum()" nbButton status="primary">Obriši Poslednje</button>
+                    </div>
+                    <div style="float: left;">
+                        <button (click)="deleteAllNum()" nbButton status="primary">Obriši Sve</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <button [disabled]="!numGameTimeStarted" style="margin: auto;" (click)="saveWord()" nbButton status="primary">Potvrdi</button>
+            </div> -->
+        </div>
+        <p-footer>
+        </p-footer>
+    </p-dialog>
+
+</div>

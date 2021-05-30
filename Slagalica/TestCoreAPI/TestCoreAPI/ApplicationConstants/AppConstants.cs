@@ -15,6 +15,10 @@ namespace TestCoreAPI.ApplicationConstants
 
         public const string FailedToAddWord = "Greška prilikom dodavanja reči";
 
+        public const string FailedValidWordCheck = "Greška prilikom provere reči";
+
+        public const string WordDoesNotExist = "Reč ne postoji";
+
         public const string FailedToAddDailyGame = "Greška prilikom dodavanja igara dana";
 
         public const string FailedToRetrieveDailyGames = "Greška prilikom pretrage igre dana za odabrani datum";

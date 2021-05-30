@@ -47,6 +47,7 @@ import { UserDetailsComponent } from './user-details/user-details.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DailyGameComponent } from './daily-game/daily-game.component';
 import { SupervisorComponent } from './supervisor/supervisor.component';
+import { UserPlayComponent } from './user-play/user-play.component';
 
 @NgModule({
   imports: [
@@ -94,6 +95,7 @@ import { SupervisorComponent } from './supervisor/supervisor.component';
     UserDetailsComponent,
     DailyGameComponent,
     SupervisorComponent,
+    UserPlayComponent,
   ],
   providers: [
     ConfirmationService

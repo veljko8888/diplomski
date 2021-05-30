@@ -159,16 +159,14 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
-        [Route("upload-image")]
-        public async Task<IActionResult> UploadImageProfile(IFormCollection data, IFormFile imageFile)
+        [Route("word-valid")]
+        public async Task<IActionResult> CheckValidWord([FromBody]WordDto word)
         {
-            var x = data["name"];
-            var result = new ResponseWrapper<List<AssociationDto>>();
-            //result = await _organizationService.AddAssocsUpload(assocsDtos);
+            var result = new ResponseWrapper<WordDto>();
+            result = await _organizationService.CheckWordValid(word);
 
-            return result.IsSuccess ? (IActionResult)Ok(true) : BadRequest(true);
+            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
         }
-
         
     }
 }

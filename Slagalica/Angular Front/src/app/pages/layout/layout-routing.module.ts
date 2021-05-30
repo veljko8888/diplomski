@@ -10,6 +10,7 @@ import { UserDetailsComponent } from './user-details/user-details.component';
 import { DailyGameComponent } from './daily-game/daily-game.component';
 import { AuthGuard } from 'app/authentication/auth.guard';
 import { SupervisorComponent } from './supervisor/supervisor.component';
+import { UserPlayComponent } from './user-play/user-play.component';
 
 const routes: Routes = [{
   path: '',
@@ -57,6 +58,14 @@ const routes: Routes = [{
       component: SupervisorComponent,
       data:{
         role: "Supervizor"
+      }
+    },
+    {
+      canActivate: [AuthGuard],
+      path: 'user-play',
+      component: UserPlayComponent,
+      data:{
+        role: "Ucesnik"
       }
     },
     

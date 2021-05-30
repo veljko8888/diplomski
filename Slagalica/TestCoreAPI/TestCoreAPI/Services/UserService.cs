@@ -178,27 +178,29 @@ namespace TestCoreAPI.Services
                 _context.Users.Add(userDB);
                 await _context.SaveChangesAsync();
                 user = _mapper.Map<UserDto>(userDB);
-                await _context.SaveChangesAsync();
-                var delimitedPath = environment.ContentRootPath.Split(new string[] { @"\" }, StringSplitOptions.None).ToList();
-                delimitedPath.RemoveAt(delimitedPath.Count - 1);
-                delimitedPath.RemoveAt(delimitedPath.Count - 1);
-                delimitedPath.Add("Angular Front");
-                delimitedPath.Add("src");
-                delimitedPath.Add("assets");
-                delimitedPath.Add("images");
-                IFormFile postedFileSave = data.Files[0];
-                var imgExtension = postedFileSave.FileName.Substring(postedFileSave.FileName.LastIndexOf('.') + 1);
-                var newPhotoName = "assets/images/" + userDB.Id.ToString() + "." + imgExtension;
-                userDB.ProfilnaSlika = newPhotoName;
-                _context.Users.Update(userDB);
-                await _context.SaveChangesAsync();
-
-                var path = string.Join(@"\", delimitedPath);
-                using (FileStream stream = new FileStream(Path.Combine(path, userDB.Id.ToString() + "." + imgExtension), FileMode.Create))
+                if(data.Files != null && data.Files.Count > 0 && data.Files[0] != null)
                 {
-                    postedFileSave.CopyTo(stream);
-                }
+                    var delimitedPath = environment.ContentRootPath.Split(new string[] { @"\" }, StringSplitOptions.None).ToList();
+                    delimitedPath.RemoveAt(delimitedPath.Count - 1);
+                    delimitedPath.RemoveAt(delimitedPath.Count - 1);
+                    delimitedPath.Add("Angular Front");
+                    delimitedPath.Add("src");
+                    delimitedPath.Add("assets");
+                    delimitedPath.Add("images");
+                    IFormFile postedFileSave = data.Files[0];
+                    var imgExtension = postedFileSave.FileName.Substring(postedFileSave.FileName.LastIndexOf('.') + 1);
+                    var newPhotoName = "assets/images/" + userDB.Id.ToString() + "." + imgExtension;
+                    userDB.ProfilnaSlika = newPhotoName;
+                    _context.Users.Update(userDB);
+                    await _context.SaveChangesAsync();
 
+                    var path = string.Join(@"\", delimitedPath);
+                    using (FileStream stream = new FileStream(Path.Combine(path, userDB.Id.ToString() + "." + imgExtension), FileMode.Create))
+                    {
+                        postedFileSave.CopyTo(stream);
+                    }
+                }
+                
                 var userId = userDB.Id.ToString();
                 return ResponseWrapper<UserDto>.Success(user);
             }

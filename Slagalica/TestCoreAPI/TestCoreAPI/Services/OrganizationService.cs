@@ -177,6 +177,24 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<WordDto>> CheckWordValid(WordDto wordDto)
+        {
+            try
+            {
+                var alreadyExist = _context.Words.Any(x => x.Rec.Equals(wordDto.Rec));
+                if (alreadyExist)
+                {
+                    return ResponseWrapper<WordDto>.Success(wordDto);
+                }
+
+                return ResponseWrapper<WordDto>.Error(AppConstants.WordDoesNotExist);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<WordDto>.Error(AppConstants.FailedValidWordCheck);
+            }
+        }
+
         public async Task<ResponseWrapper<WordDto>> AddWord(WordDto wordDto)
         {
             try
@@ -188,6 +206,7 @@ namespace TestCoreAPI.Services
                 }
 
                 Word word = _mapper.Map<Word>(wordDto);
+                word.Rec = word.Rec.ToUpper();
                 word.Id = Guid.NewGuid();
                 _context.Words.Add(word);
                 await _context.SaveChangesAsync();
@@ -206,7 +225,11 @@ namespace TestCoreAPI.Services
             try
             {
                 List<Word> words = _mapper.Map<List<Word>>(wordsDtos);
-                words = words.Select(c => { c.Id = Guid.NewGuid(); return c; }).ToList();
+                words = words.Select(c => { 
+                    c.Id = Guid.NewGuid();
+                    c.Rec = c.Rec.ToUpper();
+                    return c; 
+                }).ToList();
                 _context.Words.AddRange(words);
                 await _context.SaveChangesAsync();
                 wordsDtos = _mapper.Map<List<WordDto>>(words);

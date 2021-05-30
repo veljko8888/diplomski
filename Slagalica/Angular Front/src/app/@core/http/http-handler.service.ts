@@ -350,6 +350,10 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/add-assoc-game', assocRequest);
   }
 
+  checkValidWord(wordRequest: any) {
+    return this.http.post(this.BaseURI + '/Organization/word-valid', wordRequest);
+  }
+
   addAssocsUpload(assocsRequest: any) {
     return this.http.post(this.BaseURI + '/Organization/add-assocs-games', assocsRequest);
   }

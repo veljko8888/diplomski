@@ -24,6 +24,7 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<AssociationDto>> AddAssoc(AssociationDto conn);
         Task<ResponseWrapper<List<ConnectionDto>>> AddConnsUpload(List<ConnectionDto> connsDtos);
         Task<ResponseWrapper<List<AssociationDto>>> AddAssocsUpload(List<AssociationDto> assocsDtos);
-        
+        Task<ResponseWrapper<WordDto>> CheckWordValid(WordDto word);
+
     }
 }

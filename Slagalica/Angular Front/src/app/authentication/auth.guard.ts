@@ -53,7 +53,6 @@ export class AuthGuard implements CanActivate {
       resolve(true);
     }
     else if (currentUser.tipKorisnika == TipKorisnika.Supervizor && routeSnapshop.data.role == "Supervizor") {
-      //this.router.navigate(['/pages/layout/supervisor']);
       resolve(true);
     }
     else if (currentUser.tipKorisnika == TipKorisnika.Ucesnik && routeSnapshop.data.role == "Ucesnik") {

@@ -47,7 +47,7 @@ export class DashboardHandlerComponent implements OnInit {
       this.router.navigate(['/pages/layout/supervisor']);
     }
     else if (currentUser.tipKorisnika == TipKorisnika.Ucesnik) {
-      //this.router.navigate(['/pages/layout/supervisor']);
+      this.router.navigate(['/pages/layout/user-play']);
     }
     else {
       this.router.navigate(['/auth/no-access']);
