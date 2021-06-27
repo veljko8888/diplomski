@@ -12,7 +12,7 @@
         <h3>Prijava Na Igru</h3>
         <div class="row">
             <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
-                <button type="submit" (click)="connectToGame()" nbButton status="primary">Biraj Igru</button>
+                <button type="submit" (click)="openMultiplayerGamesDialog()" nbButton status="primary">Biraj Igru</button>
             </div>
         </div>
     </div>
@@ -842,7 +842,7 @@
             <div class="form-group row">
                 <div *ngFor="let game of games" class="col-sm-4">
                     <nb-card class="nb-card-auth">
-                        <nb-card-header>{{ game }}
+                        <nb-card-header>Igrač: <b>{{ game.player1.korisnickoIme }}</b>
                         </nb-card-header>
                         <nb-card-body>
 

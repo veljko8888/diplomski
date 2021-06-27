@@ -58,6 +58,14 @@ namespace TestCoreAPI
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IOrganizationService, OrganizationService>();
 
+
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder => {
+                builder
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .WithOrigins("http://localhost:4300");
+            }));
             services.AddSignalR();
 
             //EMAIL
@@ -100,10 +108,7 @@ namespace TestCoreAPI
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseCors(builder =>
-                builder.WithOrigins("http://localhost:4300")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+            app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
 

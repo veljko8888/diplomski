@@ -101,20 +101,31 @@ export class UserPlayComponent implements OnInit {
   games = [];
 
   ngOnInit(): void {
-    const connection = new signalR.HubConnectionBuilder()  
-      .configureLogging(signalR.LogLevel.Information)  
-      .withUrl(this.httpService.BaseURICut + 'notify')  
-      .build();  
-  
-    connection.start().then(function () {  
-      console.log('SignalR Connected!');  
-    }).catch(function (err) {  
-      return console.error(err.toString());  
-    });  
-  
-    connection.on("BroadcastMessage", () => {  
-      this.httpService.getMultiplayerGames();  
-    });  
+    const connection = new signalR.HubConnectionBuilder()
+      .configureLogging(signalR.LogLevel.Information)
+      .withUrl(this.httpService.BaseURICut + 'notify')
+      .build();
+
+    // connection.start().then(function () {  
+    //   console.log('SignalR Connected!');  
+    // }).catch(function (err) {  
+    //   return console.error(err.toString());  
+    // });  
+
+    Object.defineProperty(WebSocket, 'OPEN', { value: 1, });
+    connection
+      .start()
+      .then(() => {
+        console.log('Connection started!');
+
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    connection.on("BroadcastMessage", () => {
+      this.getGames();
+    });
   }
 
   async createGame() {
@@ -167,9 +178,13 @@ export class UserPlayComponent implements OnInit {
     this.showCreateGameDialog = true;
   }
 
-  async openMultiplayerGamesDialog(){
+  async openMultiplayerGamesDialog() {
     this.showMultiplayerGamesDialog = true;
     this.frameService.showLoader();
+    this.getGames();
+  }
+
+  async getGames(){
     await this.httpService.getMultiplayerGames().subscribe(
       (res: any) => {
         this.games = res;
@@ -181,7 +196,7 @@ export class UserPlayComponent implements OnInit {
       });
   }
 
-  closeMultiplayerGamesDialog(){
+  closeMultiplayerGamesDialog() {
     this.showMultiplayerGamesDialog = false;
   }
 

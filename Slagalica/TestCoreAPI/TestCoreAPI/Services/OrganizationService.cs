@@ -155,7 +155,7 @@ namespace TestCoreAPI.Services
         {
             try
             {
-                var games = _context.MultiplayerGames.Where(x => x.GameStatus == 0).ToListAsync();
+                var games = await _context.MultiplayerGames.Include(x => x.Player1).Include(x => x.Player2).Include(x => x.Winner).Where(x => x.GameStatus == 0).ToListAsync();
                 var gamesDto = _mapper.Map<List<MultiplayerGameDto>>(games);
 
                 return ResponseWrapper<List<MultiplayerGameDto>>.Success(gamesDto);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TestCoreAPI.Models;
 
 namespace TestCoreAPI.Dtos
 {
@@ -15,5 +16,8 @@ namespace TestCoreAPI.Dtos
         public Guid? Player2Id { get; set; }
         public Guid? WinnerId { get; set; }
         public int GameStatus { get; set; }
+        public UserDto Player1 { get; set; }
+        public UserDto Player2 { get; set; }
+        public UserDto Winner { get; set; }
     }
 }

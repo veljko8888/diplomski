@@ -22,7 +22,6 @@ import {
 import { ThemeModule } from '../../@theme/theme.module';
 import { LayoutRoutingModule } from './layout-routing.module';
 import { LayoutComponent } from './layout.component';
-import { ProjectInfo } from './projectinfo/projectinfo.component';
 import { OnlyNumberDirective } from 'app/@core/utils/only-number.directive';
 
 import {TabViewModule} from 'primeng/tabview';
@@ -39,10 +38,6 @@ import {DynamicDialogModule} from 'primeng/dynamicdialog';
 import {FileUploadModule} from 'primeng/fileupload';
 import {HttpClientModule} from '@angular/common/http';
 
-
-import { SearchProjectsComponent } from './search-projects/search-projects.component';
-import { MyWorkOrdersComponent } from './my-work-orders/my-work-orders.component';
-import { WorkOrderDetailsComponent } from './my-work-orders/work-order-details/work-order-details.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DailyGameComponent } from './daily-game/daily-game.component';
@@ -87,11 +82,7 @@ import { UserPlayComponent } from './user-play/user-play.component';
   ],
   declarations: [
     LayoutComponent,
-    ProjectInfo,
     OnlyNumberDirective,
-    SearchProjectsComponent,
-    MyWorkOrdersComponent,
-    WorkOrderDetailsComponent,
     UserDetailsComponent,
     DailyGameComponent,
     SupervisorComponent,
