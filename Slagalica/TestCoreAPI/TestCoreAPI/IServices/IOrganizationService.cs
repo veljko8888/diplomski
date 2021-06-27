@@ -17,6 +17,10 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<List<UserDto>>> ActivateDeactivateUser(UserDto user);
         Task<ResponseWrapper<List<UserDto>>> GetUsers();
         Task<ResponseWrapper<DailyGamesResponseDto>> GetDailyGames(GetDailyGamesDto dailyGames);
+        Task<ResponseWrapper<DailyGameContentDto>> GetDailyGamePlay(DateTime dailyGameDate);
+        Task<ResponseWrapper<DailyGamePlayDto>> SaveDailyGamePlay(DailyGamePlayDto dailyPlay);
+        Task<ResponseWrapper<List<MultiplayerGameDto>>> GetMultiplayerGames();
+        Task<ResponseWrapper<MultiplayerGameDto>> CreateMultiplayerGame(MultiplayerGameDto multigame);
         Task<ResponseWrapper<DailyGamesResponseDto>> AddDailyGame(DailyGameDto dailyGame);
         Task<ResponseWrapper<WordDto>> AddWord(WordDto word);
         Task<ResponseWrapper<List<WordDto>>> AddWordsUpload(List<WordDto> wordsDtos);

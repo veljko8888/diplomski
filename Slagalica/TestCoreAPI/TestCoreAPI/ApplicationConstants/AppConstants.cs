@@ -65,6 +65,8 @@ namespace TestCoreAPI.ApplicationConstants
 
         public const string WrongOldPassword = "Stara lozinka je pogrešna!";
 
+        public const string NoDailyGame = "Dnevna Igra još nije definisana!";
+
         public const string ErrorChangingPass = "Došlo je do greške prilikom promene lozinke. Pokušajte ponovo.";
 
         public const string ConfirmationEmailFailedToSend = "Failed to send user registration confirmation email.";

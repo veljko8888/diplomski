@@ -23,5 +23,6 @@ namespace TestCoreAPI.Models
         public DbSet<Association> Associations { get; set; }
         public DbSet<DailyGame> DailyGames { get; set; }
         public DbSet<DailyGamePlay> DailyGamePlays { get; set; }
+        public DbSet<MultiplayerGame> MultiplayerGames { get; set; }
     }
 }

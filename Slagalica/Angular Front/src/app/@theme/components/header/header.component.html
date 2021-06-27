@@ -150,24 +150,6 @@
 
 <div class="header-container">
   <nb-actions size="small">
-
-    <nb-action class="control-item">
-      <!-- <nb-search ></nb-search> -->
-      <!-- <span class="p-input-icon-left">
-        <i class="pi pi-search"></i> -->
-      <p-autoComplete [(ngModel)]="searchText" [suggestions]="projectsResults" (completeMethod)="searchProducts($event)"
-        (onSelect)="selectProject($event)" placeholder="Global Search" field="DispName">
-        <ng-template let-project pTemplate="item">
-          <!-- <img src="assets/showcase/images/demo/car/{{brand}}.png"
-              style="width:32px;display:inline-block;margin:5px 0 2px 5px" /> -->
-          <div><b>{{project.ProjNo}}</b> {{ project.DispName }}</div>
-          <div style="font-size: 12px;">{{project.Jurisdiction}} - {{ project.ProjectType }}</div>
-        </ng-template>
-      </p-autoComplete>
-      <!-- </span> -->
-    </nb-action>
-    <nb-action class="control-item" icon="email-outline"></nb-action>
-    <nb-action class="control-item" icon="bell-outline"></nb-action>
     <nb-action class="user-action" *nbIsGranted="['view', 'user']">
       <nb-user [nbContextMenu]="userMenu" [onlyPicture]="userPictureOnly" [name]="user?.name" [picture]="user?.profilnaSlika">
       </nb-user>

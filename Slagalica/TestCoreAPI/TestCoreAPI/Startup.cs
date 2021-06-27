@@ -21,6 +21,7 @@ using TestCoreAPI.AutoMapper;
 using TestCoreAPI.IServices;
 using TestCoreAPI.Models;
 using TestCoreAPI.Services;
+using TestCoreAPI.SignalRHub;
 
 namespace TestCoreAPI
 {
@@ -56,6 +57,8 @@ namespace TestCoreAPI
             services.AddSingleton(mapper);
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IOrganizationService, OrganizationService>();
+
+            services.AddSignalR();
 
             //EMAIL
             services.AddTransient<IMailService, SendGridMailService>();
@@ -107,6 +110,11 @@ namespace TestCoreAPI
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<BroadcastHub>("/notify");
+            });
 
             app.UseEndpoints(endpoints =>
             {

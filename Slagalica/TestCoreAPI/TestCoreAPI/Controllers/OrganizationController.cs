@@ -23,40 +23,37 @@ namespace TestCoreAPI.Controllers
             _organizationService = organizationService;
         }
 
+
+        [HttpPost]
+        [Route("get-daily-game")]
+        public async Task<IActionResult> GetDailyGame(GetDailyGamesDto dailyGameDate)
+        {
+            var users = await _organizationService.GetDailyGamePlay(dailyGameDate.DailyGameDate);
+            return Ok(users.Data);
+        }
+
         [HttpGet]
-        [Route("LexiconData")]
-        //GET : /api/LexiconData
-        public async Task<IActionResult> GetLexiconData()
+        [Route("multiplayer-games")]
+        public async Task<IActionResult> GetMultiplayerGames()
         {
-            var lexicons = await _organizationService.GetLexicons();
-            return Ok(lexicons.Data);
+            var users = await _organizationService.GetMultiplayerGames();
+            return Ok(users.Data);
         }
 
         [HttpPost]
-        [Route("RemoveLexicon")]
-        //GET : /api/RemoveLexicon
-        public async Task<IActionResult> RemoveLexicon([FromBody]WordDto lexiconDto)
+        [Route("create-multiplayer-game")]
+        public async Task<IActionResult> CreateMultiplayerGame(MultiplayerGameDto multiGame)
         {
-            var result = await _organizationService.Delete(lexiconDto.Id.Value);
-            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+            var users = await _organizationService.CreateMultiplayerGame(multiGame);
+            return Ok(users.Data);
         }
 
         [HttpPost]
-        [Route("SaveLexicon")]
-        //GET : /api/SaveLexicon
-        public async Task<IActionResult> InsertLexicon([FromBody]WordDto lexiconDto)
+        [Route("save-daily-play")]
+        public async Task<IActionResult> SaveDailyPlay(DailyGamePlayDto gamePlay)
         {
-            var result = new ResponseWrapper<List<WordDto>>();
-            if (lexiconDto.Id != null)
-            {
-                result = await _organizationService.Update(lexiconDto);
-            }
-            else
-            {
-                result = await _organizationService.Insert(lexiconDto);
-            }
-
-            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+            var users = await _organizationService.SaveDailyGamePlay(gamePlay);
+            return Ok(users.Data);
         }
 
         [HttpGet]
@@ -147,7 +144,7 @@ namespace TestCoreAPI.Controllers
 
             return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
         }
-        
+
         [HttpPost]
         [Route("add-assocs-games")]
         public async Task<IActionResult> AddAssocsGames([FromBody]List<AssociationDto> assocsDtos)
@@ -167,6 +164,6 @@ namespace TestCoreAPI.Controllers
 
             return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
         }
-        
+
     }
 }

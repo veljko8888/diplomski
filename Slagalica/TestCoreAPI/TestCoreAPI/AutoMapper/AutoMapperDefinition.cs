@@ -20,6 +20,8 @@ namespace TestCoreAPI.AutoMapper
             CreateMap<Association, AssociationDto>().ReverseMap();
             CreateMap<DailyGame, DailyGamesResponseDto>().ReverseMap();
             CreateMap<DailyGame, DailyGameDto>().ReverseMap();
+            CreateMap<DailyGamePlay, DailyGamePlayDto>().ReverseMap();
+            CreateMap<MultiplayerGame, MultiplayerGameDto>().ReverseMap();
         }
     }
 }

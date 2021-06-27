@@ -3,7 +3,7 @@
         <h3>Kreiraj Partiju</h3>
         <div class="row">
             <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
-                <button type="submit" (click)="createGame()" nbButton status="primary">Kreiraj Igru</button>
+                <button type="submit" (click)="createGameDialog()" nbButton status="primary">Kreiraj Igru</button>
             </div>
         </div>
     </div>
@@ -45,7 +45,8 @@
                 <p style="font-size: 20px; margin: auto; color: rgb(84, 187, 235); font-weight: bold;">{{infoMsg}}</p>
             </div>
             <div class="form-group row">
-                <p style="font-size: 30px; margin: auto; color: blue; font-weight: bold;">Broj Osvojenih Poena: {{points}}</p>
+                <p style="font-size: 30px; margin: auto; color: blue; font-weight: bold;">Broj Osvojenih Poena:
+                    {{points}}</p>
             </div>
         </div>
         <div *ngIf="slagalicaActive">
@@ -135,7 +136,8 @@
                 </div>
             </div>
             <div class="form-group row">
-                <button [disabled]="!wordGameTimeStarted" style="margin: auto;" (click)="saveWord()" nbButton status="primary">Potvrdi</button>
+                <button [disabled]="!wordGameTimeStarted" style="margin: auto;" (click)="saveWord()" nbButton
+                    status="primary">Potvrdi</button>
             </div>
         </div>
         <div *ngIf="mojBrojActive">
@@ -180,28 +182,28 @@
             </div>
             <div class="form-group row">
                 <div class="col-sm-2">
-                    <input readonly="readonly" (click)="chooseNum(6)"
-                        [(ngModel)]="numsArray[6].value" class="input-style" type="text" nbInput fullWidth>
+                    <input readonly="readonly" (click)="chooseNum(6)" [(ngModel)]="numsArray[6].value"
+                        class="input-style" type="text" nbInput fullWidth>
                 </div>
                 <div class="col-sm-2">
-                    <input readonly="readonly" (click)="chooseNum(7)"
-                        [(ngModel)]="numsArray[7].value" class="input-style" type="text" nbInput fullWidth>
+                    <input readonly="readonly" (click)="chooseNum(7)" [(ngModel)]="numsArray[7].value"
+                        class="input-style" type="text" nbInput fullWidth>
                 </div>
                 <div class="col-sm-2">
-                    <input readonly="readonly" (click)="chooseNum(8)"
-                        [(ngModel)]="numsArray[8].value" class="input-style" type="text" nbInput fullWidth>
+                    <input readonly="readonly" (click)="chooseNum(8)" [(ngModel)]="numsArray[8].value"
+                        class="input-style" type="text" nbInput fullWidth>
                 </div>
                 <div class="col-sm-2">
-                    <input readonly="readonly" (click)="chooseNum(9)"
-                        [(ngModel)]="numsArray[9].value" class="input-style" type="text" nbInput fullWidth>
+                    <input readonly="readonly" (click)="chooseNum(9)" [(ngModel)]="numsArray[9].value"
+                        class="input-style" type="text" nbInput fullWidth>
                 </div>
                 <div class="col-sm-2">
-                    <input readonly="readonly" (click)="chooseNum(10)"
-                        [(ngModel)]="numsArray[10].value" class="input-style" type="text" nbInput fullWidth>
+                    <input readonly="readonly" (click)="chooseNum(10)" [(ngModel)]="numsArray[10].value"
+                        class="input-style" type="text" nbInput fullWidth>
                 </div>
                 <div class="col-sm-2">
-                    <input readonly="readonly" (click)="chooseNum(11)"
-                        [(ngModel)]="numsArray[11].value" class="input-style" type="text" nbInput fullWidth>
+                    <input readonly="readonly" (click)="chooseNum(11)" [(ngModel)]="numsArray[11].value"
+                        class="input-style" type="text" nbInput fullWidth>
                 </div>
             </div>
             <div class="form-group row">
@@ -213,7 +215,8 @@
             <div class="form-group row">
                 <div class="col-sm-12">
                     <label>Izraz</label>
-                    <input readonly="readonly" [(ngModel)]="expression" class="input-style" type="text" nbInput fullWidth>
+                    <input readonly="readonly" [(ngModel)]="expression" class="input-style" type="text" nbInput
+                        fullWidth>
                 </div>
             </div>
             <div class="form-group row">
@@ -227,30 +230,626 @@
                 </div>
             </div>
             <div class="form-group row">
-                <button [disabled]="!numGameTimeStarted" style="margin: auto;" (click)="checkValidExpressionAndCalcPoints()" nbButton status="primary">Potvrdi</button>
+                <button [disabled]="!numGameTimeStarted" style="margin: auto;"
+                    (click)="checkValidExpressionAndCalcPoints()" nbButton status="primary">Potvrdi</button>
             </div>
         </div>
         <div *ngIf="skockoActive">
+
             <div class="form-group row">
                 <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeft}} sekundi</p>
             </div>
-            <!-- <div class="form-group row">
-                <button style="margin: auto;" [disabled]="numGameTimeStarted" (click)="pickNums()" nbButton
-                    status="primary">Odaberi Brojeve</button>
-            </div>
             <div class="form-group row">
-                <div style="margin: auto; display: block;">
-                    <div style="float: left; padding-right: 5px;">
-                        <button (click)="deleteLastNum()" nbButton status="primary">Obriši Poslednje</button>
+                <button style="margin: auto;" [disabled]="skockoGameTimeStarted" (click)="pickSkocko()" nbButton
+                    status="primary">Započni igru</button>
+            </div>
+            <div style="display: flex; justify-content: space-around;">
+                <div style="width: 80%;">
+                    <div class="form-group row">
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[0].combination[0]"
+                                value="&#9829;" class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[0].combination[1]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[0].combination[2]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[0].combination[3]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+
+                        <div class="skocko-field" *ngFor="let status of currentCombination[0].combinationStatus">
+                            <input readonly="readonly" class="input-style skocko-small radius" type="text" nbInput
+                                fullWidth
+                                [ngStyle]="{'background': status == 0 ? 'red' : status == 1 ? 'yellow' : 'white' }">
+                        </div>
                     </div>
-                    <div style="float: left;">
-                        <button (click)="deleteAllNum()" nbButton status="primary">Obriši Sve</button>
+                    <div class="form-group row">
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[1].combination[0]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[1].combination[1]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[1].combination[2]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[1].combination[3]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+
+                        <div class="skocko-field" *ngFor="let status of currentCombination[1].combinationStatus">
+                            <input readonly="readonly" class="input-style skocko-small radius" type="text" nbInput
+                                fullWidth
+                                [ngStyle]="{'background': status == 0 ? 'red' : status == 1 ? 'yellow' : 'white' }">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[2].combination[0]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[2].combination[1]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[2].combination[2]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[2].combination[3]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+
+                        <div class="skocko-field" *ngFor="let status of currentCombination[2].combinationStatus">
+                            <input readonly="readonly" class="input-style skocko-small radius" type="text" nbInput
+                                fullWidth
+                                [ngStyle]="{'background': status == 0 ? 'red' : status == 1 ? 'yellow' : 'white' }">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[3].combination[0]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[3].combination[1]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[3].combination[2]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[3].combination[3]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+
+                        <div class="skocko-field" *ngFor="let status of currentCombination[3].combinationStatus">
+                            <input readonly="readonly" class="input-style skocko-small radius" type="text" nbInput
+                                fullWidth
+                                [ngStyle]="{'background': status == 0 ? 'red' : status == 1 ? 'yellow' : 'white' }">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[4].combination[0]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[4].combination[1]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[4].combination[2]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[4].combination[3]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+
+                        <div class="skocko-field" *ngFor="let status of currentCombination[4].combinationStatus">
+                            <input readonly="readonly" class="input-style skocko-small radius" type="text" nbInput
+                                fullWidth
+                                [ngStyle]="{'background': status == 0 ? 'red' : status == 1 ? 'yellow' : 'white' }">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[5].combination[0]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[5].combination[1]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[5].combination[2]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+                        <div class="skocko-field">
+                            <input readonly="readonly" [(ngModel)]="currentCombination[5].combination[3]"
+                                class="input-style skocko-small" type="text" nbInput fullWidth>
+                        </div>
+
+                        <div class="skocko-field" *ngFor="let status of currentCombination[5].combinationStatus">
+                            <input readonly="readonly" class="input-style skocko-small radius" type="text" nbInput
+                                fullWidth
+                                [ngStyle]="{'background': status == 0 ? 'red' : status == 1 ? 'yellow' : 'white' }">
+                        </div>
+                    </div>
+
+                </div>
+                <div style="float: left; width: 20%;">
+                    <div style="padding-bottom: 10px;" (click)="selectSign('♠')" class="form-group row skocko-wrap">
+                        <p class="skocko">
+                            &#9824;
+                        </p>
+                    </div>
+
+                    <div style="padding-bottom: 10px;" (click)="selectSign('♥')" class="form-group row skocko-wrap">
+                        <p class="skocko">
+                            &#9829;
+                        </p>
+                    </div>
+
+                    <div style="padding-bottom: 10px;" (click)="selectSign('♣')" class="form-group row skocko-wrap">
+                        <p class="skocko">&#9827;
+                        </p>
+                    </div>
+
+                    <div style="padding-bottom: 10px;" (click)="selectSign('♦')" class="form-group row skocko-wrap">
+                        <p class="skocko">&#9830;
+                        </p>
+                    </div>
+
+                    <div style="padding-bottom: 10px;" (click)="selectSign('🌟')" class="form-group row skocko-wrap">
+                        <p class="skocko">🌟
+                        </p>
+                    </div>
+
+                    <div style="padding-bottom: 10px;" (click)="selectSign('☺️')" class="form-group row skocko-wrap">
+                        <p class="skocko">☺️
+                        </p>
+                    </div>
+
+                    <div style="padding-bottom: 10px;" class="form-group row skocko-wrap">
+                        <p class="skocko">
+                            <button style="margin: auto;" (click)="submitRowCombination()" nbButton
+                                status="primary">Potvrdi Kombinaciju</button>
+                        </p>
+                    </div>
+
+                    <div style="padding-bottom: 10px;" class="form-group row skocko-wrap">
+                        <p class="skocko">
+                            <button style="margin: auto;" (click)="resetCombination()" nbButton status="primary">Obriši
+                                Kombinaciju</button>
+                        </p>
                     </div>
                 </div>
             </div>
+        </div>
+        <div *ngIf="spojniceActive">
             <div class="form-group row">
-                <button [disabled]="!numGameTimeStarted" style="margin: auto;" (click)="saveWord()" nbButton status="primary">Potvrdi</button>
-            </div> -->
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeft}} sekundi</p>
+            </div>
+            <div class="form-group row">
+                <button style="margin: auto;" [disabled]="spojniceGameStarted" (click)="pickSpojnice()" nbButton
+                    status="primary">Start</button>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div>
+                            <input [(ngModel)]="spojniceDesc" readonly="readonly" type="text" nbInput fullWidth
+                                id="Description" name="Description" placeholder="Opis Spojnice">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[0].correct ? 'green' : currentRow == 0 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[0].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L1" name="L1" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(0)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[0].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[0].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="R1" name="R1" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[1].correct ? 'green' : currentRow == 1 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[1].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L2" name="L2" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(1)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[1].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[1].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="R2" name="R2" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[2].correct ? 'green' : currentRow == 2 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[2].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L3" name="L3" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(2)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[2].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[2].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="R3" name="R3" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[3].correct ? 'green' : currentRow == 3 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[3].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L4" name="L4" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(3)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[3].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[3].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="ime" name="R4" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[4].correct ? 'green' : currentRow == 4 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[4].left" class="cursor" type="text" nbInput
+                                fullWidth id="L5" name="L5" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(4)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[4].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[4].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="R5" name="R5" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[5].correct ? 'green' : currentRow == 5 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[5].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L6" name="L6" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(5)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[5].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[5].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="ime" name="R6" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[6].correct ? 'green' : currentRow == 6 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[6].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L7" name="L7" placeholder="Opis Spojnice">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(6)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[6].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[6].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="R7" name="R7" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[7].correct ? 'green' : currentRow == 7 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[7].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L8" name="L8" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(7)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[7].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[7].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="R8" name="R8" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[8].correct ? 'green' : currentRow == 8 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[8].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L9" name="L9" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(8)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[8].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[8].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="R9" name="R9" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input
+                                [ngStyle]="{'background': spojniceParovi[9].correct ? 'green' : currentRow == 9 ? 'yellow' : 'white' }"
+                                [(ngModel)]="spojniceShuffledParovi[9].left" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="L10" name="L10" placeholder="Leva Spojnica">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <div>
+                            <input (click)="checkConnection(9)"
+                                [ngStyle]="{'background': spojniceShuffledParovi[9].correct ? 'green' : 'white'}"
+                                [(ngModel)]="spojniceShuffledParovi[9].right" class="cursor" readonly="readonly"
+                                type="text" nbInput fullWidth id="R10" name="R10" placeholder="Desna Spojnica">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="asocijacijeActive">
+            <div class="form-group row">
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeft}} sekundi</p>
+            </div>
+            <div class="form-group row">
+                <button style="margin: auto;" [disabled]="asocijacijeGameStarted" (click)="pickAsocijacije()" nbButton
+                    status="primary">Start</button>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (click)="openField('A1')" [(ngModel)]="asocijacijeBind.A1" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="A1">
+                </div>
+                <div class="col-sm-6">
+                    <input (click)="openField('B1')" [(ngModel)]="asocijacijeBind.B1" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="B1">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (click)="openField('A2')" [(ngModel)]="asocijacijeBind.A2" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="A2">
+                </div>
+                <div class="col-sm-6">
+                    <input (click)="openField('B2')" [(ngModel)]="asocijacijeBind.B2" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="B2">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (click)="openField('A3')" [(ngModel)]="asocijacijeBind.A3" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="A3">
+                </div>
+                <div class="col-sm-6">
+                    <input (click)="openField('B3')" [(ngModel)]="asocijacijeBind.B3" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="B3">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (click)="openField('A4')" [(ngModel)]="asocijacijeBind.A4" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="A4">
+                </div>
+                <div class="col-sm-6">
+                    <input (click)="openField('B4')" [(ngModel)]="asocijacijeBind.B4" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="B4">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'A')"
+                        [(ngModel)]="asocijacijeBind.A" class="input-style" type="text" nbInput fullWidth
+                        placeholder="A">
+                </div>
+                <div class="col-sm-6">
+                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'B')"
+                        [(ngModel)]="asocijacijeBind.B" class="input-style" type="text" nbInput fullWidth
+                        placeholder="B">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'Final')"
+                        [(ngModel)]="asocijacijeBind.Final" class="input-style" type="text" nbInput fullWidth
+                        placeholder="Konačno">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'C')"
+                        [(ngModel)]="asocijacijeBind.C" class="input-style" type="text" nbInput fullWidth
+                        placeholder="C">
+                </div>
+                <div class="col-sm-6">
+                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'D')"
+                        [(ngModel)]="asocijacijeBind.D" class="input-style" type="text" nbInput fullWidth
+                        placeholder="D">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (click)="openField('C1')" [(ngModel)]="asocijacijeBind.C1" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="C1">
+                </div>
+                <div class="col-sm-6">
+                    <input (click)="openField('D1')" [(ngModel)]="asocijacijeBind.D1" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="D1">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (click)="openField('C2')" [(ngModel)]="asocijacijeBind.C2" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="C2">
+                </div>
+                <div class="col-sm-6">
+                    <input (click)="openField('D2')" [(ngModel)]="asocijacijeBind.D2" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="D2">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (click)="openField('C3')" [(ngModel)]="asocijacijeBind.C3" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="C3">
+                </div>
+                <div class="col-sm-6">
+                    <input (click)="openField('D3')" [(ngModel)]="asocijacijeBind.D3" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="D3">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <input (click)="openField('C4')" [(ngModel)]="asocijacijeBind.C4" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="C4">
+                </div>
+                <div class="col-sm-6">
+                    <input (click)="openField('D4')" [(ngModel)]="asocijacijeBind.D4" readonly="readonly"
+                        class="input-style" type="text" nbInput fullWidth placeholder="D4">
+                </div>
+            </div>
+        </div>
+        <p-footer>
+        </p-footer>
+    </p-dialog>
+
+    <p-dialog [style]="{width: '50vw'}" modal="true" (onHide)="closeCreateGameDialog()"
+        [(visible)]="showCreateGameDialog">
+        <p-header>
+            Kreiranje Partije
+        </p-header>
+        <div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <button type="submit" (click)="createGame()" nbButton status="primary">Kreiraj Igru</button>
+                </div>
+            </div>
+            <div *ngIf="waitCreateGame" class="form-group row">
+                <div class="col-sm-12">
+                    <p>{{waitCreateGame}}</p>
+                </div>
+            </div>
+        </div>
+        <p-footer>
+        </p-footer>
+    </p-dialog>
+
+    <p-dialog [style]="{width: '50vw'}" modal="true" (onHide)="closeMultiplayerGamesDialog()"
+        [(visible)]="showMultiplayerGamesDialog">
+        <p-header>
+            Sve Igre
+        </p-header>
+        <div>
+            <div class="form-group row">
+                <div *ngFor="let game of games" class="col-sm-4">
+                    <nb-card class="nb-card-auth">
+                        <nb-card-header>{{ game }}
+                        </nb-card-header>
+                        <nb-card-body>
+
+                        </nb-card-body>
+                    </nb-card>
+                </div>
+            </div>
         </div>
         <p-footer>
         </p-footer>

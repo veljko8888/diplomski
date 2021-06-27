@@ -131,7 +131,7 @@ nb-layout {
 }
 
 .dx-tab {
-  background-color: #03a9f4;  
+  background-color: #03a9f4;
   color: white;
 }
 
@@ -145,17 +145,17 @@ nb-layout {
   color: #7b919e;
 }
 
-
 .dx-tab.dx-tab-selected:before {
   background-color: #ffffff;
 }
 
-.dx-tab.dx-tab-selected, .dx-tab.dx-tab-selected .dx-icon {
+.dx-tab.dx-tab-selected,
+.dx-tab.dx-tab-selected .dx-icon {
   color: white;
 }
 
 .dx-tab.dx-state-hover {
-  background-color: #03a9f4; 
+  background-color: #03a9f4;
   color: #7b919e;
 }
 
@@ -172,23 +172,23 @@ nb-layout {
 }
 
 .rounded-circle {
-  border-radius: 50%!important;
+  border-radius: 50% !important;
 }
 
 .profile-btn {
   border: none !important;
-  background-color: transparent !important; 
+  background-color: transparent !important;
 }
 
 .profile-col {
-  background-color:  #03a9f4;  ;
+  background-color: #03a9f4;
 }
 
 .tab-col {
   padding-right: 0;
 }
 
-.nb-theme-default nb-layout .layout{
+.nb-theme-default nb-layout .layout {
   background-color: #0398fc;
 }
 
@@ -196,21 +196,50 @@ nb-layout {
   background-color: #236fe8;
 }
 
-.nav-link{
+.nav-link {
   color: rgba(0, 0, 0, 0.5) !important;
 }
 
-.bg-login{
+.bg-login {
   background-color: #0398fc;
   min-width: 1000px !important;
 }
 
-.slagalica{
+.slagalica {
   height: 150px;
 }
 
-.bg-style{
-  margin:0 auto;
+.bg-style {
+  margin: 0 auto;
   width: 1000px !important;
 }
 
+.skocko-wrap {
+  justify-content: flex-end !important;
+  cursor: pointer;
+}
+
+.skocko {
+  font-size: 40px !important;
+  font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", "Times", "Symbola", "Aegyptus", "Code2000",
+    "Code2001", "Code2002", "Musica", "serif", "LastResort" !important;
+}
+
+.skocko-small {
+  font-size: 20px !important;
+  font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", "Times", "Symbola", "Aegyptus", "Code2000",
+    "Code2001", "Code2002", "Musica", "serif", "LastResort" !important;
+}
+
+.skocko-field {
+  width: 70px !important;
+  padding: 5px !important;
+}
+
+.radius {
+  border-radius: 30px !important;
+}
+
+.cursor {
+  cursor: pointer;
+}

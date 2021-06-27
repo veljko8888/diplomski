@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Img.ELicensing.Core;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using TestCoreAPI.ApplicationConstants;
 using TestCoreAPI.Dtos;
 using TestCoreAPI.IServices;
 using TestCoreAPI.Models;
+using TestCoreAPI.SignalRHub;
 
 namespace TestCoreAPI.Services
 {
@@ -17,10 +19,13 @@ namespace TestCoreAPI.Services
     {
         private ApplicationDbContext _context;
         private IMapper _mapper;
+        private readonly IHubContext<BroadcastHub, IHubClient> _hubContext;
         public OrganizationService(
+            IHubContext<BroadcastHub, IHubClient> hubContext,
             ApplicationDbContext context,
             IMapper mapper)
         {
+            _hubContext = hubContext;
             _context = context;
             _mapper = mapper;
         }
@@ -85,7 +90,7 @@ namespace TestCoreAPI.Services
         {
             try
             {
-                if(dailyGameDto.Id != null && dailyGameDto.Id != Guid.Empty)
+                if (dailyGameDto.Id != null && dailyGameDto.Id != Guid.Empty)
                 {
                     var dg = _mapper.Map<DailyGame>(dailyGameDto);
                     _context.DailyGames.Update(dg);
@@ -126,6 +131,80 @@ namespace TestCoreAPI.Services
             catch (Exception)
             {
                 return ResponseWrapper<DailyGamesResponseDto>.Error(AppConstants.FailedToAddDailyGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<DailyGamePlayDto>> SaveDailyGamePlay(DailyGamePlayDto dailyGame)
+        {
+            try
+            {
+                var gamePlay = _mapper.Map<DailyGamePlay>(dailyGame);
+                await _context.DailyGamePlays.AddAsync(gamePlay);
+                await _context.SaveChangesAsync();
+                dailyGame = _mapper.Map<DailyGamePlayDto>(gamePlay);
+
+                return ResponseWrapper<DailyGamePlayDto>.Success(dailyGame);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<DailyGamePlayDto>.Error(AppConstants.NoDailyGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<List<MultiplayerGameDto>>> GetMultiplayerGames()
+        {
+            try
+            {
+                var games = _context.MultiplayerGames.Where(x => x.GameStatus == 0).ToListAsync();
+                var gamesDto = _mapper.Map<List<MultiplayerGameDto>>(games);
+
+                return ResponseWrapper<List<MultiplayerGameDto>>.Success(gamesDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<List<MultiplayerGameDto>>.Error(AppConstants.NoDailyGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<MultiplayerGameDto>> CreateMultiplayerGame(MultiplayerGameDto multiGame)
+        {
+            try
+            {
+                var gamePlay = _mapper.Map<MultiplayerGame>(multiGame);
+                await _context.MultiplayerGames.AddAsync(gamePlay);
+                await _context.SaveChangesAsync();
+                multiGame = _mapper.Map<MultiplayerGameDto>(gamePlay);
+
+                await _hubContext.Clients.All.BroadcastMessage();
+                return ResponseWrapper<MultiplayerGameDto>.Success(multiGame);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+            }
+        }
+        
+
+        public async Task<ResponseWrapper<DailyGameContentDto>> GetDailyGamePlay(DateTime dailyGamesDateDto)
+        {
+            try
+            {
+                var dailyGame = _context.DailyGames.Include(x => x.Association).Include(x => x.Connection.Pairs).FirstOrDefault(x => x.DailyGameDate.Day == dailyGamesDateDto.Day && x.DailyGameDate.Month == dailyGamesDateDto.Month && x.DailyGameDate.Year == dailyGamesDateDto.Year);
+                if(dailyGame == null)
+                {
+                    return ResponseWrapper<DailyGameContentDto>.Error(AppConstants.NoDailyGame);
+                }
+
+                var association = _mapper.Map<AssociationDto>(dailyGame.Association);
+                var connection = _mapper.Map<ConnectionDto>(dailyGame.Connection);
+                DailyGameContentDto response = new DailyGameContentDto();
+                response.Connections = connection;
+                response.Associations = association;
+                return ResponseWrapper<DailyGameContentDto>.Success(response);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<DailyGameContentDto>.Error(AppConstants.NoDailyGame);
             }
         }
 
@@ -225,10 +304,11 @@ namespace TestCoreAPI.Services
             try
             {
                 List<Word> words = _mapper.Map<List<Word>>(wordsDtos);
-                words = words.Select(c => { 
+                words = words.Select(c =>
+                {
                     c.Id = Guid.NewGuid();
                     c.Rec = c.Rec.ToUpper();
-                    return c; 
+                    return c;
                 }).ToList();
                 _context.Words.AddRange(words);
                 await _context.SaveChangesAsync();

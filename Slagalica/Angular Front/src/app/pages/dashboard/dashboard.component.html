@@ -7,33 +7,6 @@
         <div class="table-header">
             Korisnici
             <div style="padding-top: 10px">
-                <!-- <div>
-                    <label class="label col-form-label">Date From</label>
-                    <input [(ngModel)]="dateFrom" class="col-md-2 margin-left-12 margin-right-10" nbInput fullWidth
-                        placeholder="Date From" [nbDatepicker]="formpicker">
-                    <nb-datepicker #formpicker></nb-datepicker>
-                    <label class="label col-form-label">Date To</label>
-                    <input [(ngModel)]="dateTo" class="input-style col-md-2 margin-left-12 margin-right-10" nbInput
-                        fullWidth placeholder="Date To" [nbDatepicker]="formpicker2">
-                    <nb-datepicker #formpicker2></nb-datepicker>
-                    <button type="submit" (click)="filterWorkOrders()" nbButton status="primary">Filter</button>
-                    <div style="margin-top: 10px;">
-                        <label class="label col-form-label margin-right-10">Columns</label>
-                        <nb-select (selectedChange)="colsChanged()" [(ngModel)]="selectedCols" nbInput fullWidth
-                            multiple placeholder="Columns">
-                            <nb-option *ngFor="let option of allCols;" disabled="{{ option.mandatory ? true : false }}"
-                                value="{{ option.field }}">
-                                {{ option.header }}</nb-option>
-                        </nb-select>
-                    </div>
-                </div> -->
-                <!-- <div>
-                    <span class="p-input-icon-left">
-                        <i class="pi pi-search"></i>
-                        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
-                            placeholder="Global Search" />
-                    </span>
-                </div> -->
             </div>
         </div>
     </ng-template>
