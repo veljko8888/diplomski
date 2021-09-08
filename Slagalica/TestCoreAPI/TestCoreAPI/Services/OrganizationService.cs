@@ -166,13 +166,366 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<int>> GetSecondsLeft(MultiplayerGameDto game)
+        {
+            try
+            {
+                var gameDb = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == game.Id);
+                int diffInSeconds = (int)(gameDb.SlagalicaGameEnds - DateTime.UtcNow).TotalSeconds;
+
+                return ResponseWrapper<int>.Success(diffInSeconds);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<int>.Error(AppConstants.NoDailyGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<List<string>>> GetCombination(Guid gameId)
+        {
+            var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == gameId);
+            if (game != null)
+            {
+                List<string> combination = game.Combination.Split('-').ToList();
+                return ResponseWrapper<List<string>>.Success(combination);
+            }
+
+            return ResponseWrapper<List<string>>.Error("Problem with getting combination.");
+        }
+
+        public async Task<ResponseWrapper<UpdateGameEndsAndSendNumsDto>> GetNums(Guid gameId)
+        {
+            var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == gameId);
+            if (game != null)
+            {
+                var res = new UpdateGameEndsAndSendNumsDto();
+                string[] nums = game.Nums.Split('#');
+                var numsArray = new List<NumDto>();
+                foreach (var numChar in nums.Select((value, i) => new { i, value }))
+                {
+                    if (numChar.i == 12)
+                    {
+                        res.FinalNum = int.Parse(numChar.value.ToString());
+                    }
+                    else
+                    {
+                        var numElem = new NumDto();
+                        numElem.Clicked = false;
+                        numElem.Value = numChar.value.ToString();
+                        numsArray.Add(numElem);
+                    }
+                }
+
+                res.Nums = numsArray;
+
+                return ResponseWrapper<UpdateGameEndsAndSendNumsDto>.Success(res);
+            }
+
+            return ResponseWrapper<UpdateGameEndsAndSendNumsDto>.Error("Problem with getting chars.");
+        }
+
+        public async Task<ResponseWrapper<List<CharDto>>> GetChars(Guid gameId)
+        {
+            var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == gameId);
+            if (game != null)
+            {
+                string chars = game.Chars;
+                var charsArray = new List<CharDto>();
+                foreach (char character in chars)
+                {
+                    var charElem = new CharDto();
+                    charElem.Clicked = false;
+                    charElem.Value = character.ToString();
+                    charsArray.Add(charElem);
+                }
+
+                return ResponseWrapper<List<CharDto>>.Success(charsArray);
+            }
+
+            return ResponseWrapper<List<CharDto>>.Error("Problem with getting chars.");
+        }
+
+        public async Task<ResponseWrapper<int>> AddPoints(GameAndUserDto request)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                    if (game.Player1Id == request.UserId)
+                    {
+                        game.Player1Points += request.AddPoints;
+                    }
+                    else
+                    {
+                        game.Player2Points += request.AddPoints;
+                    }
+                    _context.MultiplayerGames.Update(game);
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+                    return ResponseWrapper<int>.Success(0);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<int>.Error(AppConstants.NoDailyGame);
+                }
+            }
+        }
+
+        public async Task<ResponseWrapper<GameAndUserDto>> OpponentPoints(GameAndUserDto request)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var opponentPoints = 0;
+                    var points = 0;
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                    if (game.Player1Id == request.UserId)
+                    {
+                        opponentPoints = game.Player2Points;
+                        points = game.Player1Points;
+                    }
+                    else
+                    {
+                        opponentPoints = game.Player1Points;
+                        points = game.Player2Points;
+                    }
+                    transaction.Commit();
+                    var res = new GameAndUserDto();
+                    res.OpponentPoints = opponentPoints;
+                    res.Points = points;
+                    return ResponseWrapper<GameAndUserDto>.Success(res);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<GameAndUserDto>.Error(AppConstants.NoDailyGame);
+                }
+            }
+        }
+
+        public async Task<ResponseWrapper<bool>> NextGame(GameAndUserDto request)
+        {
+            try
+            {
+                //var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                //if (request.UserId == game.Player1Id)
+                //{
+                //    await _hubContext.Clients.Group(request.GameId.ToString()).NextGame();
+                //}
+                //else
+                //{
+                //    await _hubContext.Clients.Group(request.GameId.ToString()).NextGamePlayer2();
+                //}
+                await _hubContext.Clients.Group(request.GameId.ToString()).NextGame();
+
+                return ResponseWrapper<bool>.Success(true);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<bool>.Error("");
+            }
+        }
+
+        public async Task<ResponseWrapper<bool>> NextPlayerSkocko(GameAndUserDto request)
+        {
+            try
+            {
+                //var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                //if (request.UserId == game.Player1Id)
+                //{
+                //    await _hubContext.Clients.Group(request.GameId.ToString()).NextPlayerSkocko();
+                //}
+                //else
+                //{
+                //    await _hubContext.Clients.Group(request.GameId.ToString()).NextPlayerSkockoPlayer2();
+                //}
+                await _hubContext.Clients.Group(request.GameId.ToString()).NextPlayerSkocko();
+                return ResponseWrapper<bool>.Success(true);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<bool>.Error("");
+            }
+        }
+
+        public async Task<ResponseWrapper<bool>> TryNextPlayerSkocko(GameAndUserDto request)
+        {
+            try
+            {
+                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                if (request.UserId == game.Player1Id)
+                {
+                    await _hubContext.Clients.Group(request.GameId.ToString()).TryNextPlayerSkocko();
+                }
+                else
+                {
+                    await _hubContext.Clients.Group(request.GameId.ToString()).TryNextPlayerSkockoPlayer2();
+                }
+                //await _hubContext.Clients.Group(request.GameId.ToString()).NextPlayerSkocko();
+                return ResponseWrapper<bool>.Success(true);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<bool>.Error("");
+            }
+        }
+
+        public async Task<ResponseWrapper<bool>> PlayerFinished(GameAndUserDto request)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                    if (game.Player1Id == request.UserId)
+                    {
+                        game.Player1WordsFinished = true;
+                    }
+                    else
+                    {
+                        game.Player2WordsFinished = true;
+                    }
+
+                    _context.MultiplayerGames.Update(game);
+                    await _context.SaveChangesAsync();
+
+                    if (game.Player1WordsFinished && game.Player2WordsFinished)
+                    {
+                        if (request.GameName == "slagalica")
+                        {
+                            await _hubContext.Clients.Group(game.Id.ToString()).WordsFinished();
+                        }
+                        else if (request.GameName == "mojbroj")
+                        {
+                            await _hubContext.Clients.Group(game.Id.ToString()).NumsFinished();
+                        }
+
+                        game.Player1WordsFinished = false;
+                        game.Player2WordsFinished = false;
+                        _context.MultiplayerGames.Update(game);
+                        await _context.SaveChangesAsync();
+                    }
+                    transaction.Commit();
+                    return ResponseWrapper<bool>.Success(true);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<bool>.Error(AppConstants.NoDailyGame);
+                }
+            }
+        }
+
+        public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendCombination(UpdateGameEndsAndSendCombinationDto multigame)
+        {
+            try
+            {
+                string comb = string.Join("-", multigame.Combination);
+                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
+                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(90);
+                game.Combination = comb;
+                _context.MultiplayerGames.Update(game);
+                await _context.SaveChangesAsync();
+                multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
+                if (multigame.UserId == game.Player1Id)
+                {
+                    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSkocko();
+                }
+                else
+                {
+                    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSkockoPlayer2();
+                }
+                return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendNums(UpdateGameEndsAndSendNumsDto multigame)
+        {
+            try
+            {
+                string nums = string.Empty;
+                foreach (var num in multigame.Nums)
+                {
+                    nums += num.Value.ToString();
+                    nums += "#";
+                }
+                nums += multigame.FinalNum;
+
+                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
+                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
+                game.Nums = nums;
+                _context.MultiplayerGames.Update(game);
+                await _context.SaveChangesAsync();
+                multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
+                await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerNums();
+                return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendChars(UpdateGameEndsAndSendCharsDto multiGame)
+        {
+            try
+            {
+                string chars = string.Empty;
+                foreach (var character in multiGame.Chars)
+                {
+                    chars += character.Value;
+                }
+
+                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multiGame.MultiplayerGameDto.Id);
+                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
+                game.Chars = chars;
+                _context.MultiplayerGames.Update(game);
+                await _context.SaveChangesAsync();
+                multiGame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
+                await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimer();
+                return ResponseWrapper<MultiplayerGameDto>.Success(multiGame.MultiplayerGameDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+            }
+        }
+
+        public async Task<ResponseWrapper<MultiplayerGameDto>> GetMultiplayerGame(MultiplayerGameDto multiGame)
+        {
+            try
+            {
+                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multiGame.Id);
+                game.Player2Id = multiGame.Player2Id;
+                _context.MultiplayerGames.Update(game);
+                await _context.SaveChangesAsync();
+                multiGame = _mapper.Map<MultiplayerGameDto>(game);
+                return ResponseWrapper<MultiplayerGameDto>.Success(multiGame);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+            }
+        }
+
         public async Task<ResponseWrapper<MultiplayerGameDto>> CreateMultiplayerGame(MultiplayerGameDto multiGame)
         {
             try
             {
+                //_hubContext.
                 var gamePlay = _mapper.Map<MultiplayerGame>(multiGame);
+                gamePlay.Id = Guid.NewGuid();
+
                 await _context.MultiplayerGames.AddAsync(gamePlay);
                 await _context.SaveChangesAsync();
+                await _hubContext.Groups.AddToGroupAsync(gamePlay.Id.ToString(), gamePlay.Id.ToString());
                 multiGame = _mapper.Map<MultiplayerGameDto>(gamePlay);
 
                 await _hubContext.Clients.All.BroadcastMessage();
@@ -183,14 +536,14 @@ namespace TestCoreAPI.Services
                 return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
             }
         }
-        
+
 
         public async Task<ResponseWrapper<DailyGameContentDto>> GetDailyGamePlay(DateTime dailyGamesDateDto)
         {
             try
             {
                 var dailyGame = _context.DailyGames.Include(x => x.Association).Include(x => x.Connection.Pairs).FirstOrDefault(x => x.DailyGameDate.Day == dailyGamesDateDto.Day && x.DailyGameDate.Month == dailyGamesDateDto.Month && x.DailyGameDate.Year == dailyGamesDateDto.Year);
-                if(dailyGame == null)
+                if (dailyGame == null)
                 {
                     return ResponseWrapper<DailyGameContentDto>.Error(AppConstants.NoDailyGame);
                 }
@@ -260,13 +613,52 @@ namespace TestCoreAPI.Services
         {
             try
             {
-                var alreadyExist = _context.Words.Any(x => x.Rec.Equals(wordDto.Rec));
-                if (alreadyExist)
+                bool alreadyExist = false;
+                MultiplayerGame game = null;
+                using (var transaction = _context.Database.BeginTransaction())
                 {
-                    return ResponseWrapper<WordDto>.Success(wordDto);
+                    try
+                    {
+                        _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                        alreadyExist = _context.Words.Any(x => x.Rec.Equals(wordDto.Rec));
+                        
+                        if (alreadyExist)
+                        {
+                            if (wordDto.GameId.HasValue)
+                            {
+                                game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == wordDto.GameId.Value);
+                                if (wordDto.GameId.HasValue && wordDto.UserId.HasValue)
+                                {
+                                    if (game != null)
+                                    {
+                                        if (game.Player1Id == wordDto.UserId)
+                                        {
+                                            game.Player1Points += wordDto.Rec.Length * 2;
+                                            game.Player1WordsFinished = false;
+                                        }
+                                        else
+                                        {
+                                            game.Player2Points += wordDto.Rec.Length * 2;
+                                            game.Player2WordsFinished = false;
+                                        }
+                                        _context.MultiplayerGames.Update(game);
+                                        await _context.SaveChangesAsync();
+                                    }
+                                }
+                            }
+                            transaction.Commit();
+                            return ResponseWrapper<WordDto>.Success(wordDto);
+                        }
+                        transaction.Commit();
+                        return ResponseWrapper<WordDto>.Error(AppConstants.WordDoesNotExist);
+                    }
+                    catch (Exception)
+                    {
+                        return ResponseWrapper<WordDto>.Error(AppConstants.WordDoesNotExist);
+                    }
                 }
 
-                return ResponseWrapper<WordDto>.Error(AppConstants.WordDoesNotExist);
+
             }
             catch (Exception)
             {

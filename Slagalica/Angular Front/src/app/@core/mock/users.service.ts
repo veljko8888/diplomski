@@ -10,6 +10,18 @@ export class UserService extends UserData {
   private currentUser: BehaviorSubject<any> = new BehaviorSubject(null);
   public readonly currentUser$: Observable<any> = this.currentUser.asObservable();
 
+  private currentGame: BehaviorSubject<any> = new BehaviorSubject(null);
+  public readonly currentGame$: Observable<any> = this.currentGame.asObservable();
+
+  private submittedWord: BehaviorSubject<any> = new BehaviorSubject(null);
+  public readonly submittedWord$: Observable<any> = this.submittedWord.asObservable();
+
+  private submittedNum: BehaviorSubject<any> = new BehaviorSubject(null);
+  public readonly submittedNum$: Observable<any> = this.submittedNum.asObservable();
+
+  private skockoCombination: BehaviorSubject<any> = new BehaviorSubject(null);
+  public readonly skockoCombination$: Observable<any> = this.skockoCombination.asObservable();
+
   private users = {
     nick: { name: 'Nick Jones', picture: 'assets/images/nick.png' },
     eva: { name: 'Eva Moor', picture: 'assets/images/eva.png' },
@@ -41,6 +53,38 @@ export class UserService extends UserData {
     { user: this.users.kate, type: this.types.work, time: this.time.setHours(9, 31)},
     { user: this.users.jack, type: this.types.mobile, time: this.time.setHours(8, 0)},
   ];
+
+  saveCombination(comb: any){
+    this.skockoCombination.next(comb);
+  }
+
+  getCombination(){
+    return this.skockoCombination.value;
+  }
+
+  saveSubmittedExpression(numSolution: any) {
+    this.submittedNum.next(numSolution);
+  }
+
+  getSubmittedExpression(){
+    return this.submittedNum.value;
+  }
+
+  saveSubmittedWord(wordSolution: string){
+    this.submittedWord.next(wordSolution);
+  }
+
+  getSubmittedWord(){
+    return this.submittedWord.value;
+  }
+
+  saveCurrentGame(currentGameForFirstPlayer: any){
+    this.currentGame.next(currentGameForFirstPlayer);
+  }
+
+  getCurrentGame(){
+    return this.currentGame.value;
+  }
 
   saveLoggedInUser(loggedInUser) {
     this.currentUser.next(loggedInUser);

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestCoreAPI.Models;
 
 namespace TestCoreAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210905140740_chars")]
+    partial class chars
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,17 +181,11 @@ namespace TestCoreAPI.Migrations
                     b.Property<string>("Chars")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Combination")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("GameStatus")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("MultiplayerGameDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Nums")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("Player1Id")
                         .HasColumnType("uniqueidentifier");
@@ -197,17 +193,11 @@ namespace TestCoreAPI.Migrations
                     b.Property<int>("Player1Points")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Player1WordsFinished")
-                        .HasColumnType("bit");
-
                     b.Property<Guid?>("Player2Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Player2Points")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Player2WordsFinished")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("SlagalicaGameEnds")
                         .HasColumnType("datetime2");

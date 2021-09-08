@@ -41,6 +41,118 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("get-seconds-left")]
+        public async Task<IActionResult> GetSecondsLeft(MultiplayerGameDto multiGame)
+        {
+            var users = await _organizationService.GetSecondsLeft(multiGame);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("get-multiplayer-game")]
+        public async Task<IActionResult> GetMultiplayer(MultiplayerGameDto multiGame)
+        {
+            var users = await _organizationService.GetMultiplayerGame(multiGame);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("save-points")]
+        public async Task<IActionResult> GetNums(GameAndUserDto request)
+        {
+            var nums = await _organizationService.AddPoints(request);
+            return Ok(nums.Data);
+        }
+
+        [HttpPost]
+        [Route("get-combination")]
+        public async Task<IActionResult> GetCombination(MultiplayerGameDto request)
+        {
+            var comb = await _organizationService.GetCombination(request.Id);
+            return Ok(comb.Data);
+        }
+
+        [HttpPost]
+        [Route("get-nums")]
+        public async Task<IActionResult> GetNums(MultiplayerGameDto request)
+        {
+            var nums = await _organizationService.GetNums(request.Id);
+            return Ok(nums.Data);
+        }
+
+        [HttpPost]
+        [Route("get-chars")]
+        public async Task<IActionResult> GetChars(MultiplayerGameDto request)
+        {
+            var chars = await _organizationService.GetChars(request.Id);
+            return Ok(chars.Data);
+        }
+
+        [HttpPost]
+        [Route("opponent-points")]
+        public async Task<IActionResult> OpponentPoints(GameAndUserDto request)
+        {
+            var users = await _organizationService.OpponentPoints(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("player-finished")]
+        public async Task<IActionResult> PlayerFinished(GameAndUserDto request)
+        {
+            var users = await _organizationService.PlayerFinished(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("next-player")]
+        public async Task<IActionResult> NextPlayer(GameAndUserDto request)
+        {
+            var users = await _organizationService.NextPlayerSkocko(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("try-next-player")]
+        public async Task<IActionResult> TryNextPlayer(GameAndUserDto request)
+        {
+            var users = await _organizationService.TryNextPlayerSkocko(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("next-game")]
+        public async Task<IActionResult> NextGame(GameAndUserDto request)
+        {
+            var users = await _organizationService.NextGame(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("update-game-ends")]
+        public async Task<IActionResult> UpdateGameEnds(UpdateGameEndsAndSendCharsDto request)
+        {
+            var users = await _organizationService.UpdateGameEndsAndSendChars(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("update-game-ends-nums")]
+        public async Task<IActionResult> UpdateGameEndsNums(UpdateGameEndsAndSendNumsDto request)
+        {
+            var users = await _organizationService.UpdateGameEndsAndSendNums(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("update-game-ends-combination")]
+        public async Task<IActionResult> UpdateGameEndsCombination(UpdateGameEndsAndSendCombinationDto request)
+        {
+            var users = await _organizationService.UpdateGameEndsAndSendCombination(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
         [Route("create-multiplayer-game")]
         public async Task<IActionResult> CreateMultiplayerGame(MultiplayerGameDto multiGame)
         {

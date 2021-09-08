@@ -75,12 +75,32 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/add-assoc-game', assocRequest);
   }
 
+  playerFinished(request: any){
+    return this.http.post(this.BaseURI + '/Organization/player-finished', request);
+  }
+
   checkValidWord(wordRequest: any) {
     return this.http.post(this.BaseURI + '/Organization/word-valid', wordRequest);
   }
 
   saveDailyGame(request: any){
     return this.http.post(this.BaseURI + '/Organization/save-daily-play', request);
+  }
+
+  getSecondsLeft(request: any){
+    return this.http.post(this.BaseURI + '/Organization/get-seconds-left', request);
+  }
+
+  updateGameEndsDateAndSendCombination(request: any){
+    return this.http.post(this.BaseURI + '/Organization/update-game-ends-combination', request);
+  }
+
+  updateGameEndsDateAndSendChars(request: any){
+    return this.http.post(this.BaseURI + '/Organization/update-game-ends', request);
+  }
+
+  updateGameEndsDateAndSendNums(request: any){
+    return this.http.post(this.BaseURI + '/Organization/update-game-ends-nums', request);
   }
 
   getDailyGame(currentDate: any) {
@@ -91,8 +111,44 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/create-multiplayer-game', request);
   }
 
+  getMultiplayerGame(request: any){
+    return this.http.post(this.BaseURI + '/Organization/get-multiplayer-game', request);
+  }
+
   getMultiplayerGames(){
     return this.http.get(this.BaseURI + '/Organization/multiplayer-games');
+  }
+
+  calcOpponentPoints(request: any){
+    return this.http.post(this.BaseURI + '/Organization/opponent-points', request);
+  }
+
+  getCombination(request: any){
+    return this.http.post(this.BaseURI + '/Organization/get-combination', request);
+  }
+
+  getChars(request: any){
+    return this.http.post(this.BaseURI + '/Organization/get-chars', request);
+  }
+
+  getNums(request: any){
+    return this.http.post(this.BaseURI + '/Organization/get-nums', request);
+  }
+
+  nextPlayer(request: any){
+    return this.http.post(this.BaseURI + '/Organization/next-player', request);
+  }
+
+  tryOtherPlayer(request: any){
+    return this.http.post(this.BaseURI + '/Organization/try-next-player', request);
+  }
+
+  nextGame(request: any){
+    return this.http.post(this.BaseURI + '/Organization/next-game', request);
+  }
+
+  savePoints(request: any){
+    return this.http.post(this.BaseURI + '/Organization/save-points', request);
   }
 
   addAssocsUpload(assocsRequest: any) {

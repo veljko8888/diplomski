@@ -19,6 +19,12 @@ namespace TestCoreAPI.Models
         public virtual User? Player2 { get; set; }
         public Guid? WinnerId { get; set; }
         public virtual User? Winner { get; set; }
+        public DateTime SlagalicaGameEnds { get; set; }
+        public string Chars { get; set; }
+        public string Nums { get; set; }
+        public string Combination { get; set; }
+        public bool Player1WordsFinished { get; set; }
+        public bool Player2WordsFinished { get; set; }
         public int GameStatus { get; set; }
     }
 }

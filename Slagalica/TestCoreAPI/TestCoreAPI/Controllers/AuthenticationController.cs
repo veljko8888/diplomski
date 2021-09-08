@@ -96,7 +96,7 @@ namespace TestCoreAPI.Controllers
                         new Claim("UserID", result.Data.Id.ToString()),
                         new Claim("UserType", result.Data.TipKorisnika.ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddMinutes(120),
+                    Expires = DateTime.UtcNow.AddMinutes(1200000),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JWT_Secret)), SecurityAlgorithms.HmacSha256Signature)
                 };
                 var tokenHandler = new JwtSecurityTokenHandler();

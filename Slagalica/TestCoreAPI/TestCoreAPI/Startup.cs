@@ -44,7 +44,7 @@ namespace TestCoreAPI
 
             //database options
             services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
+            options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")), ServiceLifetime.Transient, ServiceLifetime.Transient);
 
             var mappingConfig = new MapperConfiguration(mc =>
             {

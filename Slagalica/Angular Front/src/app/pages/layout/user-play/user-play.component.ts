@@ -99,21 +99,24 @@ export class UserPlayComponent implements OnInit {
 
   showMultiplayerGamesDialog: boolean = false;
   games = [];
+  connection: signalR.HubConnection;
+
+
+  showMultiplayerDialog: boolean = false;
+  timeLeftMultiplayer: number = 60;
+  pointsOpponent: number = 0;
+  mojBrojPoints: number = 0;
+  player2Freeze = false;
+  player1Freeze = false;
 
   ngOnInit(): void {
-    const connection = new signalR.HubConnectionBuilder()
+    this.connection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Information)
       .withUrl(this.httpService.BaseURICut + 'notify')
       .build();
 
-    // connection.start().then(function () {  
-    //   console.log('SignalR Connected!');  
-    // }).catch(function (err) {  
-    //   return console.error(err.toString());  
-    // });  
-
     Object.defineProperty(WebSocket, 'OPEN', { value: 1, });
-    connection
+    this.connection
       .start()
       .then(() => {
         console.log('Connection started!');
@@ -123,9 +126,86 @@ export class UserPlayComponent implements OnInit {
         console.log(err);
       });
 
-    connection.on("BroadcastMessage", () => {
+    this.connection.on("BroadcastMessage", () => {
       this.getGames();
     });
+
+    this.connection.on("GameStarted", () => {
+      this.showMultiplayerDialog = true;
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
+
+      } else {
+        this.frameService.showLoader();
+      }
+    });
+
+    this.connection.on("CountdownTimer", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        this.getChars();
+        this.startTimer(1, true);
+        this.wordGameTimeStarted = true;
+      }
+    });
+
+    this.connection.on("CountdownTimerNums", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        this.getNums();
+        this.startTimer(2, true);
+        this.numGameTimeStarted = true;
+      }
+    });
+
+    this.connection.on("CountdownTimerSkocko", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        this.frameService.showLoader();
+        this.getCombination();
+        this.startTimerPassive();
+      }
+    });
+
+    this.connection.on("CountdownTimerSkockoPlayer2", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
+        this.frameService.showLoader();
+        this.getCombination();
+        this.startTimerPassive();
+      }
+    });
+
+    this.connection.on("WordsFinished", () => {
+      this.checkValidWordAndCalcPoints(true);
+      this.frameService.hideLoader();
+    });
+
+    this.connection.on("NumsFinished", () => {
+      this.checkValidExpressionAndCalcPoints(true);
+      this.frameService.hideLoader();
+    });
+
+
+    this.connection.on("NextPlayerSkocko", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        this.frameService.hideLoader();
+        this.skockoGameTimeStarted = false;
+        this.timeLeftMultiplayer = 60;
+        clearInterval(this.interval);
+        this.calcPointsOpponent();
+      }
+    });
+
+    this.connection.on("NextGame", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
+        this.frameService.hideLoader();
+        this.calcPointsOpponent();
+        this.skockoActive = false;
+        this.spojniceActive = true;
+        this.infoMsg = '';
+        this.timeLeftMultiplayer = 60;
+      }
+    });
+  }
+
+  closeMultiplayerDialog() {
+    this.showMultiplayerDialog = false;
   }
 
   async createGame() {
@@ -135,6 +215,13 @@ export class UserPlayComponent implements OnInit {
     }
     await this.httpService.createMultiplayerGame(request).subscribe(
       (res: any) => {
+        this.connection
+          .invoke('EnterFirst', res.id).then(
+            (result: any) => {
+              //console.log(res);
+            }
+          )
+        this.userService.saveCurrentGame(res);
         this.waitCreateGame = 'Igra je kreirana, molimo sačekajte vašeg protivnika.'
       },
       error => {
@@ -155,8 +242,69 @@ export class UserPlayComponent implements OnInit {
 
   }
 
-  async saveWord() {
-    await this.checkValidWordAndCalcPoints();
+  async saveWord(isMultiPlayer: boolean = false) {
+    if (isMultiPlayer) {
+      this.frameService.showLoader();
+      this.userService.saveSubmittedWord(this.wordSolution);
+      let request = {
+        gameId: this.userService.getCurrentGame().id,
+        userId: this.userService.getCurrentUser().id,
+        gameName: 'slagalica'
+      }
+      await this.httpService.playerFinished(request).subscribe(
+        (res: any) => {
+        },
+        error => {
+          console.log(error);
+        });
+    }
+    else {
+      await this.checkValidWordAndCalcPoints();
+    }
+  }
+
+  async saveNum(isMultiPlayer: boolean = false) {
+    if (isMultiPlayer) {
+      this.frameService.showLoader();
+      this.mojBrojPoints = 0;
+      try {
+        let calcResult = eval(this.expression);
+        if (Number.isInteger(calcResult)) {
+          if (calcResult == this.finalNum) {
+            this.mojBrojPoints = 10;
+            //this.points += mojBrojPoints;
+          }
+          else if ((calcResult - this.finalNum <= 5 && calcResult - this.finalNum >= -5)
+            || (this.finalNum - calcResult <= 5 && this.finalNum - calcResult >= -5)) {
+            this.mojBrojPoints = 5;
+            //this.points += mojBrojPoints;
+          }
+        }
+      }
+      catch (error) {
+
+      }
+      finally {
+        this.savePoints(5);
+        //this.savePoints(this.mojBrojPoints)
+      }
+      this.userService.saveSubmittedExpression(this.expression);
+
+      let request = {
+        gameId: this.userService.getCurrentGame().id,
+        userId: this.userService.getCurrentUser().id,
+        gameName: 'mojbroj'
+      }
+      await this.httpService.playerFinished(request).subscribe(
+        (res: any) => {
+        },
+        error => {
+          console.log(error);
+        });
+    }
+    else {
+      await this.checkValidExpressionAndCalcPoints();
+    }
   }
 
   closeDailyGameDialog() {
@@ -178,16 +326,74 @@ export class UserPlayComponent implements OnInit {
     this.showCreateGameDialog = true;
   }
 
+  async enterGame(gameId: any) {
+    this.connection
+      .invoke('EnterSecond', gameId).then(
+        (res: any) => {
+          //console.log(res);
+        }
+      )
+    let request = {
+      Id: gameId,
+      Player2Id: this.userService.getCurrentUser().id
+    }
+    await this.httpService.getMultiplayerGame(request).subscribe(
+      (res: any) => {
+        this.userService.saveCurrentGame(res);
+      },
+      error => {
+        this.waitCreateGame = 'Greška prilikom zapocinjanja igre, molimo pokušajte ponovo.'
+        console.log(error);
+      });
+  }
+
   async openMultiplayerGamesDialog() {
     this.showMultiplayerGamesDialog = true;
     this.frameService.showLoader();
     this.getGames();
   }
 
-  async getGames(){
+  async getGames() {
     await this.httpService.getMultiplayerGames().subscribe(
       (res: any) => {
         this.games = res;
+        this.frameService.hideLoader();
+      },
+      error => {
+        this.frameService.hideLoader();
+        console.log(error);
+      });
+  }
+
+  async getNums() {
+    await this.httpService.getNums(this.userService.getCurrentGame()).subscribe(
+      (res: any) => {
+        this.numsArray = res.nums;
+        this.finalNum = res.finalNum;
+        this.frameService.hideLoader();
+      },
+      error => {
+        this.frameService.hideLoader();
+        console.log(error);
+      });
+  }
+
+  async getCombination() {
+    await this.httpService.getCombination(this.userService.getCurrentGame()).subscribe(
+      (res: any) => {
+        this.userService.saveCombination(res);
+        //this.frameService.hideLoader();
+      },
+      error => {
+        //this.frameService.hideLoader();
+        console.log(error);
+      });
+  }
+
+  async getChars() {
+    await this.httpService.getChars(this.userService.getCurrentGame()).subscribe(
+      (res: any) => {
+        this.charsArray = res;
         this.frameService.hideLoader();
       },
       error => {
@@ -289,21 +495,59 @@ export class UserPlayComponent implements OnInit {
       { value: '', clicked: false }, { value: '', clicked: false }];
   }
 
-  pickChars() {
-    this.wordGameTimeStarted = true;
-    this.charsArray.forEach(char => {
-      char.value = this.chars[Math.floor(Math.random() * 30) + 1 - 1]
-    });
-    this.startTimer(1);
+  async pickChars(isMultiplayer: boolean = false) {
+    if (isMultiplayer) {
+      this.wordGameTimeStarted = true;
+      this.charsArray.forEach(char => {
+        char.value = this.chars[Math.floor(Math.random() * 30) + 1 - 1]
+      });
+      let request = {
+        multiplayerGameDto: this.userService.getCurrentGame(),
+        chars: this.charsArray
+      }
+      await this.httpService.updateGameEndsDateAndSendChars(request).subscribe(
+        (res: any) => {
+        },
+        error => {
+          //this.waitCreateGame = 'Greška prilikom zapocinjanja igre, molimo pokušajte ponovo.'
+          console.log(error);
+        });
+      this.startTimer(1, true);
+    }
+    else {
+      this.wordGameTimeStarted = true;
+      this.charsArray.forEach(char => {
+        char.value = this.chars[Math.floor(Math.random() * 30) + 1 - 1]
+      });
+      this.startTimer(1);
+    }
+
   }
 
-  pickSkocko() {
+  async pickSkocko(isMultiplayer: boolean = false) {
     this.skockoGameTimeStarted = true;
     this.skockoCombination[0] = this.skockoOptions[Math.floor(Math.random() * 6) + 1 - 1];
     this.skockoCombination[1] = this.skockoOptions[Math.floor(Math.random() * 6) + 1 - 1];
     this.skockoCombination[2] = this.skockoOptions[Math.floor(Math.random() * 6) + 1 - 1];
     this.skockoCombination[3] = this.skockoOptions[Math.floor(Math.random() * 6) + 1 - 1];
-    this.startTimer(3);
+    if (isMultiplayer) {
+      let request = {
+        multiplayerGameDto: this.userService.getCurrentGame(),
+        userId: this.userService.getCurrentUser().id,
+        combination: this.skockoCombination
+      }
+      await this.httpService.updateGameEndsDateAndSendCombination(request).subscribe(
+        (res: any) => {
+        },
+        error => {
+          //this.waitCreateGame = 'Greška prilikom zapocinjanja igre, molimo pokušajte ponovo.'
+          console.log(error);
+        });
+      this.startTimer(3, true);
+    }
+    else {
+      this.startTimer(3);
+    }
   }
 
   pickAsocijacije() {
@@ -433,10 +677,11 @@ export class UserPlayComponent implements OnInit {
     this.currentCombinationIteration = 0;
   }
 
-  submitRowCombination() {
+  submitRowCombination(isMultiplayer: boolean = false) {
     let correctSignAndPlace = 0;
     let correctSign = 0;
     let i = 0;
+    console.log(this.skockoCombination);
     this.skockoCombination.forEach(element => {
       if (element == this.currentCombination[this.currentCombinationRow].combination[i++]) {
         correctSignAndPlace++;
@@ -481,22 +726,98 @@ export class UserPlayComponent implements OnInit {
     this.currentCombinationRow++;
 
     if (correctSignAndPlace == 4) {
-      this.points += 10;
-      this.infoMsg = "Pogodak! Osvojili ste 10 poena u ovoj igri.";
-      clearInterval(this.interval);
-      this.timeLeft = 60;
-      setTimeout(() => {
-        this.skockoActive = false;
-        this.spojniceActive = true;
-        this.infoMsg = '';
-      }, 5000);
+      if (isMultiplayer) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          this.points += 10;
+          this.infoMsg = "Pogodak! Osvojili ste 10 poena u ovoj igri.";
+          this.savePoints(10);
+          clearInterval(this.interval);
+          this.timeLeftMultiplayer = 60;
+          setTimeout(() => {
+            this.moveNextGame();
+            this.skockoActive = false;
+            this.spojniceActive = true;
+            this.infoMsg = '';
+          }, 5000);
+        }
+        else {
+          this.points += 10;
+          this.infoMsg = "Pogodak! Osvojili ste 10 poena u ovoj igri.";
+          this.savePoints(10);
+          clearInterval(this.interval);
+          this.timeLeftMultiplayer = 60;
+          setTimeout(() => {
+            this.moveNextPlayer();
+            // this.skockoActive = false;
+            // this.spojniceActive = true;
+            // this.infoMsg = '';
+          }, 5000);
+        }
+      }
+      else {
+        this.points += 10;
+        this.infoMsg = "Pogodak! Osvojili ste 10 poena u ovoj igri.";
+        clearInterval(this.interval);
+        this.timeLeft = 60;
+        setTimeout(() => {
+          this.skockoActive = false;
+          this.spojniceActive = true;
+          this.infoMsg = '';
+        }, 5000);
+      }
+
     }
     else if (this.currentCombinationRow > 5) {
-      this.checkSkockoCombinationAndCalculatePoints();
+      if (isMultiplayer) {
+
+      }
+      else {
+        this.checkSkockoCombinationAndCalculatePoints();
+      }
     }
   }
 
-  pickNums() {
+  async moveNextGame() {
+    this.frameService.showLoader();
+    let request = {
+      gameId: this.userService.getCurrentGame().id,
+    }
+    await this.httpService.nextGame(request).subscribe(
+      (res: any) => {
+      },
+      error => {
+        //this.frameService.hideLoader();
+        console.log(error);
+      });
+  }
+
+  async moveNextPlayer() {
+    this.frameService.showLoader();
+    this.currentCombination = [
+      { combinationStatus: [2, 2, 2, 2], combination: ['', '', '', ''], combinationSubmitted: false, allSignsChosen: false },
+      { combinationStatus: [2, 2, 2, 2], combination: ['', '', '', ''], combinationSubmitted: false, allSignsChosen: false },
+      { combinationStatus: [2, 2, 2, 2], combination: ['', '', '', ''], combinationSubmitted: false, allSignsChosen: false },
+      { combinationStatus: [2, 2, 2, 2], combination: ['', '', '', ''], combinationSubmitted: false, allSignsChosen: false },
+      { combinationStatus: [2, 2, 2, 2], combination: ['', '', '', ''], combinationSubmitted: false, allSignsChosen: false },
+      { combinationStatus: [2, 2, 2, 2], combination: ['', '', '', ''], combinationSubmitted: false, allSignsChosen: false }
+    ];
+    this.currentCombinationIteration = 0;
+    this.currentCombinationRow = 0;
+    this.skockoCombination = [];
+    let request = {
+      gameId: this.userService.getCurrentGame().id,
+      userId: this.userService.getCurrentUser().id
+    }
+    await this.httpService.nextPlayer(request).subscribe(
+      (res: any) => {
+      },
+      error => {
+        //this.frameService.hideLoader();
+        console.log(error);
+      });
+  }
+
+  async pickNums(isMultiplayer: boolean = false) {
     this.numGameTimeStarted = true;
     for (let i = 0; i < 6; i++) {
       if (i < 4) {
@@ -510,32 +831,114 @@ export class UserPlayComponent implements OnInit {
       }
     }
     this.finalNum = Math.floor(Math.random() * 999) + 1;
-    this.startTimer(2);
+    if (isMultiplayer) {
+      let request = {
+        multiplayerGameDto: this.userService.getCurrentGame(),
+        nums: this.numsArray,
+        finalNum: this.finalNum
+      }
+      await this.httpService.updateGameEndsDateAndSendNums(request).subscribe(
+        (res: any) => {
+        },
+        error => {
+          //this.waitCreateGame = 'Greška prilikom zapocinjanja igre, molimo pokušajte ponovo.'
+          console.log(error);
+        });
+      this.startTimer(2, true);
+    }
+    else {
+      this.startTimer(2);
+    }
   }
 
-  startTimer(game: number) {
+  startTimerPassive() {
     this.interval = setInterval(async () => {
-      if (this.timeLeft > 0) {
-        this.timeLeft--;
-      } else {
-        clearInterval(this.interval);
-        if (game == 1) {
-          await this.checkValidWordAndCalcPoints();
-        }
-        else if (game == 2) {
-          this.checkValidExpressionAndCalcPoints();
-        }
-        else if (game == 3) {
-          this.checkSkockoCombinationAndCalculatePoints();
-        }
-        else if (game == 4) {
-          this.checkSpojniceAndCalculatePoints();
-        }
-        else if (game == 5) {
-          this.checkAsocijacijeAndCalculatePoints();
-        }
+      if (this.timeLeftMultiplayer > 0) {
+        this.httpService.getSecondsLeft(this.userService.getCurrentGame()).subscribe(
+          (res: any) => {
+            this.timeLeftMultiplayer = res;
+          },
+          error => {
+            console.log(error);
+          });
       }
-    }, 1000)
+      else {
+        clearInterval(this.interval);
+      }
+    }, 1000);
+  }
+
+  startTimer(game: number, isMultiPlayer = false) {
+    if (isMultiPlayer) {
+      this.interval = setInterval(async () => {
+        if (this.timeLeftMultiplayer > 0) {
+          this.httpService.getSecondsLeft(this.userService.getCurrentGame()).subscribe(
+            (res: any) => {
+              this.timeLeftMultiplayer = res;
+            },
+            error => {
+              console.log(error);
+            });
+        } else {
+          clearInterval(this.interval);
+          if (game == 1) {
+            if (isMultiPlayer) {
+              await this.checkValidWordAndCalcPoints(true);
+            }
+            else {
+              await this.checkValidWordAndCalcPoints();
+            }
+          }
+          else if (game == 2) {
+            if (isMultiPlayer) {
+              await this.checkValidExpressionAndCalcPoints(true);
+            }
+            else {
+              await this.checkValidExpressionAndCalcPoints();
+            }
+          }
+          else if (game == 3) {
+            if (isMultiPlayer) {
+              this.checkSkockoCombinationAndCalculatePoints(true);
+            }
+            else {
+              this.checkSkockoCombinationAndCalculatePoints();
+            }
+          }
+          else if (game == 4) {
+            this.checkSpojniceAndCalculatePoints();
+          }
+          else if (game == 5) {
+            this.checkAsocijacijeAndCalculatePoints();
+          }
+        }
+      }, 1000)
+    }
+    else {
+      this.interval = setInterval(async () => {
+
+        if (this.timeLeft > 0) {
+          this.timeLeft--;
+        } else {
+          clearInterval(this.interval);
+          if (game == 1) {
+            await this.checkValidWordAndCalcPoints();
+          }
+          else if (game == 2) {
+            this.checkValidExpressionAndCalcPoints();
+          }
+          else if (game == 3) {
+            this.checkSkockoCombinationAndCalculatePoints();
+          }
+          else if (game == 4) {
+            this.checkSpojniceAndCalculatePoints();
+          }
+          else if (game == 5) {
+            this.checkAsocijacijeAndCalculatePoints();
+          }
+        }
+      }, 1000)
+    }
   }
 
   checkConnection(index: number) {
@@ -627,9 +1030,12 @@ export class UserPlayComponent implements OnInit {
     return dateString;
   }
 
-  async checkValidWordAndCalcPoints() {
+  async checkValidWordAndCalcPoints(isMultiplayer: boolean = false) {
+    this.wordSolution = isMultiplayer ? this.userService.getSubmittedWord() : this.wordSolution;
     let wordRequest = {
-      Rec: this.wordSolution //'ЧИГОТА'
+      Rec: this.wordSolution, //'ЧИГОТА'
+      GameId: this.userService.getCurrentGame()?.id,
+      UserId: this.userService.getCurrentUser().id
     }
     await this.httpService.checkValidWord(wordRequest).subscribe(
       (res: any) => {
@@ -642,6 +1048,14 @@ export class UserPlayComponent implements OnInit {
         this.timeLeft = 60;
         this.infoMsg = `Osvojili ste ${slagalicaPoints} poena u ovoj igri. Uskoro počinje sledeća igra...`
         setTimeout(() => {
+          if (isMultiplayer) {
+            this.timeLeftMultiplayer = 60;
+            this.calcPointsOpponent();
+            if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+              this.numGameTimeStarted = true;
+              this.frameService.showLoader();
+            }
+          }
           this.slagalicaActive = false;
           this.mojBrojActive = true;
           this.infoMsg = '';
@@ -655,6 +1069,14 @@ export class UserPlayComponent implements OnInit {
         this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
         this.infoMsg = `Osvojili ste 0 poena u ovoj igri. Uskoro počinje sledeća igra...`;
         setTimeout(() => {
+          if (isMultiplayer) {
+            this.calcPointsOpponent();
+            this.timeLeftMultiplayer = 60;
+            if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+              this.numGameTimeStarted = true;
+              this.frameService.showLoader();
+            }
+          }
           this.slagalicaActive = false;
           this.mojBrojActive = true;
           this.infoMsg = '';
@@ -663,23 +1085,41 @@ export class UserPlayComponent implements OnInit {
       });
   }
 
-  checkValidExpressionAndCalcPoints() {
+  async calcPointsOpponent() {
+    let request = {
+      GameId: this.userService.getCurrentGame().id,
+      UserId: this.userService.getCurrentUser().id
+    }
+    await this.httpService.calcOpponentPoints(request).subscribe(
+      (res: any) => {
+        this.points = res.points;
+        this.pointsOpponent = res.opponentPoints;
+        this.frameService.hideLoader();
+      },
+      error => {
+        this.frameService.hideLoader();
+        console.log(error);
+      });
+  }
+
+  async checkValidExpressionAndCalcPoints(isMultiplayer: boolean = false) {
     try {
-      let mojBrojPoints = 0;
+      this.mojBrojPoints = 0;
+      this.expression = isMultiplayer ? this.userService.getSubmittedExpression() : this.expression;
       let calcResult = eval(this.expression);
       if (Number.isInteger(calcResult)) {
         if (calcResult == this.finalNum) {
-          mojBrojPoints = 10;
-          this.points += mojBrojPoints;
+          this.mojBrojPoints = 10;
+          this.points += this.mojBrojPoints;
         }
         else if ((calcResult - this.finalNum <= 5 && calcResult - this.finalNum >= -5)
           || (this.finalNum - calcResult <= 5 && this.finalNum - calcResult >= -5)) {
-          mojBrojPoints = 5;
-          this.points += mojBrojPoints;
+          this.mojBrojPoints = 5;
+          this.points += this.mojBrojPoints;
         }
       }
 
-      this.infoMsg = `Osvojili ste ${mojBrojPoints} poena u ovoj igri. Uskoro počinje sledeća igra...`
+      this.infoMsg = `Osvojili ste ${this.mojBrojPoints} poena u ovoj igri. Uskoro počinje sledeća igra...`
     }
     catch (error) {
       this.infoMsg = `Osvojili ste 0 poena u ovoj igri. Postoji greška u vašem izrazu. Uskoro počinje sledeća igra...`
@@ -687,7 +1127,19 @@ export class UserPlayComponent implements OnInit {
     finally {
       clearInterval(this.interval);
       this.timeLeft = 60;
-      setTimeout(() => {
+      if (isMultiplayer) {
+        this.timeLeftMultiplayer = 60;
+        //this.savePoints(this.mojBrojPoints);
+        this.savePoints(10);
+        this.calcPointsOpponent();
+      }
+
+      this.frameService.hideLoader();
+      setTimeout(async () => {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          this.skockoGameTimeStarted = true;
+          this.frameService.showLoader();
+        }
         this.mojBrojActive = false;
         this.skockoActive = true;
         this.infoMsg = '';
@@ -695,15 +1147,51 @@ export class UserPlayComponent implements OnInit {
     }
   }
 
-  checkSkockoCombinationAndCalculatePoints() {
-    this.infoMsg = `Osvojili ste 0 poena u ovoj igri. Uskoro počinje sledeća igra...`;
-    clearInterval(this.interval);
-    this.timeLeft = 60;
-    setTimeout(() => {
-      this.skockoActive = false;
-      this.spojniceActive = true;
-      this.infoMsg = '';
-    }, 5000);
+  async savePoints(mojBrojPoints) {
+    let request = {
+      gameId: this.userService.getCurrentGame().id,
+      userId: this.userService.getCurrentUser().id,
+      addPoints: mojBrojPoints
+    }
+    await this.httpService.savePoints(request).subscribe(
+      (res: any) => {
+      },
+      error => {
+        console.log(error);
+      });
+  }
+
+  checkSkockoCombinationAndCalculatePoints(isMultiplayer: boolean = false) {
+    if (isMultiplayer) {
+      this.infoMsg = `Osvojili ste 0 poena u ovoj igri.`;
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        clearInterval(this.interval);
+        this.timeLeftMultiplayer = 60;
+        setTimeout(() => {
+          this.moveNextGame();
+          this.skockoActive = false;
+          this.spojniceActive = true;
+          this.infoMsg = '';
+        }, 5000);
+      }
+      else {
+        clearInterval(this.interval);
+        this.timeLeftMultiplayer = 60;
+        setTimeout(() => {
+          this.moveNextPlayer();
+        }, 5000);
+      }
+    }
+    else {
+      this.infoMsg = `Osvojili ste 0 poena u ovoj igri. Uskoro počinje sledeća igra...`;
+      clearInterval(this.interval);
+      this.timeLeft = 60;
+      setTimeout(() => {
+        this.skockoActive = false;
+        this.spojniceActive = true;
+        this.infoMsg = '';
+      }, 5000);
+    }
   }
 
   checkSpojniceAndCalculatePoints() {

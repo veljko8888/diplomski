@@ -10,5 +10,7 @@ namespace TestCoreAPI.Dtos
         public Guid? Id { get; set; }
 
         public string? Rec { get; set; }
+        public Guid? UserId { get; set; }
+        public Guid? GameId { get; set; }
     }
 }

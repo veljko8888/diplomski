@@ -19,5 +19,6 @@ namespace TestCoreAPI.Dtos
         public UserDto Player1 { get; set; }
         public UserDto Player2 { get; set; }
         public UserDto Winner { get; set; }
+        public DateTime SlagalicaGameEnds { get; set; }
     }
 }

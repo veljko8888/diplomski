@@ -20,7 +20,25 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<DailyGameContentDto>> GetDailyGamePlay(DateTime dailyGameDate);
         Task<ResponseWrapper<DailyGamePlayDto>> SaveDailyGamePlay(DailyGamePlayDto dailyPlay);
         Task<ResponseWrapper<List<MultiplayerGameDto>>> GetMultiplayerGames();
+        Task<ResponseWrapper<MultiplayerGameDto>> GetMultiplayerGame(MultiplayerGameDto multigame);
+        Task<ResponseWrapper<List<CharDto>>> GetChars(Guid gameId);
+        Task<ResponseWrapper<UpdateGameEndsAndSendNumsDto>> GetNums(Guid gameId);
+        Task<ResponseWrapper<List<string>>> GetCombination(Guid gameId);
+        
+        Task<ResponseWrapper<bool>> PlayerFinished(GameAndUserDto request);
+        Task<ResponseWrapper<bool>> NextPlayerSkocko(GameAndUserDto request);
+        Task<ResponseWrapper<bool>> TryNextPlayerSkocko(GameAndUserDto request);
+        
+        Task<ResponseWrapper<bool>> NextGame(GameAndUserDto request);
+        
+        Task<ResponseWrapper<GameAndUserDto>> OpponentPoints(GameAndUserDto request);
+        Task<ResponseWrapper<int>> AddPoints(GameAndUserDto request);
+        Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendCombination(UpdateGameEndsAndSendCombinationDto multigame);
+        
+        Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendNums(UpdateGameEndsAndSendNumsDto multigame);
+        Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendChars(UpdateGameEndsAndSendCharsDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> CreateMultiplayerGame(MultiplayerGameDto multigame);
+        Task<ResponseWrapper<int>> GetSecondsLeft(MultiplayerGameDto game);
         Task<ResponseWrapper<DailyGamesResponseDto>> AddDailyGame(DailyGameDto dailyGame);
         Task<ResponseWrapper<WordDto>> AddWord(WordDto word);
         Task<ResponseWrapper<List<WordDto>>> AddWordsUpload(List<WordDto> wordsDtos);
