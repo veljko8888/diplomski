@@ -12,6 +12,7 @@ namespace TestCoreAPI.SignalRHub
         Task CountdownTimer();
         Task CountdownTimerNums();
         Task CountdownTimerSkocko();
+        Task CountdownTimerSpojnice();
         Task CountdownTimerSkockoPlayer2();
         Task WordsFinished();
         Task NumsFinished();
@@ -21,5 +22,7 @@ namespace TestCoreAPI.SignalRHub
         Task TryNextPlayerSkocko();
         Task NextGame();
         Task NextGamePlayer2();
+        Task SpojniceState2();
+        Task SpojniceSecondRound();
     }
 }

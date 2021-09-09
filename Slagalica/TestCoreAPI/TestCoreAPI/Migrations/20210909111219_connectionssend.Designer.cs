@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestCoreAPI.Models;
 
 namespace TestCoreAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210909111219_connectionssend")]
+    partial class connectionssend
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -219,9 +221,6 @@ namespace TestCoreAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SpojniceText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SpojniceTextLeft")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("WinnerId")

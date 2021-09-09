@@ -28,5 +28,7 @@ namespace TestCoreAPI.Models
         public int GameStatus { get; set; }
         public int Player1EvalResult { get; set; }
         public int Player2EvalResult { get; set; }
+        public string SpojniceText { get; set; }
+        public string SpojniceTextLeft { get; set; }
     }
 }

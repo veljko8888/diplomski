@@ -103,6 +103,18 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/update-game-ends-nums', request);
   }
 
+  updateGameEndsDateAndNotifyForConnections(request: any){
+    return this.http.post(this.BaseURI + '/Organization/update-game-ends-connections', request);
+  }
+
+  getSpojniceGame(currentDate){
+    return this.http.post(this.BaseURI + '/Organization/get-spojnice', currentDate);
+  }
+
+  getSpojniceChecked(request: any){
+    return this.http.post(this.BaseURI + '/Organization/get-spojnice-checked', request);
+  }
+
   getDailyGame(currentDate: any) {
     return this.http.post(this.BaseURI + '/Organization/get-daily-game', currentDate);
   }
@@ -153,6 +165,14 @@ export class HttpHandlerService {
 
   savePoints(request: any){
     return this.http.post(this.BaseURI + '/Organization/save-points', request);
+  }
+
+  spojniceSecondRound(request: any){
+    return this.http.post(this.BaseURI + '/Organization/spojnice-second-round', request);
+  }
+
+  sendSpojniceShuffledState(request: any){
+    return this.http.post(this.BaseURI + '/Organization/spojnice-save-shuffled', request);
   }
 
   addAssocsUpload(assocsRequest: any) {

@@ -17,6 +17,7 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<List<UserDto>>> ActivateDeactivateUser(UserDto user);
         Task<ResponseWrapper<List<UserDto>>> GetUsers();
         Task<ResponseWrapper<DailyGamesResponseDto>> GetDailyGames(GetDailyGamesDto dailyGames);
+        Task<ResponseWrapper<DailyGameContentDto>> GetSpojnice(DateTime gamesDate);
         Task<ResponseWrapper<DailyGameContentDto>> GetDailyGamePlay(DateTime dailyGameDate);
         Task<ResponseWrapper<DailyGamePlayDto>> SaveDailyGamePlay(DailyGamePlayDto dailyPlay);
         Task<ResponseWrapper<List<MultiplayerGameDto>>> GetMultiplayerGames();
@@ -35,7 +36,7 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<GameAndUserDto>> OpponentPoints(GameAndUserDto request);
         Task<ResponseWrapper<int>> AddPoints(GameAndUserDto request);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendCombination(UpdateGameEndsAndSendCombinationDto multigame);
-
+        Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndNotifyCombinations(UpdateGameEndsAndNotifyCombinationsDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendNums(UpdateGameEndsAndSendNumsDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendChars(UpdateGameEndsAndSendCharsDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> CreateMultiplayerGame(MultiplayerGameDto multigame);
@@ -43,6 +44,10 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<DailyGamesResponseDto>> AddDailyGame(DailyGameDto dailyGame);
         Task<ResponseWrapper<WordDto>> AddWord(WordDto word);
         Task<ResponseWrapper<List<WordDto>>> AddWordsUpload(List<WordDto> wordsDtos);
+        Task<ResponseWrapper<SpojniceRestAndShuffleDto>> ResetSpojniceSaveShuffled(SpojniceRestAndShuffleDto spojniceResetDto);
+        Task<ResponseWrapper<SpojniceRestAndShuffleDto>> GetSpojniceChecked(SpojniceRestAndShuffleDto spojniceResetDto);
+        Task<ResponseWrapper<bool>> SpojniceSecondRound(GameAndUserDto request);
+        
         Task<ResponseWrapper<ConnectionDto>> AddConn(ConnectionDto conn);
         Task<ResponseWrapper<AssociationDto>> AddAssoc(AssociationDto conn);
         Task<ResponseWrapper<List<ConnectionDto>>> AddConnsUpload(List<ConnectionDto> connsDtos);

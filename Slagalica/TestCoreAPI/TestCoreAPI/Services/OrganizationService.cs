@@ -457,13 +457,39 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndNotifyCombinations(UpdateGameEndsAndNotifyCombinationsDto multigame)
+        {
+            try
+            {
+                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
+                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
+                _context.MultiplayerGames.Update(game);
+                await _context.SaveChangesAsync();
+                multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
+                await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSpojnice();
+                //if (multigame.UserId == game.Player1Id)
+                //{
+                //    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSkocko();
+                //}
+                //else
+                //{
+                //    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSkockoPlayer2();
+                //}
+                return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+            }
+        }
+
         public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendCombination(UpdateGameEndsAndSendCombinationDto multigame)
         {
             try
             {
                 string comb = string.Join("-", multigame.Combination);
                 var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
-                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(90);
+                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
                 game.Combination = comb;
                 _context.MultiplayerGames.Update(game);
                 await _context.SaveChangesAsync();
@@ -575,6 +601,34 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<DailyGameContentDto>> GetSpojnice(DateTime gamesDate)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM DailyGames WITH (TABLOCKX, HOLDLOCK)");
+                    var dailyGame = await _context.DailyGames.Include(x => x.Association).Include(x => x.Connection.Pairs).FirstOrDefaultAsync(x => x.DailyGameDate.Day == gamesDate.Day && x.DailyGameDate.Month == gamesDate.Month && x.DailyGameDate.Year == gamesDate.Year);
+                    if (dailyGame == null)
+                    {
+                        return ResponseWrapper<DailyGameContentDto>.Error(AppConstants.NoDailyGame);
+                    }
+
+                    var association = _mapper.Map<AssociationDto>(dailyGame.Association);
+                    var connection = _mapper.Map<ConnectionDto>(dailyGame.Connection);
+                    DailyGameContentDto response = new DailyGameContentDto();
+                    response.Connections = connection;
+                    response.Associations = association;
+                    response.GameState = 1;
+                    transaction.Commit();
+                    return ResponseWrapper<DailyGameContentDto>.Success(response);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<DailyGameContentDto>.Error(AppConstants.NoDailyGame);
+                }
+            }
+        }
 
         public async Task<ResponseWrapper<DailyGameContentDto>> GetDailyGamePlay(DateTime dailyGamesDateDto)
         {
@@ -726,6 +780,126 @@ namespace TestCoreAPI.Services
             catch (Exception)
             {
                 return ResponseWrapper<WordDto>.Error(AppConstants.FailedToAddWord);
+            }
+        }
+
+        public async Task<ResponseWrapper<bool>> SpojniceSecondRound(GameAndUserDto request)
+        {
+            try
+            {
+                await _hubContext.Clients.Group(request.GameId.ToString()).SpojniceSecondRound();
+
+                return ResponseWrapper<bool>.Success(true);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<bool>.Error(AppConstants.FailedToAddWord);
+            }
+        }
+
+        public async Task<ResponseWrapper<SpojniceRestAndShuffleDto>> GetSpojniceChecked(SpojniceRestAndShuffleDto spojniceResetDto)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == spojniceResetDto.MultiplayerGameDto.Id);
+                    if (game != null)
+                    {
+                        var res = new SpojniceRestAndShuffleDto();
+                        List<string> spojniceElements = game.SpojniceText.Split("$$").ToList();
+                        List<ShuffledSpojnicaDto> list = new List<ShuffledSpojnicaDto>();
+                        
+                        foreach (var spojnica in spojniceElements)
+                        {
+                            ShuffledSpojnicaDto spojnicaDto = new ShuffledSpojnicaDto();
+                            List<string> splittedSpojnica = spojnica.Split("##").ToList();
+                            spojnicaDto.Left = splittedSpojnica[0];
+                            spojnicaDto.Right = splittedSpojnica[1];
+                            spojnicaDto.Correct = Convert.ToBoolean(splittedSpojnica[2]);
+                            list.Add(spojnicaDto);
+                        }
+
+                        res.SpojniceShuffledState = list;
+
+                        spojniceElements = game.SpojniceTextLeft.Split("$$").ToList();
+                        list = new List<ShuffledSpojnicaDto>();
+
+                        foreach (var spojnica in spojniceElements)
+                        {
+                            ShuffledSpojnicaDto spojnicaDto = new ShuffledSpojnicaDto();
+                            List<string> splittedSpojnica = spojnica.Split("##").ToList();
+                            spojnicaDto.Left = splittedSpojnica[0];
+                            spojnicaDto.Right = splittedSpojnica[1];
+                            spojnicaDto.Correct = Convert.ToBoolean(splittedSpojnica[2]);
+                            list.Add(spojnicaDto);
+                        }
+
+                        res.SpojniceLeftSide = list;
+                        return ResponseWrapper<SpojniceRestAndShuffleDto>.Success(res);
+                    }
+
+                    return ResponseWrapper<SpojniceRestAndShuffleDto>.Error(AppConstants.FailedToAddWord);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<SpojniceRestAndShuffleDto>.Error(AppConstants.FailedToAddWord);
+                }
+            }
+        }
+
+        public async Task<ResponseWrapper<SpojniceRestAndShuffleDto>> ResetSpojniceSaveShuffled(SpojniceRestAndShuffleDto spojniceResetDto)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == spojniceResetDto.MultiplayerGameDto.Id);
+                    if (game != null)
+                    {
+                        //List<string> combination = game.Combination.Split('-').ToList();
+                        var spojList = string.Empty;
+                        foreach (var spojnica in spojniceResetDto.SpojniceShuffledState.Select((value, i) => new { i, value }))
+                        {
+                            string spojnicaText = string.Empty;
+                            spojnicaText += spojnica.value.Left + "##" + spojnica.value.Right + "##" + spojnica.value.Correct;
+                            if (spojnica.i != spojniceResetDto.SpojniceShuffledState.Count - 1)
+                            {
+                                spojnicaText += "$$";
+                            }
+                            spojList += spojnicaText;
+                        }
+
+                        game.SpojniceText = spojList;
+
+                        spojList = string.Empty;
+                        foreach (var spojnica in spojniceResetDto.SpojniceLeftSide.Select((value, i) => new { i, value }))
+                        {
+                            string spojnicaText = string.Empty;
+                            spojnicaText += spojnica.value.Left + "##" + spojnica.value.Right + "##" + spojnica.value.Correct;
+                            if (spojnica.i != spojniceResetDto.SpojniceShuffledState.Count - 1)
+                            {
+                                spojnicaText += "$$";
+                            }
+                            spojList += spojnicaText;
+                        }
+
+                        game.SpojniceTextLeft = spojList;
+                        _context.MultiplayerGames.Update(game);
+                        await _context.SaveChangesAsync();
+                        transaction.Commit();
+                        await _hubContext.Clients.Group(spojniceResetDto.MultiplayerGameDto.Id.ToString()).SpojniceState2();
+                        return ResponseWrapper<SpojniceRestAndShuffleDto>.Success(spojniceResetDto);
+                    }
+
+                    return ResponseWrapper<SpojniceRestAndShuffleDto>.Error(AppConstants.FailedToAddWord);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<SpojniceRestAndShuffleDto>.Error(AppConstants.FailedToAddWord);
+                }
             }
         }
 

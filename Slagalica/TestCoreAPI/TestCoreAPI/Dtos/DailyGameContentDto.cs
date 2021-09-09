@@ -9,5 +9,6 @@ namespace TestCoreAPI.Dtos
     {
         public ConnectionDto Connections { get; set; }
         public AssociationDto Associations { get; set; }
+        public int GameState { get; set; }
     }
 }

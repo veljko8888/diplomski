@@ -163,6 +163,55 @@ export class UserPlayComponent implements OnInit {
       }
     });
 
+    this.connection.on("CountdownTimerSpojnice", () => {
+      let gameState = this.userService.getSpojniceGameState();
+      if (gameState == 1 || gameState == null || gameState == undefined) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          this.getSpojnice();
+          this.startTimerPassive();
+        }
+        else {
+          this.getSpojnice();
+          this.startTimer(4, true);
+        }
+      }
+      if (gameState == 2) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          //this.getSpojnice(true);
+          this.startTimer(4, true);
+          //this.userService.saveSpojniceGameState(3);
+          this.spojniceGameStarted = true;
+        }
+        else {
+          //this.getSpojnice(true);
+          this.startTimerPassive();
+          //this.userService.saveSpojniceGameState(3);
+        }
+      }
+
+    });
+
+    this.connection.on("SpojniceSecondRound", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        this.getSpojnice(true);
+        this.calcPointsOpponent();
+        this.spojniceGameStarted = false;
+        this.timeLeftMultiplayer = 60;
+        clearInterval(this.interval);
+        this.userService.saveSpojniceGameState(3);
+        this.frameService.hideLoader();
+      }
+      else {
+        this.getSpojnice(true);
+        this.calcPointsOpponent();
+        this.skockoGameTimeStarted = true;
+        this.timeLeftMultiplayer = 60;
+        clearInterval(this.interval);
+        this.userService.saveSpojniceGameState(3);
+        this.frameService.showLoader();
+      }
+    });
+
     this.connection.on("CountdownTimerSkockoPlayer2", () => {
       if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
         this.frameService.showLoader();
@@ -200,12 +249,33 @@ export class UserPlayComponent implements OnInit {
       if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
         this.frameService.hideLoader();
         this.calcPointsOpponent();
+        clearInterval(this.interval);
         this.skockoActive = false;
         this.spojniceActive = true;
         this.infoMsg = '';
         this.timeLeftMultiplayer = 60;
       }
     });
+
+    this.connection.on("SpojniceState2", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        this.userService.saveSpojniceGameState(2);
+        this.getSpojniceAlreadyChecked();
+        this.calcPointsOpponent();
+        this.timeLeftMultiplayer = 60;
+        clearInterval(this.interval);
+        this.frameService.hideLoader();
+      }
+      else {
+        this.points += this.spojnicePoints;
+        this.spojnicePoints = 0;
+        this.userService.saveSpojniceGameState(2);
+        this.timeLeftMultiplayer = 60;
+        clearInterval(this.interval);
+        this.frameService.showLoader();
+      }
+    });
+
   }
 
   closeMultiplayerDialog() {
@@ -274,17 +344,6 @@ export class UserPlayComponent implements OnInit {
       let calcResult = -1;
       try {
         calcResult = eval(this.expression);
-        // if (Number.isInteger(calcResult)) {
-        //   if (calcResult == this.finalNum) {
-        //     this.mojBrojPoints = 10;
-        //     //this.points += mojBrojPoints;
-        //   }
-        //   else if ((calcResult - this.finalNum <= 5 && calcResult - this.finalNum >= -5)
-        //     || (this.finalNum - calcResult <= 5 && this.finalNum - calcResult >= -5)) {
-        //     this.mojBrojPoints = 5;
-        //     //this.points += mojBrojPoints;
-        //   }
-        // }
       }
       catch (error) {
 
@@ -559,21 +618,42 @@ export class UserPlayComponent implements OnInit {
     this.startTimer(5);
   }
 
-  async pickSpojnice() {
-    this.spojniceGameStarted = true;
+  async getSpojniceAlreadyChecked() {
     let request = {
-      DailyGameDate: this.formatDate(new Date())
+      multiplayerGameDto: this.userService.getCurrentGame(),
+      userId: this.userService.getCurrentUser().id
     }
-    await this.httpService.getDailyGame(request).subscribe(
+    await this.httpService.getSpojniceChecked(request).subscribe(
+      (res: any) => {
+        this.spojniceShuffledParovi = res.spojniceShuffledState;
+        this.spojniceParovi = res.spojniceLeftSide
+        this.currentRow = this.spojniceParovi.indexOf(this.spojniceParovi.find(x => x.correct == false))
+      },
+      error => {
+        //this.waitCreateGame = 'Greška prilikom zapocinjanja igre, molimo pokušajte ponovo.'
+        console.log(error);
+      });
+  }
+
+  async getSpojnice(isSecondRoundSpojnice: boolean = false) {
+    let today = new Date();
+    let date = isSecondRoundSpojnice ? new Date(today.setDate(today.getDate() + 1)) : today;
+    let request = {
+      DailyGameDate: this.formatDate(date)
+    }
+    await this.httpService.getSpojniceGame(request).subscribe(
       (res: any) => {
         this.asocijacijeFields = res.associations;
         this.spojniceDesc = res.connections.description;
+        this.userService.saveSpojniceGameState(res.gameState);
         let i = 0;
         let assignedIndexes = [];
         res.connections.pairs.forEach(pair => {
           this.spojniceParovi[i].left = pair.left;
           this.spojniceParovi[i].right = pair.right;
+          this.spojniceParovi[i].correct = false;
           this.spojniceShuffledParovi[i].left = pair.left;
+          this.spojniceShuffledParovi[i].correct = false;
           let newIndex = Math.floor(Math.random() * 10);
           while (assignedIndexes.includes(newIndex)) {
             newIndex = Math.floor(Math.random() * 10);
@@ -587,7 +667,52 @@ export class UserPlayComponent implements OnInit {
       error => {
         console.log(error);
       });
-    this.startTimer(4);
+  }
+
+  async pickSpojnice(isMultiplayer: boolean = false) {
+    if (isMultiplayer) {
+      let request = {
+        multiplayerGameDto: this.userService.getCurrentGame(),
+        userId: this.userService.getCurrentUser().id
+      }
+      await this.httpService.updateGameEndsDateAndNotifyForConnections(request).subscribe(
+        (res: any) => {
+        },
+        error => {
+          //this.waitCreateGame = 'Greška prilikom zapocinjanja igre, molimo pokušajte ponovo.'
+          console.log(error);
+        });
+    }
+    else {
+      this.spojniceGameStarted = true;
+      let request = {
+        DailyGameDate: this.formatDate(new Date())
+      }
+      await this.httpService.getDailyGame(request).subscribe(
+        (res: any) => {
+          this.asocijacijeFields = res.associations;
+          this.spojniceDesc = res.connections.description;
+          let i = 0;
+          let assignedIndexes = [];
+          res.connections.pairs.forEach(pair => {
+            this.spojniceParovi[i].left = pair.left;
+            this.spojniceParovi[i].right = pair.right;
+            this.spojniceShuffledParovi[i].left = pair.left;
+            let newIndex = Math.floor(Math.random() * 10);
+            while (assignedIndexes.includes(newIndex)) {
+              newIndex = Math.floor(Math.random() * 10);
+            }
+            assignedIndexes.push(newIndex);
+            this.spojniceShuffledParovi[newIndex].right = pair.right;
+            i++;
+          });
+          this.currentRow = 0;
+        },
+        error => {
+          console.log(error);
+        });
+      this.startTimer(4);
+    }
   }
 
   openField(fieldName: string) {
@@ -910,7 +1035,12 @@ export class UserPlayComponent implements OnInit {
             }
           }
           else if (game == 4) {
-            this.checkSpojniceAndCalculatePoints();
+            if (isMultiPlayer) {
+              this.checkSpojniceAndCalculatePoints(true);
+            }
+            else {
+              this.checkSpojniceAndCalculatePoints();
+            }
           }
           else if (game == 5) {
             this.checkAsocijacijeAndCalculatePoints();
@@ -945,7 +1075,7 @@ export class UserPlayComponent implements OnInit {
     }
   }
 
-  checkConnection(index: number) {
+  checkConnection(index: number, isMultiplayer: boolean = false) {
     if (this.spojniceShuffledParovi[index].correct == false) {
       if (this.spojniceShuffledParovi[index].right == this.spojniceParovi[this.currentRow].right) {
         this.spojniceParovi[this.currentRow].correct = true;
@@ -954,10 +1084,29 @@ export class UserPlayComponent implements OnInit {
       }
 
       if (this.currentRow == 9) {
-        this.checkSpojniceAndCalculatePoints();
+        if (isMultiplayer && this.userService.getSpojniceGameState() != 2 && this.userService.getSpojniceGameState() != 4) {
+          this.checkSpojniceAndCalculatePoints(true);
+        }
+        else {
+          this.checkSpojniceAndCalculatePoints();
+        }
       }
 
-      this.currentRow++;
+      if (isMultiplayer && this.userService.getSpojniceGameState() == 2 || this.userService.getSpojniceGameState() == 4) {
+        let spojniceParoviNew = this.spojniceParovi.slice(this.currentRow + 1);
+        let elem = spojniceParoviNew.find(x => x.correct == false);
+        if (elem) {
+          this.currentRow = this.spojniceParovi.indexOf(elem);
+        }
+        else {
+          //this.currentRow = 0;
+          this.checkSpojniceAndCalculatePoints(true);
+        }
+      }
+      else {
+        this.currentRow++;
+      }
+
     }
   }
 
@@ -1107,7 +1256,7 @@ export class UserPlayComponent implements OnInit {
           calcPoints = 10;
           this.savePoints(calcPoints);
         }
-        else{
+        else {
           let a = 6;
         }
         this.infoMsg = `Osvojili ste ${calcPoints} poena u ovoj igri. Uskoro počinje sledeća igra...`;
@@ -1240,16 +1389,62 @@ export class UserPlayComponent implements OnInit {
     }
   }
 
-  checkSpojniceAndCalculatePoints() {
-    this.infoMsg = `Osvojili ste ${this.spojnicePoints} poena u ovoj igri. Uskoro počinje sledeća igra...`;
-    this.points += this.spojnicePoints;
-    clearInterval(this.interval);
-    this.timeLeft = 240;
-    setTimeout(() => {
-      this.spojniceActive = false;
-      this.asocijacijeActive = true;
-      this.infoMsg = '';
-    }, 5000);
+  async checkSpojniceAndCalculatePoints(isMultiplayer: boolean = false) {
+    if (isMultiplayer) {
+      let gameState = this.userService.getSpojniceGameState();
+      if (gameState == 1) {
+        await this.savePoints(this.spojnicePoints);
+        if (this.spojnicePoints == 10) {
+
+        }
+        else {
+          let request = {
+            multiplayerGameDto: this.userService.getCurrentGame(),
+            userId: this.userService.getCurrentUser().id,
+            spojniceShuffledState: this.spojniceShuffledParovi,
+            spojniceLeftSide: this.spojniceParovi
+          }
+          await this.httpService.sendSpojniceShuffledState(request).subscribe(
+            (res: any) => {
+            },
+            error => {
+              console.log(error);
+            });
+        }
+      }
+      else if (gameState == 2) {
+        await this.savePoints(this.spojnicePoints);
+        //notif za novu spojnicu
+        let request = {
+          gameId: this.userService.getCurrentGame().id,
+          userId: this.userService.getCurrentUser().id,
+        }
+        await this.httpService.spojniceSecondRound(request).subscribe(
+          (res: any) => {
+          },
+          error => {
+            console.log(error);
+          });
+
+      }
+      else if (gameState == 3) {
+
+      }
+      else {
+
+      }
+    }
+    else {
+      this.infoMsg = `Osvojili ste ${this.spojnicePoints} poena u ovoj igri. Uskoro počinje sledeća igra...`;
+      this.points += this.spojnicePoints;
+      clearInterval(this.interval);
+      this.timeLeft = 240;
+      setTimeout(() => {
+        this.spojniceActive = false;
+        this.asocijacijeActive = true;
+        this.infoMsg = '';
+      }, 5000);
+    }
   }
 
   async checkAsocijacijeAndCalculatePoints() {

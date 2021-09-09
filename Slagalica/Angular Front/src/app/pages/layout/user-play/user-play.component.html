@@ -1267,10 +1267,10 @@
         </div>
         <div *ngIf="spojniceActive">
             <div class="form-group row">
-                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeft}} sekundi</p>
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi</p>
             </div>
             <div class="form-group row">
-                <button style="margin: auto;" [disabled]="spojniceGameStarted" (click)="pickSpojnice()" nbButton
+                <button style="margin: auto;" [disabled]="spojniceGameStarted" (click)="pickSpojnice(true)" nbButton
                     status="primary">Start</button>
             </div>
             <div class="row">
@@ -1297,7 +1297,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(0)"
+                            <input (click)="checkConnection(0, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[0].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[0].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="R1" name="R1" placeholder="Desna Spojnica">
@@ -1320,7 +1320,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(1)"
+                            <input (click)="checkConnection(1, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[1].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[1].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="R2" name="R2" placeholder="Desna Spojnica">
@@ -1343,7 +1343,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(2)"
+                            <input (click)="checkConnection(2, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[2].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[2].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="R3" name="R3" placeholder="Desna Spojnica">
@@ -1366,7 +1366,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(3)"
+                            <input (click)="checkConnection(3, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[3].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[3].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="ime" name="R4" placeholder="Desna Spojnica">
@@ -1389,7 +1389,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(4)"
+                            <input (click)="checkConnection(4, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[4].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[4].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="R5" name="R5" placeholder="Desna Spojnica">
@@ -1412,7 +1412,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(5)"
+                            <input (click)="checkConnection(5, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[5].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[5].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="ime" name="R6" placeholder="Desna Spojnica">
@@ -1435,7 +1435,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(6)"
+                            <input (click)="checkConnection(6, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[6].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[6].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="R7" name="R7" placeholder="Desna Spojnica">
@@ -1458,7 +1458,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(7)"
+                            <input (click)="checkConnection(7, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[7].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[7].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="R8" name="R8" placeholder="Desna Spojnica">
@@ -1481,7 +1481,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(8)"
+                            <input (click)="checkConnection(8, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[8].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[8].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="R9" name="R9" placeholder="Desna Spojnica">
@@ -1504,7 +1504,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <div>
-                            <input (click)="checkConnection(9)"
+                            <input (click)="checkConnection(9, true)"
                                 [ngStyle]="{'background': spojniceShuffledParovi[9].correct ? 'green' : 'white'}"
                                 [(ngModel)]="spojniceShuffledParovi[9].right" class="cursor" readonly="readonly"
                                 type="text" nbInput fullWidth id="R10" name="R10" placeholder="Desna Spojnica">

@@ -25,6 +25,9 @@ export class UserService extends UserData {
   private opponentCalcNum: BehaviorSubject<any> = new BehaviorSubject(null);
   public readonly opponentCalcNum$: Observable<any> = this.opponentCalcNum.asObservable();
 
+  private spojniceGameState: BehaviorSubject<any> = new BehaviorSubject(null);
+  public readonly spojniceGameState$: Observable<any> = this.spojniceGameState.asObservable();
+  
   private users = {
     nick: { name: 'Nick Jones', picture: 'assets/images/nick.png' },
     eva: { name: 'Eva Moor', picture: 'assets/images/eva.png' },
@@ -56,6 +59,15 @@ export class UserService extends UserData {
     { user: this.users.kate, type: this.types.work, time: this.time.setHours(9, 31)},
     { user: this.users.jack, type: this.types.mobile, time: this.time.setHours(8, 0)},
   ];
+
+  
+  saveSpojniceGameState(num: any){
+    this.spojniceGameState.next(num);
+  }
+
+  getSpojniceGameState(){
+    return this.spojniceGameState.value;
+  }
 
   saveOpponentCalcNumber(num: any){
     this.opponentCalcNum.next(num);

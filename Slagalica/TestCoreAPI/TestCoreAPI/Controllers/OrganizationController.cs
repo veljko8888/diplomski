@@ -23,7 +23,6 @@ namespace TestCoreAPI.Controllers
             _organizationService = organizationService;
         }
 
-
         [HttpPost]
         [Route("get-daily-game")]
         public async Task<IActionResult> GetDailyGame(GetDailyGamesDto dailyGameDate)
@@ -161,6 +160,15 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("update-game-ends-connections")]
+        public async Task<IActionResult> UpdateGameEndsConnections(UpdateGameEndsAndNotifyCombinationsDto request)
+        {
+            var notify = await _organizationService.UpdateGameEndsAndNotifyCombinations(request);
+            return Ok(notify.Data);
+        }
+
+
+        [HttpPost]
         [Route("create-multiplayer-game")]
         public async Task<IActionResult> CreateMultiplayerGame(MultiplayerGameDto multiGame)
         {
@@ -193,6 +201,31 @@ namespace TestCoreAPI.Controllers
             result = await _organizationService.ActivateDeactivateUser(userDto);
 
             return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+        }
+
+
+        [HttpPost]
+        [Route("get-spojnice-checked")]
+        public async Task<IActionResult> GetSpojniceChecked(SpojniceRestAndShuffleDto spojniceDto)
+        {
+            var games = await _organizationService.GetSpojniceChecked(spojniceDto);
+            return Ok(games.Data);
+        }
+
+        [HttpPost]
+        [Route("spojnice-second-round")]
+        public async Task<IActionResult> SpojniceSecondRound(GameAndUserDto request)
+        {
+            var games = await _organizationService.SpojniceSecondRound(request);
+            return Ok(games.Data);
+        }
+
+        [HttpPost]
+        [Route("get-spojnice")]
+        public async Task<IActionResult> GetSpojnice(GetDailyGamesDto dailyGameDate)
+        {
+            var games = await _organizationService.GetSpojnice(dailyGameDate.DailyGameDate);
+            return Ok(games.Data);
         }
 
         [HttpPost]
@@ -231,6 +264,16 @@ namespace TestCoreAPI.Controllers
         {
             var result = new ResponseWrapper<List<WordDto>>();
             result = await _organizationService.AddWordsUpload(wordsDtos);
+
+            return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
+        }
+
+        [HttpPost]
+        [Route("spojnice-save-shuffled")]
+        public async Task<IActionResult> SpojniceSendShuffled([FromBody]SpojniceRestAndShuffleDto spojnice)
+        {
+            var result = new ResponseWrapper<SpojniceRestAndShuffleDto>();
+            result = await _organizationService.ResetSpojniceSaveShuffled(spojnice);
 
             return result.IsSuccess ? (IActionResult)Ok(result.Data) : BadRequest(result.Errors);
         }
