@@ -173,12 +173,16 @@ export class UserPlayComponent implements OnInit {
 
     this.connection.on("WordsFinished", () => {
       this.checkValidWordAndCalcPoints(true);
-      this.frameService.hideLoader();
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        this.frameService.showLoader();
+      }
     });
 
     this.connection.on("NumsFinished", () => {
-      this.checkValidExpressionAndCalcPoints(true);
-      this.frameService.hideLoader();
+      this.getOpponentCalculation();
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+        this.frameService.showLoader();
+      }
     });
 
 
@@ -267,40 +271,40 @@ export class UserPlayComponent implements OnInit {
     if (isMultiPlayer) {
       this.frameService.showLoader();
       this.mojBrojPoints = 0;
+      let calcResult = -1;
       try {
-        let calcResult = eval(this.expression);
-        if (Number.isInteger(calcResult)) {
-          if (calcResult == this.finalNum) {
-            this.mojBrojPoints = 10;
-            //this.points += mojBrojPoints;
-          }
-          else if ((calcResult - this.finalNum <= 5 && calcResult - this.finalNum >= -5)
-            || (this.finalNum - calcResult <= 5 && this.finalNum - calcResult >= -5)) {
-            this.mojBrojPoints = 5;
-            //this.points += mojBrojPoints;
-          }
-        }
+        calcResult = eval(this.expression);
+        // if (Number.isInteger(calcResult)) {
+        //   if (calcResult == this.finalNum) {
+        //     this.mojBrojPoints = 10;
+        //     //this.points += mojBrojPoints;
+        //   }
+        //   else if ((calcResult - this.finalNum <= 5 && calcResult - this.finalNum >= -5)
+        //     || (this.finalNum - calcResult <= 5 && this.finalNum - calcResult >= -5)) {
+        //     this.mojBrojPoints = 5;
+        //     //this.points += mojBrojPoints;
+        //   }
+        // }
       }
       catch (error) {
 
       }
       finally {
-        this.savePoints(5);
-        //this.savePoints(this.mojBrojPoints)
-      }
-      this.userService.saveSubmittedExpression(this.expression);
+        this.userService.saveNumEval(calcResult);
 
-      let request = {
-        gameId: this.userService.getCurrentGame().id,
-        userId: this.userService.getCurrentUser().id,
-        gameName: 'mojbroj'
+        let request = {
+          gameId: this.userService.getCurrentGame().id,
+          userId: this.userService.getCurrentUser().id,
+          evalResult: calcResult,
+          gameName: 'mojbroj'
+        }
+        await this.httpService.playerFinished(request).subscribe(
+          (res: any) => {
+          },
+          error => {
+            console.log(error);
+          });
       }
-      await this.httpService.playerFinished(request).subscribe(
-        (res: any) => {
-        },
-        error => {
-          console.log(error);
-        });
     }
     else {
       await this.checkValidExpressionAndCalcPoints();
@@ -769,7 +773,7 @@ export class UserPlayComponent implements OnInit {
     }
     else if (this.currentCombinationRow > 5) {
       if (isMultiplayer) {
-
+        this.checkSkockoCombinationAndCalculatePoints(true);
       }
       else {
         this.checkSkockoCombinationAndCalculatePoints();
@@ -891,7 +895,7 @@ export class UserPlayComponent implements OnInit {
           }
           else if (game == 2) {
             if (isMultiPlayer) {
-              await this.checkValidExpressionAndCalcPoints(true);
+              await this.saveNum(true);
             }
             else {
               await this.checkValidExpressionAndCalcPoints();
@@ -1085,6 +1089,48 @@ export class UserPlayComponent implements OnInit {
       });
   }
 
+  async getOpponentCalculation() {
+    let request = {
+      GameId: this.userService.getCurrentGame().id,
+      UserId: this.userService.getCurrentUser().id
+    }
+    await this.httpService.getOpponentsCalcNumber(request).subscribe(
+      (res: any) => {
+        this.userService.saveOpponentCalcNumber(res);
+        let myNumber = this.userService.getNumEval();
+        let calcPoints = 0;
+        if ((this.finalNum == myNumber && this.finalNum == res) || (Math.abs(this.finalNum - myNumber) == Math.abs(this.finalNum - res))) {
+          calcPoints = 5;
+          this.savePoints(calcPoints);
+        }
+        else if (Math.abs(this.finalNum - myNumber) < Math.abs(this.finalNum - res)) {
+          calcPoints = 10;
+          this.savePoints(calcPoints);
+        }
+        else{
+          let a = 6;
+        }
+        this.infoMsg = `Osvojili ste ${calcPoints} poena u ovoj igri. Uskoro počinje sledeća igra...`;
+        clearInterval(this.interval);
+        this.timeLeftMultiplayer = 60;
+        this.frameService.hideLoader();
+        setTimeout(async () => {
+          if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+            this.skockoGameTimeStarted = true;
+            this.frameService.showLoader();
+          }
+          this.calcPointsOpponent();
+          this.mojBrojActive = false;
+          this.skockoActive = true;
+          this.infoMsg = '';
+        }, 5000);
+      },
+      error => {
+        this.frameService.hideLoader();
+        console.log(error);
+      });
+  }
+
   async calcPointsOpponent() {
     let request = {
       GameId: this.userService.getCurrentGame().id,
@@ -1094,10 +1140,10 @@ export class UserPlayComponent implements OnInit {
       (res: any) => {
         this.points = res.points;
         this.pointsOpponent = res.opponentPoints;
-        this.frameService.hideLoader();
+        //this.frameService.hideLoader();
       },
       error => {
-        this.frameService.hideLoader();
+        //this.frameService.hideLoader();
         console.log(error);
       });
   }
@@ -1105,7 +1151,7 @@ export class UserPlayComponent implements OnInit {
   async checkValidExpressionAndCalcPoints(isMultiplayer: boolean = false) {
     try {
       this.mojBrojPoints = 0;
-      this.expression = isMultiplayer ? this.userService.getSubmittedExpression() : this.expression;
+      //this.expression = isMultiplayer ? this.userService.getSubmittedExpression() : this.expression;
       let calcResult = eval(this.expression);
       if (Number.isInteger(calcResult)) {
         if (calcResult == this.finalNum) {
@@ -1130,7 +1176,7 @@ export class UserPlayComponent implements OnInit {
       if (isMultiplayer) {
         this.timeLeftMultiplayer = 60;
         //this.savePoints(this.mojBrojPoints);
-        this.savePoints(10);
+        //this.savePoints(10);
         this.calcPointsOpponent();
       }
 

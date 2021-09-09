@@ -123,6 +123,10 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/opponent-points', request);
   }
 
+  getOpponentsCalcNumber(request: any){
+    return this.http.post(this.BaseURI + '/Organization/opponent-calcnum', request);
+  }
+
   getCombination(request: any){
     return this.http.post(this.BaseURI + '/Organization/get-combination', request);
   }

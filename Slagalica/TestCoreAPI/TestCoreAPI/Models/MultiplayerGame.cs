@@ -26,5 +26,7 @@ namespace TestCoreAPI.Models
         public bool Player1WordsFinished { get; set; }
         public bool Player2WordsFinished { get; set; }
         public int GameStatus { get; set; }
+        public int Player1EvalResult { get; set; }
+        public int Player2EvalResult { get; set; }
     }
 }

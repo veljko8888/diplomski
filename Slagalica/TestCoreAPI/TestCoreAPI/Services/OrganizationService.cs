@@ -273,6 +273,33 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<int>> OpponentCalcNum(GameAndUserDto request)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var opponentCalcNum = 0;
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                    if (game.Player1Id == request.UserId)
+                    {
+                        opponentCalcNum = game.Player2EvalResult;
+                    }
+                    else
+                    {
+                        opponentCalcNum = game.Player1EvalResult;
+                    }
+                    transaction.Commit();
+                    return ResponseWrapper<int>.Success(opponentCalcNum);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<int>.Error(AppConstants.NoDailyGame);
+                }
+            }
+        }
+
         public async Task<ResponseWrapper<GameAndUserDto>> OpponentPoints(GameAndUserDto request)
         {
             using (var transaction = _context.Database.BeginTransaction())
@@ -379,15 +406,18 @@ namespace TestCoreAPI.Services
             {
                 try
                 {
+                    var call = 0;
                     _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
-                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                    MultiplayerGame game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
                     if (game.Player1Id == request.UserId)
                     {
                         game.Player1WordsFinished = true;
+                        game.Player1EvalResult = request.EvalResult;
                     }
                     else
                     {
                         game.Player2WordsFinished = true;
+                        game.Player2EvalResult = request.EvalResult;
                     }
 
                     _context.MultiplayerGames.Update(game);
@@ -397,11 +427,11 @@ namespace TestCoreAPI.Services
                     {
                         if (request.GameName == "slagalica")
                         {
-                            await _hubContext.Clients.Group(game.Id.ToString()).WordsFinished();
+                            call = 1;
                         }
                         else if (request.GameName == "mojbroj")
                         {
-                            await _hubContext.Clients.Group(game.Id.ToString()).NumsFinished();
+                            call = 2;
                         }
 
                         game.Player1WordsFinished = false;
@@ -410,6 +440,14 @@ namespace TestCoreAPI.Services
                         await _context.SaveChangesAsync();
                     }
                     transaction.Commit();
+                    if(call == 1)
+                    {
+                        await _hubContext.Clients.Group(game.Id.ToString()).WordsFinished();
+                    }
+                    else if(call == 2)
+                    {
+                        await _hubContext.Clients.Group(game.Id.ToString()).NumsFinished();
+                    }
                     return ResponseWrapper<bool>.Success(true);
                 }
                 catch (Exception)

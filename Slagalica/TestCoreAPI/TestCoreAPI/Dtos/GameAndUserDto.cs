@@ -13,5 +13,6 @@ namespace TestCoreAPI.Dtos
         public int AddPoints { get; set; }
         public int Points { get; set; }
         public int OpponentPoints { get; set; }
+        public int EvalResult { get; set; }
     }
 }

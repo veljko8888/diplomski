@@ -89,6 +89,14 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("opponent-calcnum")]
+        public async Task<IActionResult> OpponentCalcNum(GameAndUserDto request)
+        {
+            var users = await _organizationService.OpponentCalcNum(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
         [Route("opponent-points")]
         public async Task<IActionResult> OpponentPoints(GameAndUserDto request)
         {

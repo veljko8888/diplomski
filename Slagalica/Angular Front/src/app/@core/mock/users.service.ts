@@ -22,6 +22,9 @@ export class UserService extends UserData {
   private skockoCombination: BehaviorSubject<any> = new BehaviorSubject(null);
   public readonly skockoCombination$: Observable<any> = this.skockoCombination.asObservable();
 
+  private opponentCalcNum: BehaviorSubject<any> = new BehaviorSubject(null);
+  public readonly opponentCalcNum$: Observable<any> = this.opponentCalcNum.asObservable();
+
   private users = {
     nick: { name: 'Nick Jones', picture: 'assets/images/nick.png' },
     eva: { name: 'Eva Moor', picture: 'assets/images/eva.png' },
@@ -54,6 +57,14 @@ export class UserService extends UserData {
     { user: this.users.jack, type: this.types.mobile, time: this.time.setHours(8, 0)},
   ];
 
+  saveOpponentCalcNumber(num: any){
+    this.opponentCalcNum.next(num);
+  }
+
+  getOpponentCalcNumber(){
+    return this.opponentCalcNum.value;
+  }
+
   saveCombination(comb: any){
     this.skockoCombination.next(comb);
   }
@@ -62,11 +73,11 @@ export class UserService extends UserData {
     return this.skockoCombination.value;
   }
 
-  saveSubmittedExpression(numSolution: any) {
+  saveNumEval(numSolution: any) {
     this.submittedNum.next(numSolution);
   }
 
-  getSubmittedExpression(){
+  getNumEval(){
     return this.submittedNum.value;
   }
 
