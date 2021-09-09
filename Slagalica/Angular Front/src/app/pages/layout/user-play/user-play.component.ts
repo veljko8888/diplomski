@@ -175,8 +175,34 @@ export class UserPlayComponent implements OnInit {
           this.startTimer(4, true);
         }
       }
-      if (gameState == 2) {
+      else if (gameState == 2) {
         if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          //this.getSpojnice(true);
+          this.startTimer(4, true);
+          //this.userService.saveSpojniceGameState(3);
+          this.spojniceGameStarted = true;
+        }
+        else {
+          //this.getSpojnice(true);
+          this.startTimerPassive();
+          //this.userService.saveSpojniceGameState(3);
+        }
+      }
+      else if (gameState == 3) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          //this.getSpojnice(true);
+          this.startTimer(4, true);
+          //this.userService.saveSpojniceGameState(3);
+          this.spojniceGameStarted = true;
+        }
+        else {
+          //this.getSpojnice(true);
+          this.startTimerPassive();
+          //this.userService.saveSpojniceGameState(3);
+        }
+      }
+      else if (gameState == 4) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
           //this.getSpojnice(true);
           this.startTimer(4, true);
           //this.userService.saveSpojniceGameState(3);
@@ -257,22 +283,64 @@ export class UserPlayComponent implements OnInit {
       }
     });
 
-    this.connection.on("SpojniceState2", () => {
-      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
-        this.userService.saveSpojniceGameState(2);
-        this.getSpojniceAlreadyChecked();
-        this.calcPointsOpponent();
-        this.timeLeftMultiplayer = 60;
-        clearInterval(this.interval);
+    this.connection.on("MoveToAsoc", () => {
+      if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
         this.frameService.hideLoader();
+        this.calcPointsOpponent();
+        clearInterval(this.interval);
+        this.spojniceActive = false;
+        this.asocijacijeActive = true;
+        this.infoMsg = '';
+        this.timeLeftMultiplayer = 60;
       }
       else {
-        this.points += this.spojnicePoints;
-        this.spojnicePoints = 0;
-        this.userService.saveSpojniceGameState(2);
-        this.timeLeftMultiplayer = 60;
-        clearInterval(this.interval);
         this.frameService.showLoader();
+        this.calcPointsOpponent();
+        clearInterval(this.interval);
+        this.spojniceActive = false;
+        this.asocijacijeActive = true;
+        this.infoMsg = '';
+        this.timeLeftMultiplayer = 60;
+      }
+    });
+
+
+    this.connection.on("SpojniceState2", () => {
+      if (this.userService.getSpojniceGameState() == 3) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
+          this.userService.saveSpojniceGameState(4);
+          this.getSpojniceAlreadyChecked();
+          this.calcPointsOpponent();
+          this.timeLeftMultiplayer = 60;
+          clearInterval(this.interval);
+          this.frameService.hideLoader();
+        }
+        else {
+          this.points += this.spojnicePoints;
+          this.spojnicePoints = 0;
+          this.userService.saveSpojniceGameState(2);
+          this.timeLeftMultiplayer = 60;
+          clearInterval(this.interval);
+          this.frameService.showLoader();
+        }
+      }
+      else {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          this.userService.saveSpojniceGameState(2);
+          this.getSpojniceAlreadyChecked();
+          this.calcPointsOpponent();
+          this.timeLeftMultiplayer = 60;
+          clearInterval(this.interval);
+          this.frameService.hideLoader();
+        }
+        else {
+          this.points += this.spojnicePoints;
+          this.spojnicePoints = 0;
+          this.userService.saveSpojniceGameState(2);
+          this.timeLeftMultiplayer = 60;
+          clearInterval(this.interval);
+          this.frameService.showLoader();
+        }
       }
     });
 
@@ -645,7 +713,8 @@ export class UserPlayComponent implements OnInit {
       (res: any) => {
         this.asocijacijeFields = res.associations;
         this.spojniceDesc = res.connections.description;
-        this.userService.saveSpojniceGameState(res.gameState);
+        let gameState = isSecondRoundSpojnice ? 3 : 1;
+        this.userService.saveSpojniceGameState(gameState);
         let i = 0;
         let assignedIndexes = [];
         res.connections.pairs.forEach(pair => {
@@ -1076,6 +1145,7 @@ export class UserPlayComponent implements OnInit {
   }
 
   checkConnection(index: number, isMultiplayer: boolean = false) {
+    let state = this.userService.getSpojniceGameState();
     if (this.spojniceShuffledParovi[index].correct == false) {
       if (this.spojniceShuffledParovi[index].right == this.spojniceParovi[this.currentRow].right) {
         this.spojniceParovi[this.currentRow].correct = true;
@@ -1084,15 +1154,17 @@ export class UserPlayComponent implements OnInit {
       }
 
       if (this.currentRow == 9) {
-        if (isMultiplayer && this.userService.getSpojniceGameState() != 2 && this.userService.getSpojniceGameState() != 4) {
-          this.checkSpojniceAndCalculatePoints(true);
+        if (isMultiplayer) {
+          if (state != 2 && state != 4) {
+            this.checkSpojniceAndCalculatePoints(true);
+          }
         }
         else {
           this.checkSpojniceAndCalculatePoints();
         }
       }
 
-      if (isMultiplayer && this.userService.getSpojniceGameState() == 2 || this.userService.getSpojniceGameState() == 4) {
+      if (isMultiplayer && (state == 2 || state == 4)) {
         let spojniceParoviNew = this.spojniceParovi.slice(this.currentRow + 1);
         let elem = spojniceParoviNew.find(x => x.correct == false);
         if (elem) {
@@ -1395,7 +1467,16 @@ export class UserPlayComponent implements OnInit {
       if (gameState == 1) {
         await this.savePoints(this.spojnicePoints);
         if (this.spojnicePoints == 10) {
-
+          let request = {
+            gameId: this.userService.getCurrentGame().id,
+            userId: this.userService.getCurrentUser().id,
+          }
+          await this.httpService.spojniceSecondRound(request).subscribe(
+            (res: any) => {
+            },
+            error => {
+              console.log(error);
+            });
         }
         else {
           let request = {
@@ -1428,10 +1509,47 @@ export class UserPlayComponent implements OnInit {
 
       }
       else if (gameState == 3) {
-
+        await this.savePoints(this.spojnicePoints);
+        if (this.spojnicePoints == 10) {
+          let request = {
+            gameId: this.userService.getCurrentGame().id,
+            userId: this.userService.getCurrentUser().id,
+          }
+          await this.httpService.moveToAsoc(request).subscribe(
+            (res: any) => {
+            },
+            error => {
+              console.log(error);
+            });
+        }
+        else {
+          let request = {
+            multiplayerGameDto: this.userService.getCurrentGame(),
+            userId: this.userService.getCurrentUser().id,
+            spojniceShuffledState: this.spojniceShuffledParovi,
+            spojniceLeftSide: this.spojniceParovi
+          }
+          await this.httpService.sendSpojniceShuffledState(request).subscribe(
+            (res: any) => {
+            },
+            error => {
+              console.log(error);
+            });
+        }
       }
-      else {
-
+      else if (gameState == 4) {
+        await this.savePoints(this.spojnicePoints);
+        //notif za prelazak na asoc
+        let request = {
+          gameId: this.userService.getCurrentGame().id,
+          userId: this.userService.getCurrentUser().id,
+        }
+        await this.httpService.moveToAsoc(request).subscribe(
+          (res: any) => {
+          },
+          error => {
+            console.log(error);
+          });
       }
     }
     else {

@@ -221,6 +221,14 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("move-to-asoc")]
+        public async Task<IActionResult> MoveToAsoc(GameAndUserDto request)
+        {
+            var games = await _organizationService.MoveToAsoc(request);
+            return Ok(games.Data);
+        }
+
+        [HttpPost]
         [Route("get-spojnice")]
         public async Task<IActionResult> GetSpojnice(GetDailyGamesDto dailyGameDate)
         {

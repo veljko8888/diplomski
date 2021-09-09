@@ -24,5 +24,6 @@ namespace TestCoreAPI.SignalRHub
         Task NextGamePlayer2();
         Task SpojniceState2();
         Task SpojniceSecondRound();
+        Task MoveToAsoc();
     }
 }

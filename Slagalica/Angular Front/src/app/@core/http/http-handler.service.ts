@@ -175,6 +175,10 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/spojnice-save-shuffled', request);
   }
 
+  moveToAsoc(request: any){
+    return this.http.post(this.BaseURI + '/Organization/move-to-asoc', request);
+  }
+
   addAssocsUpload(assocsRequest: any) {
     return this.http.post(this.BaseURI + '/Organization/add-assocs-games', assocsRequest);
   }

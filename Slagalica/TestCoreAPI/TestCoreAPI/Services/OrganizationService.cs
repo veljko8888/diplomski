@@ -783,6 +783,20 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<bool>> MoveToAsoc(GameAndUserDto request)
+        {
+            try
+            {
+                await _hubContext.Clients.Group(request.GameId.ToString()).MoveToAsoc();
+
+                return ResponseWrapper<bool>.Success(true);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<bool>.Error(AppConstants.FailedToAddWord);
+            }
+        }
+
         public async Task<ResponseWrapper<bool>> SpojniceSecondRound(GameAndUserDto request)
         {
             try

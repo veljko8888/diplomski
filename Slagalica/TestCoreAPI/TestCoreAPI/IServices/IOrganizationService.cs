@@ -47,6 +47,7 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<SpojniceRestAndShuffleDto>> ResetSpojniceSaveShuffled(SpojniceRestAndShuffleDto spojniceResetDto);
         Task<ResponseWrapper<SpojniceRestAndShuffleDto>> GetSpojniceChecked(SpojniceRestAndShuffleDto spojniceResetDto);
         Task<ResponseWrapper<bool>> SpojniceSecondRound(GameAndUserDto request);
+        Task<ResponseWrapper<bool>> MoveToAsoc(GameAndUserDto request);
         
         Task<ResponseWrapper<ConnectionDto>> AddConn(ConnectionDto conn);
         Task<ResponseWrapper<AssociationDto>> AddAssoc(AssociationDto conn);
