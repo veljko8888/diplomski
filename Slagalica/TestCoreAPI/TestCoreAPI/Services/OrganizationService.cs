@@ -408,6 +408,25 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<bool>> AssocTimesUp(GameAndUserDto request)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    MultiplayerGame game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                    transaction.Commit();
+                    await _hubContext.Clients.Group(request.GameId.ToString()).TimesUpAssoc();
+                    return ResponseWrapper<bool>.Success(true);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<bool>.Error("");
+                }
+            }
+        }
+
         public async Task<ResponseWrapper<GameAndUserDto>> GetForOpponentAssoc(GameAndUserDto request)
         {
             using (var transaction = _context.Database.BeginTransaction())
@@ -420,6 +439,7 @@ namespace TestCoreAPI.Services
                     res.PlayerIdWhoSolved = game.PlayerIdWhoSolved;
                     res.SolvedCols = game.SolvedForOpponent.Split('-').ToList();
                     transaction.Commit();
+                    
                     return ResponseWrapper<GameAndUserDto>.Success(res);
                 }
                 catch (Exception)
@@ -575,90 +595,153 @@ namespace TestCoreAPI.Services
 
         public async Task<ResponseWrapper<bool>> UpdateGameEndsAndNotifyAssoc(GameAndUserDto request)
         {
-            try
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
-                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(240);
-                _context.MultiplayerGames.Update(game);
-                await _context.SaveChangesAsync();
-                await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerAssoc();
-                return ResponseWrapper<bool>.Success(true);
-            }
-            catch (Exception)
-            {
-                return ResponseWrapper<bool>.Error(AppConstants.NoDailyGame);
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+                    game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(240);
+                    if (request.ShouldUpdateSpojniceGamePoints)
+                    {
+                        game.Player1SpojnicePoints = game.Player1Points - game.Player1SlagalicaPoints - game.Player1MojBrojPoints - game.Player1SkockoPoints;
+                        game.Player2SpojnicePoints = game.Player2Points - game.Player2SlagalicaPoints - game.Player2MojBrojPoints - game.Player2SkockoPoints;
+                    }
+                    
+                    _context.MultiplayerGames.Update(game);
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+                    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerAssoc();
+                    return ResponseWrapper<bool>.Success(true);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<bool>.Error(AppConstants.NoDailyGame);
+                }
             }
         }
 
         public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndNotifyCombinations(UpdateGameEndsAndNotifyCombinationsDto multigame)
         {
-            try
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
-                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
-                _context.MultiplayerGames.Update(game);
-                await _context.SaveChangesAsync();
-                multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
-                await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSpojnice();
-                return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
-            }
-            catch (Exception)
-            {
-                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
+                    game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
+                    game.Player1SkockoPoints = game.Player1Points - game.Player1SlagalicaPoints - game.Player1MojBrojPoints;
+                    game.Player2SkockoPoints = game.Player2Points - game.Player2SlagalicaPoints - game.Player2MojBrojPoints;
+                    _context.MultiplayerGames.Update(game);
+                    await _context.SaveChangesAsync();
+                    multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
+                    transaction.Commit();
+                    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSpojnice();
+                    return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+                }
             }
         }
 
         public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendCombination(UpdateGameEndsAndSendCombinationDto multigame)
         {
-            try
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                string comb = string.Join("-", multigame.Combination);
-                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
-                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
-                game.Combination = comb;
-                _context.MultiplayerGames.Update(game);
-                await _context.SaveChangesAsync();
-                multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
-                if (multigame.UserId == game.Player1Id)
+                try
                 {
-                    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSkocko();
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    string comb = string.Join("-", multigame.Combination);
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
+                    game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
+                    game.Combination = comb;
+                    game.Player1MojBrojPoints = game.Player1Points - game.Player1SlagalicaPoints;
+                    game.Player2MojBrojPoints = game.Player2Points - game.Player2SlagalicaPoints;
+                    _context.MultiplayerGames.Update(game);
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+                    multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
+                    if (multigame.UserId == game.Player1Id)
+                    {
+                        await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSkocko();
+                    }
+                    else
+                    {
+                        await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSkockoPlayer2();
+                    }
+                    return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
                 }
-                else
+                catch (Exception)
                 {
-                    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerSkockoPlayer2();
+                    return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
                 }
-                return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
-            }
-            catch (Exception)
-            {
-                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
             }
         }
 
         public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendNums(UpdateGameEndsAndSendNumsDto multigame)
         {
-            try
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                string nums = string.Empty;
-                foreach (var num in multigame.Nums)
+                try
                 {
-                    nums += num.Value.ToString();
-                    nums += "#";
-                }
-                nums += multigame.FinalNum;
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    string nums = string.Empty;
+                    foreach (var num in multigame.Nums)
+                    {
+                        nums += num.Value.ToString();
+                        nums += "#";
+                    }
+                    nums += multigame.FinalNum;
 
-                var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
-                game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
-                game.Nums = nums;
-                _context.MultiplayerGames.Update(game);
-                await _context.SaveChangesAsync();
-                multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
-                await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerNums();
-                return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == multigame.MultiplayerGameDto.Id);
+                    game.SlagalicaGameEnds = DateTime.UtcNow.AddSeconds(60);
+                    game.Nums = nums;
+                    //NOT SURE ABOUT THIS DOWN 
+                    game.Player1SlagalicaPoints = game.Player1Points;
+                    game.Player2SlagalicaPoints = game.Player2Points;
+                    _context.MultiplayerGames.Update(game);
+                    await _context.SaveChangesAsync();
+                    multigame.MultiplayerGameDto = _mapper.Map<MultiplayerGameDto>(game);
+                    transaction.Commit();
+                    await _hubContext.Clients.Group(game.Id.ToString()).CountdownTimerNums();
+                    return ResponseWrapper<MultiplayerGameDto>.Success(multigame.MultiplayerGameDto);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+                }
             }
-            catch (Exception)
+        }
+
+        public async Task<ResponseWrapper<GameAndUserDto>> AllPoints(GameAndUserDto request)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                return ResponseWrapper<MultiplayerGameDto>.Error(AppConstants.NoDailyGame);
+                try
+                {
+                    _context.Database.ExecuteSqlCommand("SELECT TOP 1 * FROM MultiplayerGames WITH (TABLOCKX, HOLDLOCK)");
+                    var game = await _context.MultiplayerGames.FirstOrDefaultAsync(x => x.Id == request.GameId);
+
+                    var response = new GameAndUserDto();
+                    response.Player1SlagalicaPoints = game.Player1SlagalicaPoints;
+                    response.Player1MojBrojPoints = game.Player1MojBrojPoints;
+                    response.Player1SkockoPoints = game.Player1SkockoPoints;
+                    response.Player1SpojnicePoints = game.Player1SpojnicePoints;
+                    response.Player1AsocijacijePoints = game.Player1Points - game.Player1SlagalicaPoints - game.Player1MojBrojPoints - game.Player1SkockoPoints - game.Player1SpojnicePoints;
+                    response.Player2SlagalicaPoints = game.Player2SlagalicaPoints;
+                    response.Player2MojBrojPoints = game.Player2MojBrojPoints;
+                    response.Player2SkockoPoints = game.Player2SkockoPoints;
+                    response.Player2SpojnicePoints = game.Player2SpojnicePoints;
+                    response.Player2AsocijacijePoints = game.Player2Points - game.Player2SlagalicaPoints - game.Player2MojBrojPoints - game.Player2SkockoPoints - game.Player2SpojnicePoints;
+                    transaction.Commit();
+                    return ResponseWrapper<GameAndUserDto>.Success(response);
+                }
+                catch (Exception)
+                {
+                    return ResponseWrapper<GameAndUserDto>.Error(AppConstants.NoDailyGame);
+                }
             }
         }
 

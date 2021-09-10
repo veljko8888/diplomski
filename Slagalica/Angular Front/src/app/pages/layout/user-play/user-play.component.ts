@@ -121,6 +121,20 @@ export class UserPlayComponent implements OnInit {
   isFirstRoundSolved = false;
   isSecondRoundSolved = false;
 
+  player1SlagalicaPoints = 0;
+  player1MojBrojPoints = 0;
+  player1SkockoPoints = 0;
+  player1SpojnicePoints = 0;
+  player1AsocijacijePoints = 0;
+  player2SlagalicaPoints = 0;
+  player2MojBrojPoints = 0;
+  player2SkockoPoints = 0;
+  player2SpojnicePoints = 0;
+  player2AsocijacijePoints = 0;
+
+  gameFinished = false;
+  finalSolAsocijacijePoints = 0;
+
   ngOnInit(): void {
     this.connection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Information)
@@ -218,7 +232,6 @@ export class UserPlayComponent implements OnInit {
     });
 
     this.connection.on("CountdownTimerAssoc", () => {
-      let gameState = this.userService.getSpojniceGameState();
       if (!this.isFirstRoundSolved) {
         if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
           this.getAssoc();
@@ -240,6 +253,41 @@ export class UserPlayComponent implements OnInit {
         }
       }
     });
+
+    this.connection.on("TimesUpAssoc", () => {
+      if (!this.isFirstRoundSolved) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          this.populateAllFields();
+          setTimeout(() => {
+            this.resetAssocForMulti();
+            this.frameService.hideLoader();
+            this.timeLeftMultiplayer = 240;
+            this.getAssoc(true);
+            this.isFirstRoundSolved = true;
+            clearInterval(this.interval);
+          }, 5000);
+        }
+        else {
+          this.populateAllFields();
+          setTimeout(() => {
+            this.resetAssocForMulti();
+            this.frameService.showLoader();
+            this.timeLeftMultiplayer = 240;
+            this.getAssoc(true);
+            this.isFirstRoundSolved = true;
+            clearInterval(this.interval);
+          }, 5000);
+        }
+      }
+      else if (this.isFirstRoundSolved && !this.isSecondRoundSolved) {
+        this.populateAllFields();
+        setTimeout(() => {
+          this.frameService.hideLoader();
+          this.checkAsocijacijeAndCalculatePoints(true);
+        }, 5000);
+      }
+    });
+
 
     this.connection.on("FieldOpened", () => {
       this.getOpenedField()
@@ -423,18 +471,17 @@ export class UserPlayComponent implements OnInit {
     }
   }
 
-  async handleAssocTimesUp(){
-    // let request = {
-    //   gameId: this.userService.getCurrentGame().id,
-    //   userId: this.userService.getCurrentUser().id,
-    // }
-    // await this.httpService.getOpenedField(request).subscribe(
-    //   (res: any) => {
-    //     this.asocijacijeBind[res.fieldName] = res.value;
-    //   },
-    //   error => {
-    //     console.log(error);
-    //   });
+  async handleAssocTimesUp() {
+    let request = {
+      gameId: this.userService.getCurrentGame().id,
+      userId: this.userService.getCurrentUser().id,
+    }
+    await this.httpService.assocTimesUp(request).subscribe(
+      (res: any) => {
+      },
+      error => {
+        console.log(error);
+      });
   }
 
   async getFromOpponentAssoc() {
@@ -905,6 +952,7 @@ export class UserPlayComponent implements OnInit {
       let request = {
         gameId: this.userService.getCurrentGame().id,
         userId: this.userService.getCurrentUser().id,
+        shouldUpdateSpojniceGamePoints: !this.isFirstRoundSolved
       }
       await this.httpService.updateGameEndsDateAndNotifyForAssoc(request).subscribe(
         (res: any) => {
@@ -968,7 +1016,7 @@ export class UserPlayComponent implements OnInit {
     }
     await this.httpService.getSpojniceGame(request).subscribe(
       (res: any) => {
-        this.asocijacijeFields = res.associations;
+        //this.asocijacijeFields = res.associations;
         this.spojniceDesc = res.connections.description;
         let gameState = isSecondRoundSpojnice ? 3 : 1;
         this.userService.saveSpojniceGameState(gameState);
@@ -1075,7 +1123,7 @@ export class UserPlayComponent implements OnInit {
         if (solutionWords.includes(valueTrimmed.toLowerCase())) {
           if (fieldName == 'Final') {
             this.isFinalSolved = true;
-            this.asocijacijePoints += 10;
+            this.finalSolAsocijacijePoints += 10;
             let countUnsolvedGroups = 0;
             if (this.asocijacijeBind['A'] == '') {
               countUnsolvedGroups++;
@@ -1095,12 +1143,13 @@ export class UserPlayComponent implements OnInit {
             }
 
             if (countUnsolvedGroups > 0) {
-              this.asocijacijePoints += countUnsolvedGroups * 5;
+              this.finalSolAsocijacijePoints += countUnsolvedGroups * 5;
             }
 
             this.populateAllFields();
             this.solvedColumns.push('Final');
-            this.savePoints(this.asocijacijePoints);
+            this.savePoints(this.finalSolAsocijacijePoints);
+            this.finalSolAsocijacijePoints = 0;
             this.notifyOpponentForPointsAndSendSolutions();
             this.calcPointsOpponent();
           }
@@ -1522,10 +1571,10 @@ export class UserPlayComponent implements OnInit {
             }
           }
           else if (game == 5) {
-            if(isMultiPlayer){
+            if (isMultiPlayer) {
               this.handleAssocTimesUp();
             }
-            else{
+            else {
               this.checkAsocijacijeAndCalculatePoints();
             }
           }
@@ -1984,8 +2033,31 @@ export class UserPlayComponent implements OnInit {
   async checkAsocijacijeAndCalculatePoints(isMultiplayer: boolean = false) {
     if (isMultiplayer) {
       clearInterval(this.interval);
+      let request = {
+        gameId: this.userService.getCurrentGame().id,
+        userId: this.userService.getCurrentUser().id,
+      }
+      await this.httpService.getAllGamesPoints(request).subscribe(
+        (res: any) => {
+          this.player1SlagalicaPoints = res.player1SlagalicaPoints;
+          this.player1MojBrojPoints = res.player1MojBrojPoints;
+          this.player1SkockoPoints = res.player1SkockoPoints;
+          this.player1SpojnicePoints = res.player1SpojnicePoints;
+          this.player1AsocijacijePoints = res.player1AsocijacijePoints;
+
+          this.player2SlagalicaPoints = res.player2SlagalicaPoints;
+          this.player2MojBrojPoints = res.player2MojBrojPoints;
+          this.player2SkockoPoints = res.player2SkockoPoints;
+          this.player2SpojnicePoints = res.player2SpojnicePoints;
+          this.player2AsocijacijePoints = res.player2AsocijacijePoints;
+        },
+        error => {
+          console.log(error);
+        });
       this.timeLeft = 60;
       setTimeout(() => {
+        this.frameService.hideLoader();
+        this.gameFinished = true;
         this.asocijacijeActive = false;
         this.infoMsg = '';
       }, 5000);

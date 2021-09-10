@@ -143,6 +143,10 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/get-opponents-assoc', request);
   }
 
+  assocTimesUp(request: any){
+    return this.http.post(this.BaseURI + '/Organization/assoc-times-up', request);
+  }
+
   getMultiplayerGame(request: any){
     return this.http.post(this.BaseURI + '/Organization/get-multiplayer-game', request);
   }
@@ -209,6 +213,10 @@ export class HttpHandlerService {
 
   moveToAsoc(request: any){
     return this.http.post(this.BaseURI + '/Organization/move-to-asoc', request);
+  }
+
+  getAllGamesPoints(request: any){
+    return this.http.post(this.BaseURI + '/Organization/allgames-points', request);
   }
 
   addAssocsUpload(assocsRequest: any) {

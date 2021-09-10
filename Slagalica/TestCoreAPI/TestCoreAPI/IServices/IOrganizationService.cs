@@ -33,6 +33,7 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<bool>> NextPlayerAssoc(GameAndUserDto request);
         Task<ResponseWrapper<bool>> AssocNotifyOpponentAndSendSolved(GameAndUserDto request);
         Task<ResponseWrapper<GameAndUserDto>> GetForOpponentAssoc(GameAndUserDto request);
+        Task<ResponseWrapper<bool>> AssocTimesUp(GameAndUserDto request);
         
         Task<ResponseWrapper<bool>> OpenFieldNotif(GameAndUserDto request);
         Task<ResponseWrapper<GameAndUserDto>> GetOpenedField(GameAndUserDto request);
@@ -49,9 +50,9 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendCombination(UpdateGameEndsAndSendCombinationDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndNotifyCombinations(UpdateGameEndsAndNotifyCombinationsDto multigame);
         Task<ResponseWrapper<bool>> UpdateGameEndsAndNotifyAssoc(GameAndUserDto request);
-        
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendNums(UpdateGameEndsAndSendNumsDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendChars(UpdateGameEndsAndSendCharsDto multigame);
+        Task<ResponseWrapper<GameAndUserDto>> AllPoints(GameAndUserDto request);
         Task<ResponseWrapper<MultiplayerGameDto>> CreateMultiplayerGame(MultiplayerGameDto multigame);
         Task<ResponseWrapper<int>> GetSecondsLeft(MultiplayerGameDto game);
         Task<ResponseWrapper<DailyGamesResponseDto>> AddDailyGame(DailyGameDto dailyGame);

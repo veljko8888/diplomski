@@ -128,13 +128,20 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("assoc-times-up")]
+        public async Task<IActionResult> AssocTimesUp(GameAndUserDto request)
+        {
+            var users = await _organizationService.AssocTimesUp(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
         [Route("get-opponents-assoc")]
         public async Task<IActionResult> GetForOpponentAssoc(GameAndUserDto request)
         {
             var users = await _organizationService.GetForOpponentAssoc(request);
             return Ok(users.Data);
         }
-        
 
         [HttpPost]
         [Route("assoc-notify-send-solved")]
@@ -216,6 +223,13 @@ namespace TestCoreAPI.Controllers
             return Ok(notify.Data);
         }
 
+        [HttpPost]
+        [Route("allgames-points")]
+        public async Task<IActionResult> AllPoints(GameAndUserDto request)
+        {
+            var notify = await _organizationService.AllPoints(request);
+            return Ok(notify.Data);
+        }
 
         [HttpPost]
         [Route("update-game-ends-connections")]

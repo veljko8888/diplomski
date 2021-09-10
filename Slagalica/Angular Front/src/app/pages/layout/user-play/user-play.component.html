@@ -873,6 +873,63 @@
                     {{pointsOpponent}}</p>
             </div>
         </div>
+        <div *ngIf="gameFinished">
+            <div class="form-group row">
+                <h3 style="margin: auto;">Slagalica</h3>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: blue; font-weight: bold;">Plavi Takmicar:
+                    {{player1SlagalicaPoints}}</p>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: red; font-weight: bold;">Crveni Takmicar:
+                    {{player2SlagalicaPoints}}</p>
+            </div>
+            <div class="form-group row">
+                <h3 style="margin: auto;">Moj Broj</h3>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: blue; font-weight: bold;">Plavi Takmicar:
+                    {{player1MojBrojPoints}}</p>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: red; font-weight: bold;">Crveni Takmicar:
+                    {{player2MojBrojPoints}}</p>
+            </div>
+            <div class="form-group row">
+                <h3 style="margin: auto;">Skocko</h3>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: blue; font-weight: bold;">Plavi Takmicar:
+                    {{player1SkockoPoints}}</p>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: red; font-weight: bold;">Crveni Takmicar:
+                    {{player2SkockoPoints}}</p>
+            </div>
+            <div class="form-group row">
+                <h3 style="margin: auto;">Spojnice</h3>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: blue; font-weight: bold;">Plavi Takmicar:
+                    {{player1SpojnicePoints}}</p>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: red; font-weight: bold;">Crveni Takmicar:
+                    {{player2SpojnicePoints}}</p>
+            </div>
+            <div class="form-group row">
+                <h3 style="margin: auto;">Asocijacije</h3>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: blue; font-weight: bold;">Plavi Takmicar:
+                    {{player1AsocijacijePoints}}</p>
+            </div>
+            <div class="form-group row">
+                <p style="font-size: 30px; margin: auto; color: red; font-weight: bold;">Crveni Takmicar:
+                    {{player2AsocijacijePoints}}</p>
+            </div>
+        </div>
         <div *ngIf="slagalicaActive">
             <div class="form-group row">
                 <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi</p>

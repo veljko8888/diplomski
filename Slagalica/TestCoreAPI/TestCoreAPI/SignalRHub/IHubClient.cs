@@ -20,6 +20,7 @@ namespace TestCoreAPI.SignalRHub
         Task NextPlayerSkocko();
         Task NextPlayerAssoc();
         Task NotifyOpponentForAssocSol();
+        Task TimesUpAssoc();
         Task FieldOpened();
         Task OnMoveAssoc();
         Task NextPlayerSkockoPlayer2();
