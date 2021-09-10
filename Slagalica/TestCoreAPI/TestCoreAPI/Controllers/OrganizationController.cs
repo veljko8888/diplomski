@@ -112,6 +112,55 @@ namespace TestCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("open-field-notif")]
+        public async Task<IActionResult> OpenFieldNotif(GameAndUserDto request)
+        {
+            var users = await _organizationService.OpenFieldNotif(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("opened-field")]
+        public async Task<IActionResult> GetOpenedField(GameAndUserDto request)
+        {
+            var users = await _organizationService.GetOpenedField(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("get-opponents-assoc")]
+        public async Task<IActionResult> GetForOpponentAssoc(GameAndUserDto request)
+        {
+            var users = await _organizationService.GetForOpponentAssoc(request);
+            return Ok(users.Data);
+        }
+        
+
+        [HttpPost]
+        [Route("assoc-notify-send-solved")]
+        public async Task<IActionResult> AssocNotifyOpponentAndSendSolved(GameAndUserDto request)
+        {
+            var users = await _organizationService.AssocNotifyOpponentAndSendSolved(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("next-player-assoc")]
+        public async Task<IActionResult> NextPlayerAssoc(GameAndUserDto request)
+        {
+            var users = await _organizationService.NextPlayerAssoc(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
+        [Route("on-move")]
+        public async Task<IActionResult> GetOnMoveAssoc(GameAndUserDto request)
+        {
+            var users = await _organizationService.OnMoveAssoc(request);
+            return Ok(users.Data);
+        }
+
+        [HttpPost]
         [Route("next-player")]
         public async Task<IActionResult> NextPlayer(GameAndUserDto request)
         {
@@ -158,6 +207,15 @@ namespace TestCoreAPI.Controllers
             var users = await _organizationService.UpdateGameEndsAndSendCombination(request);
             return Ok(users.Data);
         }
+
+        [HttpPost]
+        [Route("update-game-ends-assoc")]
+        public async Task<IActionResult> UpdateGameEndsAssoc(GameAndUserDto request)
+        {
+            var notify = await _organizationService.UpdateGameEndsAndNotifyAssoc(request);
+            return Ok(notify.Data);
+        }
+
 
         [HttpPost]
         [Route("update-game-ends-connections")]
@@ -225,6 +283,14 @@ namespace TestCoreAPI.Controllers
         public async Task<IActionResult> MoveToAsoc(GameAndUserDto request)
         {
             var games = await _organizationService.MoveToAsoc(request);
+            return Ok(games.Data);
+        }
+
+        [HttpPost]
+        [Route("get-assoc")]
+        public async Task<IActionResult> GetAssoc(GetDailyGamesDto dailyGameDate)
+        {
+            var games = await _organizationService.GetAssoc(dailyGameDate.DailyGameDate);
             return Ok(games.Data);
         }
 

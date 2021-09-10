@@ -14,5 +14,10 @@ namespace TestCoreAPI.Dtos
         public int Points { get; set; }
         public int OpponentPoints { get; set; }
         public int EvalResult { get; set; }
+        public string FieldName { get; set; }
+        public string Value { get; set; }
+        public Guid PlayerIdWhoSolved { get; set; }
+        public List<string> SolvedCols { get; set; }
+        public bool IsFinalSolved { get; set; }
     }
 }

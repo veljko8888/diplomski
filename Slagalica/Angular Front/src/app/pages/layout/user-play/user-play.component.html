@@ -1515,120 +1515,393 @@
         </div>
         <div *ngIf="asocijacijeActive">
             <div class="form-group row">
-                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeft}} sekundi</p>
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi</p>
             </div>
             <div class="form-group row">
-                <button style="margin: auto;" [disabled]="asocijacijeGameStarted" (click)="pickAsocijacije()" nbButton
+                <button style="margin: auto;" [disabled]="asocijacijeGameStarted" (click)="pickAsocijacije(true)" nbButton
                     status="primary">Start</button>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (click)="openField('A1')" [(ngModel)]="asocijacijeBind.A1" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"   
+                        (click)="openField('A1', true)" [(ngModel)]="asocijacijeBind.A1" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="A1">
                 </div>
                 <div class="col-sm-6">
-                    <input (click)="openField('B1')" [(ngModel)]="asocijacijeBind.B1" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"  
+                        (click)="openField('B1', true)" [(ngModel)]="asocijacijeBind.B1" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="B1">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (click)="openField('A2')" [(ngModel)]="asocijacijeBind.A2" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"  
+                        (click)="openField('A2', true)" [(ngModel)]="asocijacijeBind.A2" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="A2">
                 </div>
                 <div class="col-sm-6">
-                    <input (click)="openField('B2')" [(ngModel)]="asocijacijeBind.B2" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"   
+                        (click)="openField('B2', true)" [(ngModel)]="asocijacijeBind.B2" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="B2">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (click)="openField('A3')" [(ngModel)]="asocijacijeBind.A3" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"  
+                        (click)="openField('A3', true)" [(ngModel)]="asocijacijeBind.A3" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="A3">
                 </div>
                 <div class="col-sm-6">
-                    <input (click)="openField('B3')" [(ngModel)]="asocijacijeBind.B3" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"   
+                        (click)="openField('B3', true)" [(ngModel)]="asocijacijeBind.B3" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="B3">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (click)="openField('A4')" [(ngModel)]="asocijacijeBind.A4" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"  
+                        (click)="openField('A4', true)" [(ngModel)]="asocijacijeBind.A4" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="A4">
                 </div>
                 <div class="col-sm-6">
-                    <input (click)="openField('B4')" [(ngModel)]="asocijacijeBind.B4" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"  
+                        (click)="openField('B4', true)" [(ngModel)]="asocijacijeBind.B4" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="B4">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'A')"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('A') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"
+                        (keydown)="submitFieldSolution($event, $event.target.value, 'A', true)"
                         [(ngModel)]="asocijacijeBind.A" class="input-style" type="text" nbInput fullWidth
                         placeholder="A">
                 </div>
                 <div class="col-sm-6">
-                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'B')"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('B') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }" 
+                        (keydown)="submitFieldSolution($event, $event.target.value, 'B', true)"
                         [(ngModel)]="asocijacijeBind.B" class="input-style" type="text" nbInput fullWidth
                         placeholder="B">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-12">
-                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'Final')"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('Final') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('Final') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('Final') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('Final') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }" 
+                        (keydown)="submitFieldSolution($event, $event.target.value, 'Final', true)"
                         [(ngModel)]="asocijacijeBind.Final" class="input-style" type="text" nbInput fullWidth
                         placeholder="Konačno">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'C')"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }" 
+                        (keydown)="submitFieldSolution($event, $event.target.value, 'C', true)"
                         [(ngModel)]="asocijacijeBind.C" class="input-style" type="text" nbInput fullWidth
                         placeholder="C">
                 </div>
                 <div class="col-sm-6">
-                    <input (keydown)="submitFieldSolution($event, $event.target.value, 'D')"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }" 
+                        (keydown)="submitFieldSolution($event, $event.target.value, 'D', true)"
                         [(ngModel)]="asocijacijeBind.D" class="input-style" type="text" nbInput fullWidth
                         placeholder="D">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (click)="openField('C1')" [(ngModel)]="asocijacijeBind.C1" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"
+                        (click)="openField('C1', true)" [(ngModel)]="asocijacijeBind.C1" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="C1">
                 </div>
                 <div class="col-sm-6">
-                    <input (click)="openField('D1')" [(ngModel)]="asocijacijeBind.D1" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"  
+                        (click)="openField('D1', true)" [(ngModel)]="asocijacijeBind.D1" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="D1">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (click)="openField('C2')" [(ngModel)]="asocijacijeBind.C2" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"
+                        (click)="openField('C2', true)" [(ngModel)]="asocijacijeBind.C2" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="C2">
                 </div>
                 <div class="col-sm-6">
-                    <input (click)="openField('D2')" [(ngModel)]="asocijacijeBind.D2" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"  
+                        (click)="openField('D2', true)" [(ngModel)]="asocijacijeBind.D2" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="D2">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (click)="openField('C3')" [(ngModel)]="asocijacijeBind.C3" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }" 
+                        (click)="openField('C3', true)" [(ngModel)]="asocijacijeBind.C3" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="C3">
                 </div>
                 <div class="col-sm-6">
-                    <input (click)="openField('D3')" [(ngModel)]="asocijacijeBind.D3" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }"  
+                        (click)="openField('D3', true)" [(ngModel)]="asocijacijeBind.D3" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="D3">
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
-                    <input (click)="openField('C4')" [(ngModel)]="asocijacijeBind.C4" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('C') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }" 
+                        (click)="openField('C4', true)" [(ngModel)]="asocijacijeBind.C4" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="C4">
                 </div>
                 <div class="col-sm-6">
-                    <input (click)="openField('D4')" [(ngModel)]="asocijacijeBind.D4" readonly="readonly"
+                    <input [ngStyle]="{'background': (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'blue' 
+                    : (solvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player1Id) 
+                    ? 'red'
+                    : (opponentSolvedColumns.includes('D') 
+                    && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
+                    ? 'blue'
+                    : null }" 
+                        (click)="openField('D4', true)" [(ngModel)]="asocijacijeBind.D4" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="D4">
                 </div>
             </div>

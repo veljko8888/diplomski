@@ -18,6 +18,8 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<List<UserDto>>> GetUsers();
         Task<ResponseWrapper<DailyGamesResponseDto>> GetDailyGames(GetDailyGamesDto dailyGames);
         Task<ResponseWrapper<DailyGameContentDto>> GetSpojnice(DateTime gamesDate);
+        Task<ResponseWrapper<DailyGameContentDto>> GetAssoc(DateTime gamesDate);
+        
         Task<ResponseWrapper<DailyGameContentDto>> GetDailyGamePlay(DateTime dailyGameDate);
         Task<ResponseWrapper<DailyGamePlayDto>> SaveDailyGamePlay(DailyGamePlayDto dailyPlay);
         Task<ResponseWrapper<List<MultiplayerGameDto>>> GetMultiplayerGames();
@@ -28,6 +30,15 @@ namespace TestCoreAPI.IServices
 
         Task<ResponseWrapper<bool>> PlayerFinished(GameAndUserDto request);
         Task<ResponseWrapper<bool>> NextPlayerSkocko(GameAndUserDto request);
+        Task<ResponseWrapper<bool>> NextPlayerAssoc(GameAndUserDto request);
+        Task<ResponseWrapper<bool>> AssocNotifyOpponentAndSendSolved(GameAndUserDto request);
+        Task<ResponseWrapper<GameAndUserDto>> GetForOpponentAssoc(GameAndUserDto request);
+        
+        Task<ResponseWrapper<bool>> OpenFieldNotif(GameAndUserDto request);
+        Task<ResponseWrapper<GameAndUserDto>> GetOpenedField(GameAndUserDto request);
+        
+        Task<ResponseWrapper<int>> OnMoveAssoc(GameAndUserDto request);
+        
         Task<ResponseWrapper<bool>> TryNextPlayerSkocko(GameAndUserDto request);
 
         Task<ResponseWrapper<bool>> NextGame(GameAndUserDto request);
@@ -37,6 +48,8 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<int>> AddPoints(GameAndUserDto request);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendCombination(UpdateGameEndsAndSendCombinationDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndNotifyCombinations(UpdateGameEndsAndNotifyCombinationsDto multigame);
+        Task<ResponseWrapper<bool>> UpdateGameEndsAndNotifyAssoc(GameAndUserDto request);
+        
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendNums(UpdateGameEndsAndSendNumsDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendChars(UpdateGameEndsAndSendCharsDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> CreateMultiplayerGame(MultiplayerGameDto multigame);

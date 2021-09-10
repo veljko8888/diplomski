@@ -3,6 +3,7 @@ import { HttpHandlerService } from 'app/@core/http/http-handler.service';
 import { FrameService } from 'app/@core/mock/frame.service';
 import { UserService } from 'app/@core/mock/users.service';
 import * as signalR from '@microsoft/signalr';
+import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 
 @Component({
   selector: 'ngx-user-play',
@@ -108,6 +109,17 @@ export class UserPlayComponent implements OnInit {
   mojBrojPoints: number = 0;
   player2Freeze = false;
   player1Freeze = false;
+  oneFieldOpened = false;
+  solvedColumns = [];
+  opponentSolvedColumns = [];
+  colApoints = 0;
+  colBpoints = 0;
+  colCpoints = 0;
+  colDpoints = 0;
+  finalSolPoints = 0;
+  isFinalSolved = false;
+  isFirstRoundSolved = false;
+  isSecondRoundSolved = false;
 
   ngOnInit(): void {
     this.connection = new signalR.HubConnectionBuilder()
@@ -177,45 +189,62 @@ export class UserPlayComponent implements OnInit {
       }
       else if (gameState == 2) {
         if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
-          //this.getSpojnice(true);
           this.startTimer(4, true);
-          //this.userService.saveSpojniceGameState(3);
           this.spojniceGameStarted = true;
         }
         else {
-          //this.getSpojnice(true);
           this.startTimerPassive();
-          //this.userService.saveSpojniceGameState(3);
         }
       }
       else if (gameState == 3) {
         if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
-          //this.getSpojnice(true);
           this.startTimer(4, true);
-          //this.userService.saveSpojniceGameState(3);
           this.spojniceGameStarted = true;
         }
         else {
-          //this.getSpojnice(true);
           this.startTimerPassive();
-          //this.userService.saveSpojniceGameState(3);
         }
       }
       else if (gameState == 4) {
         if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
-          //this.getSpojnice(true);
           this.startTimer(4, true);
-          //this.userService.saveSpojniceGameState(3);
           this.spojniceGameStarted = true;
         }
         else {
-          //this.getSpojnice(true);
           this.startTimerPassive();
-          //this.userService.saveSpojniceGameState(3);
         }
       }
 
     });
+
+    this.connection.on("CountdownTimerAssoc", () => {
+      let gameState = this.userService.getSpojniceGameState();
+      if (!this.isFirstRoundSolved) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          this.getAssoc();
+          this.startTimerPassive();
+        }
+        else {
+          this.getAssoc();
+          this.startTimer(5, true);
+        }
+      }
+      else if (this.isFirstRoundSolved && !this.isSecondRoundSolved) {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
+          this.getAssoc(true);
+          this.startTimer(5, true);
+        }
+        else {
+          this.getAssoc(true);
+          this.startTimerPassive();
+        }
+      }
+    });
+
+    this.connection.on("FieldOpened", () => {
+      this.getOpenedField()
+    });
+
 
     this.connection.on("SpojniceSecondRound", () => {
       if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player2Id) {
@@ -237,6 +266,11 @@ export class UserPlayComponent implements OnInit {
         this.frameService.showLoader();
       }
     });
+
+    this.connection.on("NotifyOpponentForAssocSol", () => {
+      this.getFromOpponentAssoc();
+    });
+
 
     this.connection.on("CountdownTimerSkockoPlayer2", () => {
       if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
@@ -271,6 +305,10 @@ export class UserPlayComponent implements OnInit {
       }
     });
 
+    this.connection.on("NextPlayerAssoc", () => {
+      this.getOnMove();
+    });
+
     this.connection.on("NextGame", () => {
       if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
         this.frameService.hideLoader();
@@ -284,6 +322,7 @@ export class UserPlayComponent implements OnInit {
     });
 
     this.connection.on("MoveToAsoc", () => {
+      this.userService.saveSpojniceGameState(5);
       if (this.userService.getCurrentUser().id == this.userService.getCurrentGame()?.player1Id) {
         this.frameService.hideLoader();
         this.calcPointsOpponent();
@@ -291,7 +330,7 @@ export class UserPlayComponent implements OnInit {
         this.spojniceActive = false;
         this.asocijacijeActive = true;
         this.infoMsg = '';
-        this.timeLeftMultiplayer = 60;
+        this.timeLeftMultiplayer = 240;
       }
       else {
         this.frameService.showLoader();
@@ -300,7 +339,7 @@ export class UserPlayComponent implements OnInit {
         this.spojniceActive = false;
         this.asocijacijeActive = true;
         this.infoMsg = '';
-        this.timeLeftMultiplayer = 60;
+        this.timeLeftMultiplayer = 240;
       }
     });
 
@@ -318,7 +357,7 @@ export class UserPlayComponent implements OnInit {
         else {
           this.points += this.spojnicePoints;
           this.spojnicePoints = 0;
-          this.userService.saveSpojniceGameState(2);
+          this.userService.saveSpojniceGameState(4); //OVO SMA PROMENIO SA 2 na 4 - PROVERI !!!
           this.timeLeftMultiplayer = 60;
           clearInterval(this.interval);
           this.frameService.showLoader();
@@ -344,6 +383,186 @@ export class UserPlayComponent implements OnInit {
       }
     });
 
+  }
+
+  resetAssocForMulti() {
+    this.timeLeftMultiplayer = 240;
+    clearInterval(this.interval);
+    this.oneFieldOpened = false;
+    this.colApoints = 0;
+    this.colBpoints = 0;
+    this.colCpoints = 0;
+    this.colDpoints = 0;
+    this.finalSolPoints = 0;
+    this.solvedColumns = [];
+    this.opponentSolvedColumns = [];
+    this.isFinalSolved = false;
+    this.asocijacijePoints = 0;
+    this.asocijacijeBind = {
+      Final: '',
+      A1: 'A1',
+      A2: 'A2',
+      A3: 'A3',
+      A4: 'A4',
+      A: '',
+      B1: 'B1',
+      B2: 'B2',
+      B3: 'B3',
+      B4: 'B4',
+      B: '',
+      C1: 'C1',
+      C2: 'C2',
+      C3: 'C3',
+      C4: 'C4',
+      C: '',
+      D1: 'D1',
+      D2: 'D2',
+      D3: 'D3',
+      D4: 'D4',
+      D: '',
+    }
+  }
+
+  async handleAssocTimesUp(){
+    // let request = {
+    //   gameId: this.userService.getCurrentGame().id,
+    //   userId: this.userService.getCurrentUser().id,
+    // }
+    // await this.httpService.getOpenedField(request).subscribe(
+    //   (res: any) => {
+    //     this.asocijacijeBind[res.fieldName] = res.value;
+    //   },
+    //   error => {
+    //     console.log(error);
+    //   });
+  }
+
+  async getFromOpponentAssoc() {
+    let request = {
+      gameId: this.userService.getCurrentGame().id,
+      userId: this.userService.getCurrentUser().id,
+    }
+    await this.httpService.getFromOpponentForAssoc(request).subscribe(
+      (res: any) => {
+        if (request.userId == res.playerIdWhoSolved) {
+          if (this.solvedColumns.includes('Final')) {
+            setTimeout(() => {
+              this.resetAssocForMulti();
+              if (this.userService.getCurrentUser().id == this.userService.getCurrentGame().player2Id) {
+                this.frameService.hideLoader();
+              }
+              else {
+                this.frameService.showLoader();
+              }
+              if (this.isSecondRoundSolved) {
+                this.checkAsocijacijeAndCalculatePoints(true);
+              }
+            }, 5000);
+          }
+        }
+        else {
+          this.opponentSolvedColumns = res.solvedCols;
+          if (this.opponentSolvedColumns.includes('A')) {
+            this.asocijacijeBind['A'] = this.asocijacijeFields['a'];
+            this.asocijacijeBind['A1'] = this.asocijacijeFields['a1'];
+            this.asocijacijeBind['A2'] = this.asocijacijeFields['a2'];
+            this.asocijacijeBind['A3'] = this.asocijacijeFields['a3'];
+            this.asocijacijeBind['A4'] = this.asocijacijeFields['a4'];
+          }
+          if (this.opponentSolvedColumns.includes('B')) {
+            this.asocijacijeBind['B'] = this.asocijacijeFields['b'];
+            this.asocijacijeBind['B1'] = this.asocijacijeFields['b1'];
+            this.asocijacijeBind['B2'] = this.asocijacijeFields['b2'];
+            this.asocijacijeBind['B3'] = this.asocijacijeFields['b3'];
+            this.asocijacijeBind['B4'] = this.asocijacijeFields['b4'];
+          }
+          if (this.opponentSolvedColumns.includes('C')) {
+            this.asocijacijeBind['C'] = this.asocijacijeFields['c'];
+            this.asocijacijeBind['C1'] = this.asocijacijeFields['c1'];
+            this.asocijacijeBind['C2'] = this.asocijacijeFields['c2'];
+            this.asocijacijeBind['C3'] = this.asocijacijeFields['c3'];
+            this.asocijacijeBind['C4'] = this.asocijacijeFields['c4'];
+          }
+          if (this.opponentSolvedColumns.includes('D')) {
+            this.asocijacijeBind['D'] = this.asocijacijeFields['d'];
+            this.asocijacijeBind['D1'] = this.asocijacijeFields['d1'];
+            this.asocijacijeBind['D2'] = this.asocijacijeFields['d2'];
+            this.asocijacijeBind['D3'] = this.asocijacijeFields['d3'];
+            this.asocijacijeBind['D4'] = this.asocijacijeFields['d4'];
+          }
+          this.calcPointsOpponent();
+          if (this.opponentSolvedColumns.includes('Final')) {
+            if (!this.isFirstRoundSolved) {
+              this.isFirstRoundSolved = true;
+            }
+            else {
+              if (!this.isSecondRoundSolved) {
+                this.isSecondRoundSolved = true;
+              }
+            }
+
+            this.asocijacijeBind['Final'] = this.asocijacijeFields['final'];
+            setTimeout(() => {
+              this.resetAssocForMulti();
+              if (this.userService.getCurrentUser().id == this.userService.getCurrentGame().player2Id) {
+                this.frameService.hideLoader();
+              }
+              else {
+                this.frameService.showLoader();
+              }
+              if (this.isSecondRoundSolved) {
+                this.checkAsocijacijeAndCalculatePoints(true);
+              }
+            }, 5000);
+          }
+        }
+      },
+      error => {
+        console.log(error);
+      });
+  }
+
+  async getOpenedField() {
+    let request = {
+      gameId: this.userService.getCurrentGame().id,
+      userId: this.userService.getCurrentUser().id,
+    }
+    await this.httpService.getOpenedField(request).subscribe(
+      (res: any) => {
+        this.asocijacijeBind[res.fieldName] = res.value;
+      },
+      error => {
+        console.log(error);
+      });
+  }
+
+  async getOnMove() {
+    let request = {
+      gameId: this.userService.getCurrentGame().id,
+      userId: this.userService.getCurrentUser().id,
+    }
+    await this.httpService.onMove(request).subscribe(
+      (res: any) => {
+        if (this.userService.getCurrentUser().id == this.userService.getCurrentGame().player1Id) {
+          if (res == 1) {
+            this.frameService.hideLoader();
+          }
+          else {
+            this.frameService.showLoader();
+          }
+        }
+        else {
+          if (res == 1) {
+            this.frameService.showLoader();
+          }
+          else {
+            this.frameService.hideLoader();
+          }
+        }
+      },
+      error => {
+        console.log(error);
+      });
   }
 
   closeMultiplayerDialog() {
@@ -681,9 +900,25 @@ export class UserPlayComponent implements OnInit {
     }
   }
 
-  pickAsocijacije() {
-    this.asocijacijeGameStarted = true;
-    this.startTimer(5);
+  async pickAsocijacije(isMultiplayer: boolean = false) {
+    if (isMultiplayer) {
+      let request = {
+        gameId: this.userService.getCurrentGame().id,
+        userId: this.userService.getCurrentUser().id,
+      }
+      await this.httpService.updateGameEndsDateAndNotifyForAssoc(request).subscribe(
+        (res: any) => {
+        },
+        error => {
+          //this.waitCreateGame = 'Greška prilikom zapocinjanja igre, molimo pokušajte ponovo.'
+          console.log(error);
+        });
+      //this.startTimer(5, true);
+    }
+    else {
+      this.asocijacijeGameStarted = true;
+      this.startTimer(5);
+    }
   }
 
   async getSpojniceAlreadyChecked() {
@@ -699,6 +934,28 @@ export class UserPlayComponent implements OnInit {
       },
       error => {
         //this.waitCreateGame = 'Greška prilikom zapocinjanja igre, molimo pokušajte ponovo.'
+        console.log(error);
+      });
+  }
+
+  async getAssoc(isSecondRoundAssoc: boolean = false) {
+    if (isSecondRoundAssoc) {
+      this.userService.saveSpojniceGameState(6);
+    }
+    else {
+      this.userService.saveSpojniceGameState(5);
+    }
+    let today = new Date();
+    let date = isSecondRoundAssoc ? new Date(today.setDate(today.getDate() + 1)) : today;
+    let request = {
+      DailyGameDate: this.formatDate(date)
+    }
+    await this.httpService.getAssocGame(request).subscribe(
+      (res: any) => {
+        this.asocijacijeFields = res.associations;
+        //this.userService.saveSpojniceGameState(res.gameState);
+      },
+      error => {
         console.log(error);
       });
   }
@@ -784,79 +1041,232 @@ export class UserPlayComponent implements OnInit {
     }
   }
 
-  openField(fieldName: string) {
-    if (this.asocijacijeGameStarted) {
+  async openField(fieldName: string, isMultiplayer: boolean = false) {
+    if (isMultiplayer && !this.oneFieldOpened) {
+      let fieldNameLowerCaseFirst = fieldName[0].toLowerCase() + fieldName.slice(1);
+      this.asocijacijeBind[fieldName] = this.asocijacijeFields[fieldNameLowerCaseFirst];
+      this.oneFieldOpened = true;
+      let request = {
+        gameId: this.userService.getCurrentGame().id,
+        userId: this.userService.getCurrentUser().id,
+        fieldName: fieldName,
+        value: this.asocijacijeFields[fieldNameLowerCaseFirst]
+      }
+      await this.httpService.sendOpenFieldNotification(request).subscribe(
+        (res: any) => {
+        },
+        error => {
+          //this.frameService.hideLoader();
+          console.log(error);
+        });
+    }
+    else if (this.asocijacijeGameStarted) {
       let fieldNameLowerCaseFirst = fieldName[0].toLowerCase() + fieldName.slice(1);
       this.asocijacijeBind[fieldName] = this.asocijacijeFields[fieldNameLowerCaseFirst];
     }
   }
 
-  submitFieldSolution(event: any, value: string, fieldName: string) {
+  async submitFieldSolution(event: any, value: string, fieldName: string, isMultiplayer: boolean = false) {
     if (event.keyCode === 13) {
-      let fieldNameLowerCaseFirst = fieldName[0].toLowerCase() + fieldName.slice(1);
-      let solutionWords = this.asocijacijeFields[fieldNameLowerCaseFirst].split(',').map(v => v.toLowerCase());;
-      let valueTrimmed = value.trim();
-      if (solutionWords.includes(valueTrimmed.toLowerCase())) {
-        if (fieldName == 'Final') {
-          this.asocijacijePoints += 10;
-          let countUnsolvedGroups = 0;
-          if (this.asocijacijeBind['A'] == '') {
-            countUnsolvedGroups++;
-          }
-          if (this.asocijacijeBind['B'] == '') {
-            countUnsolvedGroups++;
-          }
-          if (this.asocijacijeBind['C'] == '') {
-            countUnsolvedGroups++;
-          }
-          if (this.asocijacijeBind['D'] == '') {
-            countUnsolvedGroups++;
-          }
+      if (isMultiplayer) {
+        let fieldNameLowerCaseFirst = fieldName[0].toLowerCase() + fieldName.slice(1);
+        let solutionWords = this.asocijacijeFields[fieldNameLowerCaseFirst].split(',').map(v => v.toLowerCase());;
+        let valueTrimmed = value.trim();
+        if (solutionWords.includes(valueTrimmed.toLowerCase())) {
+          if (fieldName == 'Final') {
+            this.isFinalSolved = true;
+            this.asocijacijePoints += 10;
+            let countUnsolvedGroups = 0;
+            if (this.asocijacijeBind['A'] == '') {
+              countUnsolvedGroups++;
+              this.solvedColumns.push('A');
+            }
+            if (this.asocijacijeBind['B'] == '') {
+              countUnsolvedGroups++;
+              this.solvedColumns.push('B');
+            }
+            if (this.asocijacijeBind['C'] == '') {
+              countUnsolvedGroups++;
+              this.solvedColumns.push('C');
+            }
+            if (this.asocijacijeBind['D'] == '') {
+              countUnsolvedGroups++;
+              this.solvedColumns.push('D');
+            }
 
-          if (countUnsolvedGroups > 0) {
-            this.asocijacijePoints += countUnsolvedGroups * 5;
-          }
+            if (countUnsolvedGroups > 0) {
+              this.asocijacijePoints += countUnsolvedGroups * 5;
+            }
 
-          this.checkAsocijacijeAndCalculatePoints();
+            this.populateAllFields();
+            this.solvedColumns.push('Final');
+            this.savePoints(this.asocijacijePoints);
+            this.notifyOpponentForPointsAndSendSolutions();
+            this.calcPointsOpponent();
+          }
+          else if (fieldName == 'A') {
+            this.asocijacijePoints += 5;
+            this.asocijacijeBind['A'] = this.asocijacijeFields['a'];
+            this.asocijacijeBind['A1'] = this.asocijacijeFields['a1'];
+            this.asocijacijeBind['A2'] = this.asocijacijeFields['a2'];
+            this.asocijacijeBind['A3'] = this.asocijacijeFields['a3'];
+            this.asocijacijeBind['A4'] = this.asocijacijeFields['a4'];
+            this.solvedColumns.push('A');
+            this.savePoints(5);
+            this.notifyOpponentForPointsAndSendSolutions();
+            this.colApoints = 5;
+            this.points += this.colApoints;
+          }
+          else if (fieldName == 'B') {
+            this.asocijacijePoints += 5;
+            this.asocijacijeBind['B'] = this.asocijacijeFields['b'];
+            this.asocijacijeBind['B1'] = this.asocijacijeFields['b1'];
+            this.asocijacijeBind['B2'] = this.asocijacijeFields['b2'];
+            this.asocijacijeBind['B3'] = this.asocijacijeFields['b3'];
+            this.asocijacijeBind['B4'] = this.asocijacijeFields['b4'];
+            this.solvedColumns.push('B');
+            this.savePoints(5);
+            this.notifyOpponentForPointsAndSendSolutions();
+            this.colBpoints = 5;
+            this.points += this.colBpoints;
+          }
+          else if (fieldName == 'C') {
+            this.asocijacijePoints += 5;
+            this.asocijacijeBind['C'] = this.asocijacijeFields['c'];
+            this.asocijacijeBind['C1'] = this.asocijacijeFields['c1'];
+            this.asocijacijeBind['C2'] = this.asocijacijeFields['c2'];
+            this.asocijacijeBind['C3'] = this.asocijacijeFields['c3'];
+            this.asocijacijeBind['C4'] = this.asocijacijeFields['c4'];
+            this.solvedColumns.push('C');
+            this.savePoints(5);
+            this.notifyOpponentForPointsAndSendSolutions();
+            this.colCpoints = 5;
+            this.points += this.colCpoints;
+          }
+          else if (fieldName == 'D') {
+            this.asocijacijePoints += 5;
+            this.asocijacijeBind['D'] = this.asocijacijeFields['d'];
+            this.asocijacijeBind['D1'] = this.asocijacijeFields['d1'];
+            this.asocijacijeBind['D2'] = this.asocijacijeFields['d2'];
+            this.asocijacijeBind['D3'] = this.asocijacijeFields['d3'];
+            this.asocijacijeBind['D4'] = this.asocijacijeFields['d4'];
+            this.solvedColumns.push('D');
+            this.savePoints(5);
+            this.notifyOpponentForPointsAndSendSolutions();
+            this.colDpoints = 5;
+            this.points += this.colDpoints;
+          }
         }
-        else if (fieldName == 'A') {
-          this.asocijacijePoints += 5;
-          this.asocijacijeBind['A'] = this.asocijacijeFields['a'];
-          this.asocijacijeBind['A1'] = this.asocijacijeFields['a1'];
-          this.asocijacijeBind['A2'] = this.asocijacijeFields['a2'];
-          this.asocijacijeBind['A3'] = this.asocijacijeFields['a3'];
-          this.asocijacijeBind['A4'] = this.asocijacijeFields['a4'];
-        }
-        else if (fieldName == 'B') {
-          this.asocijacijePoints += 5;
-          this.asocijacijeBind['B'] = this.asocijacijeFields['b'];
-          this.asocijacijeBind['B1'] = this.asocijacijeFields['b1'];
-          this.asocijacijeBind['B2'] = this.asocijacijeFields['b2'];
-          this.asocijacijeBind['B3'] = this.asocijacijeFields['b3'];
-          this.asocijacijeBind['B4'] = this.asocijacijeFields['b4'];
-        }
-        else if (fieldName == 'C') {
-          this.asocijacijePoints += 5;
-          this.asocijacijeBind['C'] = this.asocijacijeFields['c'];
-          this.asocijacijeBind['C1'] = this.asocijacijeFields['c1'];
-          this.asocijacijeBind['C2'] = this.asocijacijeFields['c2'];
-          this.asocijacijeBind['C3'] = this.asocijacijeFields['c3'];
-          this.asocijacijeBind['C4'] = this.asocijacijeFields['c4'];
-        }
-        else if (fieldName == 'D') {
-          this.asocijacijePoints += 5;
-          this.asocijacijeBind['D'] = this.asocijacijeFields['d'];
-          this.asocijacijeBind['D1'] = this.asocijacijeFields['d1'];
-          this.asocijacijeBind['D2'] = this.asocijacijeFields['d2'];
-          this.asocijacijeBind['D3'] = this.asocijacijeFields['d3'];
-          this.asocijacijeBind['D4'] = this.asocijacijeFields['d4'];
+        else {
+          this.asocijacijeBind[fieldName] = '';
+          this.frameService.showToastPrime('Netačno', 'Vaša asocijacija nije tačna', 'error', 2000);
+          this.oneFieldOpened = false;
+          let request = {
+            gameId: this.userService.getCurrentGame().id,
+            userId: this.userService.getCurrentUser().id
+          }
+          await this.httpService.nextPlayerAssoc(request).subscribe(
+            (res: any) => {
+            },
+            error => {
+              //this.frameService.hideLoader();
+              console.log(error);
+            });
         }
       }
       else {
-        this.asocijacijeBind[fieldName] = '';
-        this.frameService.showToastPrime('Netačno', 'Vaša asocijacija nije tačna', 'error', 2000);
+        let fieldNameLowerCaseFirst = fieldName[0].toLowerCase() + fieldName.slice(1);
+        let solutionWords = this.asocijacijeFields[fieldNameLowerCaseFirst].split(',').map(v => v.toLowerCase());;
+        let valueTrimmed = value.trim();
+        if (solutionWords.includes(valueTrimmed.toLowerCase())) {
+          if (fieldName == 'Final') {
+            this.asocijacijePoints += 10;
+            let countUnsolvedGroups = 0;
+            if (this.asocijacijeBind['A'] == '') {
+              countUnsolvedGroups++;
+            }
+            if (this.asocijacijeBind['B'] == '') {
+              countUnsolvedGroups++;
+            }
+            if (this.asocijacijeBind['C'] == '') {
+              countUnsolvedGroups++;
+            }
+            if (this.asocijacijeBind['D'] == '') {
+              countUnsolvedGroups++;
+            }
+
+            if (countUnsolvedGroups > 0) {
+              this.asocijacijePoints += countUnsolvedGroups * 5;
+            }
+
+            this.checkAsocijacijeAndCalculatePoints();
+          }
+          else if (fieldName == 'A') {
+            this.asocijacijePoints += 5;
+            this.asocijacijeBind['A'] = this.asocijacijeFields['a'];
+            this.asocijacijeBind['A1'] = this.asocijacijeFields['a1'];
+            this.asocijacijeBind['A2'] = this.asocijacijeFields['a2'];
+            this.asocijacijeBind['A3'] = this.asocijacijeFields['a3'];
+            this.asocijacijeBind['A4'] = this.asocijacijeFields['a4'];
+          }
+          else if (fieldName == 'B') {
+            this.asocijacijePoints += 5;
+            this.asocijacijeBind['B'] = this.asocijacijeFields['b'];
+            this.asocijacijeBind['B1'] = this.asocijacijeFields['b1'];
+            this.asocijacijeBind['B2'] = this.asocijacijeFields['b2'];
+            this.asocijacijeBind['B3'] = this.asocijacijeFields['b3'];
+            this.asocijacijeBind['B4'] = this.asocijacijeFields['b4'];
+          }
+          else if (fieldName == 'C') {
+            this.asocijacijePoints += 5;
+            this.asocijacijeBind['C'] = this.asocijacijeFields['c'];
+            this.asocijacijeBind['C1'] = this.asocijacijeFields['c1'];
+            this.asocijacijeBind['C2'] = this.asocijacijeFields['c2'];
+            this.asocijacijeBind['C3'] = this.asocijacijeFields['c3'];
+            this.asocijacijeBind['C4'] = this.asocijacijeFields['c4'];
+          }
+          else if (fieldName == 'D') {
+            this.asocijacijePoints += 5;
+            this.asocijacijeBind['D'] = this.asocijacijeFields['d'];
+            this.asocijacijeBind['D1'] = this.asocijacijeFields['d1'];
+            this.asocijacijeBind['D2'] = this.asocijacijeFields['d2'];
+            this.asocijacijeBind['D3'] = this.asocijacijeFields['d3'];
+            this.asocijacijeBind['D4'] = this.asocijacijeFields['d4'];
+          }
+        }
+        else {
+          this.asocijacijeBind[fieldName] = '';
+          this.frameService.showToastPrime('Netačno', 'Vaša asocijacija nije tačna', 'error', 2000);
+        }
       }
     }
+  }
+
+  async notifyOpponentForPointsAndSendSolutions() {
+    let request = {
+      gameId: this.userService.getCurrentGame().id,
+      userId: this.userService.getCurrentUser().id,
+      solvedCols: this.solvedColumns,
+      isFinalSolved: this.isFinalSolved
+    }
+    if (this.isFinalSolved) {
+      if (!this.isFirstRoundSolved) {
+        this.isFirstRoundSolved = true;
+        this.userService.saveSpojniceGameState(6);
+      }
+      else {
+        if (!this.isSecondRoundSolved) {
+          this.isSecondRoundSolved = true;
+        }
+      }
+    }
+    await this.httpService.notifyOpponentAndSendSolved(request).subscribe(
+      (res: any) => {
+      },
+      error => {
+        //this.frameService.hideLoader();
+        console.log(error);
+      });
   }
 
   selectSign(sign: any) {
@@ -1112,7 +1522,12 @@ export class UserPlayComponent implements OnInit {
             }
           }
           else if (game == 5) {
-            this.checkAsocijacijeAndCalculatePoints();
+            if(isMultiPlayer){
+              this.handleAssocTimesUp();
+            }
+            else{
+              this.checkAsocijacijeAndCalculatePoints();
+            }
           }
         }
       }, 1000)
@@ -1495,6 +1910,7 @@ export class UserPlayComponent implements OnInit {
       }
       else if (gameState == 2) {
         await this.savePoints(this.spojnicePoints);
+        this.spojnicePoints = 0; // PROVERI DAL SI I OVO OMANUO
         //notif za novu spojnicu
         let request = {
           gameId: this.userService.getCurrentGame().id,
@@ -1565,31 +1981,41 @@ export class UserPlayComponent implements OnInit {
     }
   }
 
-  async checkAsocijacijeAndCalculatePoints() {
-    //POSALJI REQUEST ZA ENDGAME UKUPNO POENA ITD
-    this.populateAllFields();
-    this.infoMsg = `Osvojili ste ${this.asocijacijePoints} poena u ovoj igri. Igra je završena.`;
-    this.points += this.asocijacijePoints;
-    clearInterval(this.interval);
-    this.timeLeft = 60;
-    let request = {
-      Points: this.points,
-      DailyGameDate: this.formatDate(new Date()),
-      UserId: this.userService.getCurrentUser().id
+  async checkAsocijacijeAndCalculatePoints(isMultiplayer: boolean = false) {
+    if (isMultiplayer) {
+      clearInterval(this.interval);
+      this.timeLeft = 60;
+      setTimeout(() => {
+        this.asocijacijeActive = false;
+        this.infoMsg = '';
+      }, 5000);
     }
-    await this.httpService.saveDailyGame(request).subscribe(
-      (res: any) => {
-        //ON SUCCESS
-        this.frameService.showToastPrime('Uspešno!', 'Završena igra.', 'success', 4000);
-      },
-      error => {
-        let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom završetka igre.';
-        this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
-      });
-    setTimeout(() => {
-      this.asocijacijeActive = false;
-      this.infoMsg = '';
-    }, 5000);
+    else {
+      this.populateAllFields();
+      this.infoMsg = `Osvojili ste ${this.asocijacijePoints} poena u ovoj igri. Igra je završena.`;
+      this.points += this.asocijacijePoints;
+      clearInterval(this.interval);
+      this.timeLeft = 60;
+      let request = {
+        Points: this.points,
+        DailyGameDate: this.formatDate(new Date()),
+        UserId: this.userService.getCurrentUser().id
+      }
+      await this.httpService.saveDailyGame(request).subscribe(
+        (res: any) => {
+          //ON SUCCESS
+          this.frameService.showToastPrime('Uspešno!', 'Završena igra.', 'success', 4000);
+        },
+        error => {
+          let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom završetka igre.';
+          this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
+        });
+      setTimeout(() => {
+        this.asocijacijeActive = false;
+        this.infoMsg = '';
+      }, 5000);
+    }
+
   }
 
   populateAllFields() {

@@ -30,5 +30,10 @@ namespace TestCoreAPI.Models
         public int Player2EvalResult { get; set; }
         public string SpojniceText { get; set; }
         public string SpojniceTextLeft { get; set; }
+        public int OnMove { get; set; }
+        public string FieldName { get; set; }
+        public string Value { get; set; }
+        public Guid PlayerIdWhoSolved { get; set; }
+        public string SolvedForOpponent { get; set; }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestCoreAPI.Models;
 
 namespace TestCoreAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210910092342_fieldvalue")]
+    partial class fieldvalue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,14 +223,8 @@ namespace TestCoreAPI.Migrations
                     b.Property<bool>("Player2WordsFinished")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("PlayerIdWhoSolved")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("SlagalicaGameEnds")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("SolvedForOpponent")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SpojniceText")
                         .HasColumnType("nvarchar(max)");

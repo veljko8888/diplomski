@@ -95,6 +95,10 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/update-game-ends-combination', request);
   }
 
+  updateGameEndsDateAndNotifyForAssoc(request: any){
+    return this.http.post(this.BaseURI + '/Organization/update-game-ends-assoc', request);
+  }
+
   updateGameEndsDateAndSendChars(request: any){
     return this.http.post(this.BaseURI + '/Organization/update-game-ends', request);
   }
@@ -105,6 +109,10 @@ export class HttpHandlerService {
 
   updateGameEndsDateAndNotifyForConnections(request: any){
     return this.http.post(this.BaseURI + '/Organization/update-game-ends-connections', request);
+  }
+
+  getAssocGame(currentDate){
+    return this.http.post(this.BaseURI + '/Organization/get-assoc', currentDate);
   }
 
   getSpojniceGame(currentDate){
@@ -121,6 +129,18 @@ export class HttpHandlerService {
 
   createMultiplayerGame(request: any){
     return this.http.post(this.BaseURI + '/Organization/create-multiplayer-game', request);
+  }
+
+  onMove(request: any){
+    return this.http.post(this.BaseURI + '/Organization/on-move', request);
+  }
+
+  getOpenedField(request: any){
+    return this.http.post(this.BaseURI + '/Organization/opened-field', request);
+  }
+
+  getFromOpponentForAssoc(request: any){
+    return this.http.post(this.BaseURI + '/Organization/get-opponents-assoc', request);
   }
 
   getMultiplayerGame(request: any){
@@ -155,12 +175,24 @@ export class HttpHandlerService {
     return this.http.post(this.BaseURI + '/Organization/next-player', request);
   }
 
+  nextPlayerAssoc(request: any){
+    return this.http.post(this.BaseURI + '/Organization/next-player-assoc', request);
+  }
+
+  sendOpenFieldNotification(request: any){
+    return this.http.post(this.BaseURI + '/Organization/open-field-notif', request);
+  }
+
   tryOtherPlayer(request: any){
     return this.http.post(this.BaseURI + '/Organization/try-next-player', request);
   }
 
   nextGame(request: any){
     return this.http.post(this.BaseURI + '/Organization/next-game', request);
+  }
+
+  notifyOpponentAndSendSolved(request: any){
+    return this.http.post(this.BaseURI + '/Organization/assoc-notify-send-solved', request);
   }
 
   savePoints(request: any){

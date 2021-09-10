@@ -13,10 +13,15 @@ namespace TestCoreAPI.SignalRHub
         Task CountdownTimerNums();
         Task CountdownTimerSkocko();
         Task CountdownTimerSpojnice();
+        Task CountdownTimerAssoc();
         Task CountdownTimerSkockoPlayer2();
         Task WordsFinished();
         Task NumsFinished();
         Task NextPlayerSkocko();
+        Task NextPlayerAssoc();
+        Task NotifyOpponentForAssocSol();
+        Task FieldOpened();
+        Task OnMoveAssoc();
         Task NextPlayerSkockoPlayer2();
         Task TryNextPlayerSkockoPlayer2();
         Task TryNextPlayerSkocko();

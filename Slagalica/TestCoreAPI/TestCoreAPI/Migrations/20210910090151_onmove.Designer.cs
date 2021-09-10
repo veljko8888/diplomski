@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestCoreAPI.Models;
 
 namespace TestCoreAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210910090151_onmove")]
+    partial class onmove
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,9 +184,6 @@ namespace TestCoreAPI.Migrations
                     b.Property<string>("Combination")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FieldName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("GameStatus")
                         .HasColumnType("int");
 
@@ -221,22 +220,13 @@ namespace TestCoreAPI.Migrations
                     b.Property<bool>("Player2WordsFinished")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("PlayerIdWhoSolved")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("SlagalicaGameEnds")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("SolvedForOpponent")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SpojniceText")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SpojniceTextLeft")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("WinnerId")
