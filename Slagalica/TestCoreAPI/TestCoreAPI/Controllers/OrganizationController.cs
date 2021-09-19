@@ -256,6 +256,14 @@ namespace TestCoreAPI.Controllers
             return Ok(users.Data);
         }
 
+        [HttpPost]
+        [Route("stats")]
+        public async Task<IActionResult> SaveDailyPlay(GameAndUserDto request)
+        {
+            var users = await _organizationService.GetStatsForUser(request);
+            return Ok(users.Data);
+        }
+
         [HttpGet]
         [Route("users-administration")]
         //GET : /api/LexiconData

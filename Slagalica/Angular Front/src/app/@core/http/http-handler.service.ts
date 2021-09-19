@@ -43,6 +43,10 @@ export class HttpHandlerService {
     return httpClient.get(this.BaseURI + '/Authentication/best-users');
   }
 
+  getRankingsAndStats(request: any){
+    return this.http.post(this.BaseURI + '/Organization/stats', request);
+  }
+
   getDailyGamesForDate(dailyGameDate: any) {
     return this.http.post(this.BaseURI + '/Organization/daily-games', dailyGameDate);
   }

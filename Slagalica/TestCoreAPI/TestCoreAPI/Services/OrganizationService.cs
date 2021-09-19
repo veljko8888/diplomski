@@ -745,6 +745,73 @@ namespace TestCoreAPI.Services
             }
         }
 
+        public async Task<ResponseWrapper<BestUsersDto>> GetStatsForUser(GameAndUserDto request)
+        {
+            try
+            {
+                User user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId);
+                List<BestUserDto> rank10days = await _context.DailyGamePlays
+                     .Where(x => x.DailyGameDate >= DateTime.Today.AddDays(-10) && x.DailyGameDate <= DateTime.Today)
+                     .Select(x => new
+                     {
+                         x.User.KorisnickoIme,
+                         x.Points,
+                     })
+                    .GroupBy(p => p.KorisnickoIme, x => x.Points)
+                    .Select(g => new BestUserDto
+                    {
+                        UserName = g.Key,
+                        AveragePointsPerGame = g.Sum() / 10,
+                        TotalPoints = g.Sum()
+                    }).OrderByDescending(x => x.AveragePointsPerGame).Take(10).ToListAsync();
+
+                List<BestUserDto> rank10daysAll = await _context.DailyGamePlays
+                     .Where(x => x.DailyGameDate >= DateTime.Today.AddDays(-10) && x.DailyGameDate <= DateTime.Today)
+                     .Select(x => new
+                     {
+                         x.User.KorisnickoIme,
+                         x.Points,
+                     })
+                    .GroupBy(p => p.KorisnickoIme, x => x.Points)
+                    .Select(g => new BestUserDto
+                    {
+                        UserName = g.Key,
+                        AveragePointsPerGame = g.Sum() / 10,
+                        TotalPoints = g.Sum()
+                    }).OrderByDescending(x => x.AveragePointsPerGame).ToListAsync();
+                (BestUserDto user, int index) userRank = rank10daysAll.Select((user, index) => (user, index)).FirstOrDefault(x => x.user.UserName == user.KorisnickoIme);
+
+                List<BestUserDto> playsVsOthers = await _context.MultiplayerGames
+                     .Where(x => (x.Player1Id == request.UserId || x.Player2Id == request.UserId) && x.MultiplayerGameDate >= DateTime.Today.AddDays(-10) && x.MultiplayerGameDate <= DateTime.Today)
+                     .Select(g => new BestUserDto
+                     {
+                         UserName = g.Player1.KorisnickoIme,
+                         TotalPoints = g.Player1Points,
+                         UserName2 = g.Player2.KorisnickoIme,
+                         TotalPoints2 = g.Player2Points
+                     }).ToListAsync();
+
+
+                var bestUsersRankings = new BestUsersDto();
+                bestUsersRankings.Rank7Days = new List<BestUserDto>();
+                bestUsersRankings.PlaysVsOthers = new List<BestUserDto>();
+                if (rank10days != null && playsVsOthers != null)
+                {
+                    bestUsersRankings.Rank10Days = rank10days;
+                    bestUsersRankings.PlaysVsOthers = playsVsOthers;
+                    bestUsersRankings.CurrentUserRank = userRank.user;
+                    bestUsersRankings.CurrentUserRank.Ranking = userRank.index + 1;
+                    bestUsersRankings.ShouldDisplayMyRankSeparate = bestUsersRankings.CurrentUserRank.Ranking > 10;
+                }
+
+                return ResponseWrapper<BestUsersDto>.Success(bestUsersRankings);
+            }
+            catch (Exception)
+            {
+                return ResponseWrapper<BestUsersDto>.Error(AppConstants.RanksError);
+            }
+        }
+
         public async Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendChars(UpdateGameEndsAndSendCharsDto multiGame)
         {
             try

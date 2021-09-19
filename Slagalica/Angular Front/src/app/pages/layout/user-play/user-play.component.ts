@@ -102,6 +102,8 @@ export class UserPlayComponent implements OnInit {
   games = [];
   connection: signalR.HubConnection;
 
+  shotStatsDialog = false;
+  rankings = null;
 
   showMultiplayerDialog: boolean = false;
   timeLeftMultiplayer: number = 60;
@@ -638,16 +640,32 @@ export class UserPlayComponent implements OnInit {
       });
   }
 
-  connectToGame() {
-
-  }
-
   playDailyGame() {
     this.showDailyGameDialog = true;
   }
 
-  showStats() {
+  closeStatsDialog(){
+    this.shotStatsDialog = false;
+  }
 
+  async showStats() {
+    this.frameService.showLoader();
+    this.shotStatsDialog = true;
+    let request = {
+      userId: this.userService.getCurrentUser().id,
+      gameName: 'slagalica'
+    }
+    await this.httpService.getRankingsAndStats(request).subscribe(
+      (res: any) => {
+        this.rankings = res;
+        this.frameService.hideLoader();
+      },
+      error => {
+        let errorText = error && error.error && error.error[0] ? error.error[0].value : 'Došlo je do greške prilikom dohvatanja igre dana';
+        this.frameService.showToastPrime('Ups!', errorText, 'error', 4000);
+        console.log(error);
+        this.frameService.hideLoader();
+      });
   }
 
   async saveWord(isMultiPlayer: boolean = false) {

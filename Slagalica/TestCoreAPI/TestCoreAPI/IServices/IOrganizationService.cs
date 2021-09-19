@@ -53,6 +53,8 @@ namespace TestCoreAPI.IServices
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendNums(UpdateGameEndsAndSendNumsDto multigame);
         Task<ResponseWrapper<MultiplayerGameDto>> UpdateGameEndsAndSendChars(UpdateGameEndsAndSendCharsDto multigame);
         Task<ResponseWrapper<GameAndUserDto>> AllPoints(GameAndUserDto request);
+        Task<ResponseWrapper<BestUsersDto>> GetStatsForUser(GameAndUserDto request);
+        
         Task<ResponseWrapper<MultiplayerGameDto>> CreateMultiplayerGame(MultiplayerGameDto multigame);
         Task<ResponseWrapper<int>> GetSecondsLeft(MultiplayerGameDto game);
         Task<ResponseWrapper<DailyGamesResponseDto>> AddDailyGame(DailyGameDto dailyGame);

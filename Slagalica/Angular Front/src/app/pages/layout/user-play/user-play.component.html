@@ -12,7 +12,8 @@
         <h3>Prijava Na Igru</h3>
         <div class="row">
             <div style="margin-right: 10px;" class="col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xs-1">
-                <button type="submit" (click)="openMultiplayerGamesDialog()" nbButton status="primary">Biraj Igru</button>
+                <button type="submit" (click)="openMultiplayerGamesDialog()" nbButton status="primary">Biraj
+                    Igru</button>
             </div>
         </div>
     </div>
@@ -34,6 +35,103 @@
             </div>
         </div>
     </div>
+
+    <p-dialog [style]="{width: '50vw'}" modal="true" (onHide)="closeStatsDialog()" [(visible)]="shotStatsDialog">
+        <p-header>
+            Rang Lista
+        </p-header>
+        <div>
+            <h3 class="align">
+                Rang Lista 10 Dana
+            </h3>
+            <p-table *ngIf="rankings?.rank10Days" [value]="rankings.rank10Days" dataKey="id" [rows]="10">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Rank</th>
+                        <th>Takmičar</th>
+                        <th>Ukupno Poena</th>
+                        <th>Prosek Uk.Br.Poena/Br.Igara</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user let-rowIndex="rowIndex">
+                    <tr [pSelectableRow]="user">
+                        <td>
+                            {{rowIndex+1}}
+                        </td>
+                        <td>
+                            {{user.userName}}
+                        </td>
+                        <td>
+                            {{user.totalPoints}}
+                        </td>
+                        <td>
+                            {{user.averagePointsPerGame}}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <div *ngIf="rankings?.shouldDisplayMyRankSeparate">
+                <h3>MOJ SKOR</h3>
+                <table>
+                    <tr>
+                        <td>
+                            <b>{{rankings?.currentUserRank.ranking}}.</b>
+                        </td>
+                        <td>
+                            <b>TAKMIČAR</b>
+                        </td>
+                        <td>
+                            <b>{{rankings?.currentUserRank.userName}}</b>
+                        </td>
+                        <td>
+                            <b>UKUPNO POENA</b>
+                        </td>
+                        <td>
+                            <b>{{rankings?.currentUserRank.totalPoints}}</b>
+                        </td>
+                        <td>
+                            <b>PROSEK UK.BR.POENA/BR.IGARA</b>
+                        </td>
+                        <td>
+                            <b>{{rankings?.currentUserRank.averagePointsPerGame}}</b>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3 class="align">
+                Multiplayer Igre u Proteklih 10 dana
+            </h3>
+            <p-table *ngIf="rankings?.playsVsOthers" [value]="rankings.playsVsOthers" dataKey="id" [rows]="10">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Igrac 1</th>
+                        <th>Broj Poena</th>
+                        <th>Igrac 2</th>
+                        <th>Broj Poena</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user let-rowIndex="rowIndex">
+                    <tr [pSelectableRow]="user">
+                        <td>
+                            {{user.userName}}
+                        </td>
+                        <td>
+                            {{user.totalPoints}}
+                        </td>
+                        <td>
+                            {{user.userName2}}
+                        </td>
+                        <td>
+                            {{user.totalPoints2}}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <p-footer>
+        </p-footer>
+    </p-dialog>
 
     <p-dialog [style]="{width: '50vw'}" modal="true" (onHide)="closeDailyGameDialog()"
         [(visible)]="showDailyGameDialog">
@@ -932,7 +1030,8 @@
         </div>
         <div *ngIf="slagalicaActive">
             <div class="form-group row">
-                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi</p>
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi
+                </p>
             </div>
             <div class="form-group row">
                 <button style="margin: auto;" [disabled]="wordGameTimeStarted" (click)="pickChars(true)" nbButton
@@ -1023,7 +1122,8 @@
         </div>
         <div *ngIf="mojBrojActive">
             <div class="form-group row">
-                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi</p>
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi
+                </p>
             </div>
             <div class="form-group row">
                 <button style="margin: auto;" [disabled]="numGameTimeStarted" (click)="pickNums(true)" nbButton
@@ -1111,14 +1211,15 @@
                 </div>
             </div>
             <div class="form-group row">
-                <button [disabled]="!numGameTimeStarted" style="margin: auto;"
-                    (click)="saveNum(true)" nbButton status="primary">Potvrdi</button>
+                <button [disabled]="!numGameTimeStarted" style="margin: auto;" (click)="saveNum(true)" nbButton
+                    status="primary">Potvrdi</button>
             </div>
         </div>
         <div *ngIf="skockoActive">
 
             <div class="form-group row">
-                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi</p>
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi
+                </p>
             </div>
             <div class="form-group row">
                 <button style="margin: auto;" [disabled]="skockoGameTimeStarted" (click)="pickSkocko(true)" nbButton
@@ -1126,7 +1227,7 @@
             </div>
             <div style="display: flex; justify-content: space-around;">
                 <div style="width: 80%;">
-                    
+
                     <div class="form-group row">
                         <div class="skocko-field">
                             <input readonly="readonly" [(ngModel)]="currentCombination[0].combination[0]"
@@ -1324,7 +1425,8 @@
         </div>
         <div *ngIf="spojniceActive">
             <div class="form-group row">
-                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi</p>
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi
+                </p>
             </div>
             <div class="form-group row">
                 <button style="margin: auto;" [disabled]="spojniceGameStarted" (click)="pickSpojnice(true)" nbButton
@@ -1572,11 +1674,12 @@
         </div>
         <div *ngIf="asocijacijeActive">
             <div class="form-group row">
-                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi</p>
+                <p style="margin: auto; color: red; font-weight: bold;">Preostalo Vreme: {{timeLeftMultiplayer}} sekundi
+                </p>
             </div>
             <div class="form-group row">
-                <button style="margin: auto;" [disabled]="asocijacijeGameStarted" (click)="pickAsocijacije(true)" nbButton
-                    status="primary">Start</button>
+                <button style="margin: auto;" [disabled]="asocijacijeGameStarted" (click)="pickAsocijacije(true)"
+                    nbButton status="primary">Start</button>
             </div>
             <div class="form-group row">
                 <div class="col-sm-6">
@@ -1592,8 +1695,7 @@
                     : (opponentSolvedColumns.includes('A') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"   
-                        (click)="openField('A1', true)" [(ngModel)]="asocijacijeBind.A1" readonly="readonly"
+                    : null }" (click)="openField('A1', true)" [(ngModel)]="asocijacijeBind.A1" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="A1">
                 </div>
                 <div class="col-sm-6">
@@ -1609,8 +1711,7 @@
                     : (opponentSolvedColumns.includes('B') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"  
-                        (click)="openField('B1', true)" [(ngModel)]="asocijacijeBind.B1" readonly="readonly"
+                    : null }" (click)="openField('B1', true)" [(ngModel)]="asocijacijeBind.B1" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="B1">
                 </div>
             </div>
@@ -1628,8 +1729,7 @@
                     : (opponentSolvedColumns.includes('A') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"  
-                        (click)="openField('A2', true)" [(ngModel)]="asocijacijeBind.A2" readonly="readonly"
+                    : null }" (click)="openField('A2', true)" [(ngModel)]="asocijacijeBind.A2" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="A2">
                 </div>
                 <div class="col-sm-6">
@@ -1645,8 +1745,7 @@
                     : (opponentSolvedColumns.includes('B') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"   
-                        (click)="openField('B2', true)" [(ngModel)]="asocijacijeBind.B2" readonly="readonly"
+                    : null }" (click)="openField('B2', true)" [(ngModel)]="asocijacijeBind.B2" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="B2">
                 </div>
             </div>
@@ -1664,8 +1763,7 @@
                     : (opponentSolvedColumns.includes('A') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"  
-                        (click)="openField('A3', true)" [(ngModel)]="asocijacijeBind.A3" readonly="readonly"
+                    : null }" (click)="openField('A3', true)" [(ngModel)]="asocijacijeBind.A3" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="A3">
                 </div>
                 <div class="col-sm-6">
@@ -1681,8 +1779,7 @@
                     : (opponentSolvedColumns.includes('B') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"   
-                        (click)="openField('B3', true)" [(ngModel)]="asocijacijeBind.B3" readonly="readonly"
+                    : null }" (click)="openField('B3', true)" [(ngModel)]="asocijacijeBind.B3" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="B3">
                 </div>
             </div>
@@ -1700,8 +1797,7 @@
                     : (opponentSolvedColumns.includes('A') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"  
-                        (click)="openField('A4', true)" [(ngModel)]="asocijacijeBind.A4" readonly="readonly"
+                    : null }" (click)="openField('A4', true)" [(ngModel)]="asocijacijeBind.A4" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="A4">
                 </div>
                 <div class="col-sm-6">
@@ -1717,8 +1813,7 @@
                     : (opponentSolvedColumns.includes('B') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"  
-                        (click)="openField('B4', true)" [(ngModel)]="asocijacijeBind.B4" readonly="readonly"
+                    : null }" (click)="openField('B4', true)" [(ngModel)]="asocijacijeBind.B4" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="B4">
                 </div>
             </div>
@@ -1736,8 +1831,7 @@
                     : (opponentSolvedColumns.includes('A') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"
-                        (keydown)="submitFieldSolution($event, $event.target.value, 'A', true)"
+                    : null }" (keydown)="submitFieldSolution($event, $event.target.value, 'A', true)"
                         [(ngModel)]="asocijacijeBind.A" class="input-style" type="text" nbInput fullWidth
                         placeholder="A">
                 </div>
@@ -1754,8 +1848,7 @@
                     : (opponentSolvedColumns.includes('B') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }" 
-                        (keydown)="submitFieldSolution($event, $event.target.value, 'B', true)"
+                    : null }" (keydown)="submitFieldSolution($event, $event.target.value, 'B', true)"
                         [(ngModel)]="asocijacijeBind.B" class="input-style" type="text" nbInput fullWidth
                         placeholder="B">
                 </div>
@@ -1774,8 +1867,7 @@
                     : (opponentSolvedColumns.includes('Final') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }" 
-                        (keydown)="submitFieldSolution($event, $event.target.value, 'Final', true)"
+                    : null }" (keydown)="submitFieldSolution($event, $event.target.value, 'Final', true)"
                         [(ngModel)]="asocijacijeBind.Final" class="input-style" type="text" nbInput fullWidth
                         placeholder="Konačno">
                 </div>
@@ -1794,8 +1886,7 @@
                     : (opponentSolvedColumns.includes('C') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }" 
-                        (keydown)="submitFieldSolution($event, $event.target.value, 'C', true)"
+                    : null }" (keydown)="submitFieldSolution($event, $event.target.value, 'C', true)"
                         [(ngModel)]="asocijacijeBind.C" class="input-style" type="text" nbInput fullWidth
                         placeholder="C">
                 </div>
@@ -1812,8 +1903,7 @@
                     : (opponentSolvedColumns.includes('D') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }" 
-                        (keydown)="submitFieldSolution($event, $event.target.value, 'D', true)"
+                    : null }" (keydown)="submitFieldSolution($event, $event.target.value, 'D', true)"
                         [(ngModel)]="asocijacijeBind.D" class="input-style" type="text" nbInput fullWidth
                         placeholder="D">
                 </div>
@@ -1832,8 +1922,7 @@
                     : (opponentSolvedColumns.includes('C') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"
-                        (click)="openField('C1', true)" [(ngModel)]="asocijacijeBind.C1" readonly="readonly"
+                    : null }" (click)="openField('C1', true)" [(ngModel)]="asocijacijeBind.C1" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="C1">
                 </div>
                 <div class="col-sm-6">
@@ -1849,8 +1938,7 @@
                     : (opponentSolvedColumns.includes('D') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"  
-                        (click)="openField('D1', true)" [(ngModel)]="asocijacijeBind.D1" readonly="readonly"
+                    : null }" (click)="openField('D1', true)" [(ngModel)]="asocijacijeBind.D1" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="D1">
                 </div>
             </div>
@@ -1868,8 +1956,7 @@
                     : (opponentSolvedColumns.includes('C') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"
-                        (click)="openField('C2', true)" [(ngModel)]="asocijacijeBind.C2" readonly="readonly"
+                    : null }" (click)="openField('C2', true)" [(ngModel)]="asocijacijeBind.C2" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="C2">
                 </div>
                 <div class="col-sm-6">
@@ -1885,8 +1972,7 @@
                     : (opponentSolvedColumns.includes('D') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"  
-                        (click)="openField('D2', true)" [(ngModel)]="asocijacijeBind.D2" readonly="readonly"
+                    : null }" (click)="openField('D2', true)" [(ngModel)]="asocijacijeBind.D2" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="D2">
                 </div>
             </div>
@@ -1904,8 +1990,7 @@
                     : (opponentSolvedColumns.includes('C') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }" 
-                        (click)="openField('C3', true)" [(ngModel)]="asocijacijeBind.C3" readonly="readonly"
+                    : null }" (click)="openField('C3', true)" [(ngModel)]="asocijacijeBind.C3" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="C3">
                 </div>
                 <div class="col-sm-6">
@@ -1921,8 +2006,7 @@
                     : (opponentSolvedColumns.includes('D') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }"  
-                        (click)="openField('D3', true)" [(ngModel)]="asocijacijeBind.D3" readonly="readonly"
+                    : null }" (click)="openField('D3', true)" [(ngModel)]="asocijacijeBind.D3" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="D3">
                 </div>
             </div>
@@ -1940,8 +2024,7 @@
                     : (opponentSolvedColumns.includes('C') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }" 
-                        (click)="openField('C4', true)" [(ngModel)]="asocijacijeBind.C4" readonly="readonly"
+                    : null }" (click)="openField('C4', true)" [(ngModel)]="asocijacijeBind.C4" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="C4">
                 </div>
                 <div class="col-sm-6">
@@ -1957,8 +2040,7 @@
                     : (opponentSolvedColumns.includes('D') 
                     && userService.getCurrentUser().id == userService.getCurrentGame()?.player2Id) 
                     ? 'blue'
-                    : null }" 
-                        (click)="openField('D4', true)" [(ngModel)]="asocijacijeBind.D4" readonly="readonly"
+                    : null }" (click)="openField('D4', true)" [(ngModel)]="asocijacijeBind.D4" readonly="readonly"
                         class="input-style" type="text" nbInput fullWidth placeholder="D4">
                 </div>
             </div>

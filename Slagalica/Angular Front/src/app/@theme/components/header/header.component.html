@@ -8,11 +8,11 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" [routerLink]="['/pages/dashboard']">Home</a>
+          <a class="nav-link" [routerLink]="['/pages/dashboard']">Početna</a>
         </li>
-        <li class="nav-item active">
+        <!-- <li class="nav-item active">
           <a class="nav-link" [routerLink]="['/pages/layout/customreports']">Reports</a>
-        </li>
+        </li> -->
         <li *ngIf="authService.isAdmin()" class="nav-item active">
           <a class="nav-link" [routerLink]="['/pages/layout/dailygame']">Igra dana</a>
         </li>
