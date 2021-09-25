@@ -13,7 +13,6 @@ namespace TestCoreAPI.AutoMapper
         public AutoMapperDefinition()
         {
             CreateMap<User, UserDto>().ReverseMap();
-            CreateMap<Lexicon, WordDto>().ReverseMap();
             CreateMap<Word, WordDto>().ReverseMap();
             CreateMap<Connection, ConnectionDto>().ReverseMap();
             CreateMap<Pair, PairDto>().ReverseMap();

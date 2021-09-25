@@ -97,7 +97,9 @@ namespace TestCoreAPI.Controllers
                         new Claim("UserType", result.Data.TipKorisnika.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(1200000),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JWT_Secret)), SecurityAlgorithms.HmacSha256Signature)
+                    SigningCredentials = new SigningCredentials(
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JWT_Secret)), 
+                        SecurityAlgorithms.HmacSha256Signature)
                 };
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var securityToken = tokenHandler.CreateToken(tokenDescriptor);
@@ -134,11 +136,11 @@ namespace TestCoreAPI.Controllers
             return result.IsSuccess ? (IActionResult)Ok(true) : BadRequest(true);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ConfirmRegistration([FromQuery]string userId, [FromQuery]string token)
-        {
-            var result = await _userService.CheckTokenForUser(userId, token);
-            return result.IsSuccess ? (IActionResult)Ok(result) : BadRequest(result.Errors);
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> ConfirmRegistration([FromQuery]string userId, [FromQuery]string token)
+        //{
+        //    var result = await _userService.CheckTokenForUser(userId, token);
+        //    return result.IsSuccess ? (IActionResult)Ok(result) : BadRequest(result.Errors);
+        //}
     }
 }

@@ -60,7 +60,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
 
   currentTheme = 'default';
 
-  userMenu = [{ title: 'Profil Korisnika', data: { id: 'userDetails' } }, { title: 'Odjavi me', data: { id: 'logout' } }];
+  userMenu = [{ title: 'Odjavi me', data: { id: 'logout' } }];
 
   searchText: string;
   projectsResults: any[];

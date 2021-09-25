@@ -1,10 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SectionDto } from 'app/Models/models';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { UserService } from '../mock/users.service';
-import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'

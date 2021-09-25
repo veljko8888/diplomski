@@ -644,7 +644,7 @@ export class UserPlayComponent implements OnInit {
     this.showDailyGameDialog = true;
   }
 
-  closeStatsDialog(){
+  closeStatsDialog() {
     this.shotStatsDialog = false;
   }
 

@@ -22,27 +22,12 @@ namespace TestCoreAPI.Services
     {
         private ApplicationDbContext _context;
         private IMapper _mapper;
-        private IMailService _emailService;
         public UserService(
             ApplicationDbContext context,
-            IMapper mapper,
-            IMailService emailService)
+            IMapper mapper)
         {
-            _emailService = emailService;
             _context = context;
             _mapper = mapper;
-        }
-
-        public async Task<ResponseWrapper<List<UserDto>>> GetAll()
-        {
-            List<User> resultDB = await _context.Users.ToListAsync();
-            if (resultDB != null)
-            {
-                var result = _mapper.Map<List<UserDto>>(resultDB);
-                return ResponseWrapper<List<UserDto>>.Success(result);
-            }
-
-            return ResponseWrapper<List<UserDto>>.Error(AppConstants.NoUsersInDB);
         }
 
         public async Task<ResponseWrapper<BestUsersDto>> GetBestUsers()
@@ -247,63 +232,6 @@ namespace TestCoreAPI.Services
             }
 
             return ResponseWrapper<UserDto>.Error(AppConstants.WrongUsernameOrPassword);
-        }
-
-        public async Task<ResponseWrapper<bool>> CheckTokenForUser(string userId, string token)
-        {
-            try
-            {
-                UserRegistrationConfirmation confirmation =
-                    await _context.UserRegistrationConfirmations
-                          .FirstOrDefaultAsync(x => x.UserId.ToString() == userId && x.Token.ToString() == token);
-
-                if (confirmation != null)
-                {
-                    if (confirmation.TokenExpirationTime < DateTime.UtcNow)
-                    {
-                        var userDB = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);
-                        confirmation.Token = Guid.NewGuid();
-                        confirmation.TokenExpirationTime = DateTime.UtcNow.AddSeconds(30);
-                        _context.UserRegistrationConfirmations.Update(confirmation);
-                        await _context.SaveChangesAsync();
-
-                        var response = await CreateNewEmailAndSend(userDB.Email, userId, confirmation.Token.ToString());
-                        if (response.StatusCode != HttpStatusCode.Accepted)
-                        {
-                            return ResponseWrapper<bool>.Error(AppConstants.ConfirmationEmailFailedToSend);
-                        }
-
-                        return ResponseWrapper<bool>.Error(AppConstants.TokenExpired);
-                    }
-
-                    User user = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);
-                    if (user != null)
-                    {
-                        user.NalogAktiviran = true;
-                        _context.Users.Update(user);
-                        await _context.SaveChangesAsync();
-                    }
-
-                    return ResponseWrapper<bool>.Success(true);
-                }
-
-                return ResponseWrapper<bool>.Error(AppConstants.NoUserTokenMatch);
-            }
-            catch (Exception)
-            {
-                return ResponseWrapper<bool>.Error(AppConstants.ErrorConfirmingRegistration);
-            }
-        }
-
-        private async Task<Response> CreateNewEmailAndSend(string userEmail, string userId, string token)
-        {
-            string emailHTMLTemplate = AppConstants.EmailTemplate.Replace("CONFIRMBUTTON", AppConstants.ConfirmRegistration)
-                                                                                 .Replace("CONFIRMURL", AppConstants.UserRegistrationConfirmURL
-                                                                                                                    .Replace("USERID", userId)
-                                                                                                                    .Replace("TOKEN", token));
-
-            Response emailSendingResponse = await _emailService.SendEmailAsync(userEmail, "Confirm Registration", emailHTMLTemplate);
-            return emailSendingResponse;
         }
 
         private bool VerifyPassword(string password, byte[] passwordHash, byte[] passwordSalt)

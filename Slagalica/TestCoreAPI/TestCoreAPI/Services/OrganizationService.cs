@@ -30,62 +30,6 @@ namespace TestCoreAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<ResponseWrapper<List<WordDto>>> GetLexicons()
-        {
-            try
-            {
-                List<Lexicon> lexiconsDb = await _context.Lexicons.ToListAsync();
-                List<WordDto> lexicons = _mapper.Map<List<WordDto>>(lexiconsDb);
-                return ResponseWrapper<List<WordDto>>.Success(lexicons);
-            }
-            catch (Exception)
-            {
-                return ResponseWrapper<List<WordDto>>.Error(AppConstants.GetLexiconsFailed);
-            }
-        }
-
-        public async Task<ResponseWrapper<List<WordDto>>> Delete(Guid lexiconId)
-        {
-            try
-            {
-                Lexicon lexiconRemove = _context.Lexicons.FirstOrDefault(x => x.Id == lexiconId);
-                if (lexiconRemove != null)
-                {
-                    _context.Lexicons.Remove(lexiconRemove);
-                    await _context.SaveChangesAsync();
-
-                    List<Lexicon> lexiconsDb = await _context.Lexicons.ToListAsync();
-                    List<WordDto> lexicons = _mapper.Map<List<WordDto>>(lexiconsDb);
-                    return ResponseWrapper<List<WordDto>>.Success(lexicons);
-                }
-
-                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToDeleteLexicon);
-            }
-            catch (Exception)
-            {
-                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToDeleteLexicon);
-            }
-        }
-
-        public async Task<ResponseWrapper<List<WordDto>>> Insert(WordDto lexiconDto)
-        {
-            try
-            {
-                Lexicon lexicon = _mapper.Map<Lexicon>(lexiconDto);
-                lexicon.Id = Guid.NewGuid();
-                _context.Lexicons.Add(lexicon);
-                await _context.SaveChangesAsync();
-
-                List<Lexicon> lexiconsDb = await _context.Lexicons.ToListAsync();
-                List<WordDto> lexicons = _mapper.Map<List<WordDto>>(lexiconsDb);
-                return ResponseWrapper<List<WordDto>>.Success(lexicons);
-            }
-            catch (Exception)
-            {
-                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToAddLexicon);
-            }
-        }
-
         public async Task<ResponseWrapper<DailyGamesResponseDto>> AddDailyGame(DailyGameDto dailyGameDto)
         {
             try
@@ -1333,31 +1277,6 @@ namespace TestCoreAPI.Services
             catch (Exception)
             {
                 return ResponseWrapper<List<AssociationDto>>.Error(AppConstants.FailedToAddAssocGame);
-            }
-        }
-
-
-        public async Task<ResponseWrapper<List<WordDto>>> Update(WordDto lexiconDto)
-        {
-            try
-            {
-                Lexicon lexiconUpdate = _context.Lexicons.AsNoTracking().FirstOrDefault(x => x.Id == lexiconDto.Id);
-                if (lexiconUpdate != null)
-                {
-                    lexiconUpdate = _mapper.Map<Lexicon>(lexiconDto);
-                    _context.Lexicons.Update(lexiconUpdate);
-                    await _context.SaveChangesAsync();
-
-                    List<Lexicon> lexiconsDb = await _context.Lexicons.ToListAsync();
-                    List<WordDto> lexicons = _mapper.Map<List<WordDto>>(lexiconsDb);
-                    return ResponseWrapper<List<WordDto>>.Success(lexicons);
-                }
-
-                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToUpdateLexicon);
-            }
-            catch (Exception)
-            {
-                return ResponseWrapper<List<WordDto>>.Error(AppConstants.FailedToUpdateLexicon);
             }
         }
 

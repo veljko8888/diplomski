@@ -27,16 +27,16 @@ namespace TestCoreAPI.Controllers
         [Route("get-daily-game")]
         public async Task<IActionResult> GetDailyGame(GetDailyGamesDto dailyGameDate)
         {
-            var users = await _organizationService.GetDailyGamePlay(dailyGameDate.DailyGameDate);
-            return Ok(users.Data);
+            var play = await _organizationService.GetDailyGamePlay(dailyGameDate.DailyGameDate);
+            return Ok(play.Data);
         }
 
         [HttpGet]
         [Route("multiplayer-games")]
         public async Task<IActionResult> GetMultiplayerGames()
         {
-            var users = await _organizationService.GetMultiplayerGames();
-            return Ok(users.Data);
+            var games = await _organizationService.GetMultiplayerGames();
+            return Ok(games.Data);
         }
 
         [HttpPost]

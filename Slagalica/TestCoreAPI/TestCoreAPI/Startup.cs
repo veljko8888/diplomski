@@ -68,9 +68,6 @@ namespace TestCoreAPI
             }));
             services.AddSignalR();
 
-            //EMAIL
-            services.AddTransient<IMailService, SendGridMailService>();
-
             services.AddCors();
 
             //JWT TOKEN
