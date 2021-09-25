@@ -153,23 +153,6 @@ namespace TestCoreAPI.Migrations
                     b.ToTable("DailyGamePlays");
                 });
 
-            modelBuilder.Entity("TestCoreAPI.Models.Lexicon", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("SentimentScore")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Word")
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Lexicons");
-                });
-
             modelBuilder.Entity("TestCoreAPI.Models.MultiplayerGame", b =>
                 {
                     b.Property<Guid>("Id")
